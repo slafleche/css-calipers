@@ -1,22 +1,30 @@
 {
-  "name": "measurementkit",
+  "name": "css-calipers",
   "version": "0.0.0",
-  "description": "Reserved package name placeholder for the upcoming MeasurementKit unit-safety toolkit for CSS.",
+  "description": "Reserved package name placeholder for the upcoming CSS-Calipers unit-safety toolkit for CSS.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/slafleche/measurementkit.git"
+    "url": "git+https://github.com/slafleche/css-calipers.git"
   },
   "bugs": {
-    "url": "https://github.com/slafleche/measurementkit/issues"
+    "url": "https://github.com/slafleche/css-calipers/issues"
   },
-  "homepage": "https://github.com/slafleche/measurementkit#readme",
+  "homepage": "https://github.com/slafleche/css-calipers#readme",
   "author": "Stephane Lafleche",
   "keywords": [
     "css",
     "units",
     "typescript",
     "measurement",
-    "safety"
-  ]
+    "safety",
+    "calipers",
+    "type-safe",
+    "css-calipers"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "commonjs"
 }
