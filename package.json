@@ -1,0 +1,22 @@
+{
+  "name": "measurementkit",
+  "version": "0.0.0",
+  "description": "Reserved package name placeholder for the upcoming MeasurementKit unit-safety toolkit for CSS.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slafleche/measurementkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/slafleche/measurementkit/issues"
+  },
+  "homepage": "https://github.com/slafleche/measurementkit#readme",
+  "author": "Stephane Lafleche",
+  "keywords": [
+    "css",
+    "units",
+    "typescript",
+    "measurement",
+    "safety"
+  ]
+}
