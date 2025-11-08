@@ -1,27 +1,22 @@
-# MeasurementKit for CSS
+# CSS-Calipers
 
-**CSS is code. Measure it like one.**
+**CSS is a mess. Your vars shouldn’t be.**  
+A type-safe measurement layer that brings compile-time unit sanity to your CSS logic.
 
 ---
 
-This package name is reserved for the upcoming **MeasurementKit** library —  
-a compile-time unit safety system for CSS values in TypeScript.
+This name is reserved for the upcoming **CSS-Calipers** release. A compile-time unit safety system for CSS values in TypeScript.
 
 ```bash
 npm install measurementkit
 ```
 
-> 🚧 Nothing to see here yet. We're reserving the name so the real MeasurementKit
-> release can ship immediately when it is ready.
+> 🚧 Work in progress.  
+> Until the first release ships under this name, you can experiment with the same core library under **measurementkit**.
 
 ## What to expect
 
-- Type-safe CSS measurement units expressed in TypeScript.
-- Compile-time validation so mismatched units (px vs rem, ms vs s) never ship.
-- Ergonomic APIs that work with your existing styling approach.
+- Type-safe CSS measurement units expressed in TypeScript.  
+- Compile-time validation to prevent mixing incompatible units (`px` vs `rem`, `ms` vs `s`).  
+- Lightweight, ergonomic APIs that drop cleanly into any styling setup.
 
-## Follow the project
-
-- Watch this repo to be notified of the first release.
-- Open an issue if you want specific features in v1.
-- Ping us on GitHub if you'd like to help test the prerelease once it lands.
