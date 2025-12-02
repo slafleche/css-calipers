@@ -27,6 +27,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.14",
     "vitest": "^4.0.14"
   },
   "type": "commonjs"

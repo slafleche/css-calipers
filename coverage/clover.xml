@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1764683518231" clover="3.2.0">
+  <project timestamp="1764683518232" name="All files">
+    <metrics statements="182" coveredstatements="180" conditionals="73" coveredconditionals="63" methods="45" coveredmethods="45" elements="300" coveredelements="288" complexity="0" loc="182" ncloc="182" packages="3" files="17" classes="17"/>
+    <package name="src">
+      <metrics statements="111" coveredstatements="109" conditionals="71" coveredconditionals="61" methods="42" coveredmethods="42"/>
+      <file name="core.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/core.ts">
+        <metrics statements="110" coveredstatements="108" conditionals="71" coveredconditionals="61" methods="42" coveredmethods="42"/>
+        <line num="64" count="20" type="stmt"/>
+        <line num="65" count="20" type="stmt"/>
+        <line num="66" count="20" type="cond" truecount="2" falsecount="0"/>
+        <line num="67" count="9" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="80" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="81" count="2" type="stmt"/>
+        <line num="82" count="2" type="stmt"/>
+        <line num="93" count="74" type="cond" truecount="2" falsecount="0"/>
+        <line num="94" count="3" type="stmt"/>
+        <line num="100" count="71" type="stmt"/>
+        <line num="101" count="71" type="stmt"/>
+        <line num="102" count="71" type="stmt"/>
+        <line num="103" count="71" type="stmt"/>
+        <line num="112" count="37" type="stmt"/>
+        <line num="116" count="1" type="stmt"/>
+        <line num="120" count="50" type="stmt"/>
+        <line num="124" count="17" type="stmt"/>
+        <line num="128" count="1" type="stmt"/>
+        <line num="132" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="133" count="1" type="stmt"/>
+        <line num="137" count="12" type="stmt"/>
+        <line num="141" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="142" count="4" type="stmt"/>
+        <line num="156" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="157" count="1" type="stmt"/>
+        <line num="167" count="3" type="stmt"/>
+        <line num="168" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="169" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="170" count="1" type="stmt"/>
+        <line num="176" count="1" type="stmt"/>
+        <line num="178" count="1" type="stmt"/>
+        <line num="182" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="183" count="4" type="stmt"/>
+        <line num="188" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="189" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="191" count="3" type="stmt"/>
+        <line num="192" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="193" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="197" count="2" type="stmt"/>
+        <line num="198" count="2" type="stmt"/>
+        <line num="202" count="1" type="stmt"/>
+        <line num="203" count="1" type="stmt"/>
+        <line num="207" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="208" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="209" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="210" count="3" type="stmt"/>
+        <line num="211" count="2" type="stmt"/>
+        <line num="215" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="216" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="217" count="1" type="stmt"/>
+        <line num="224" count="1" type="stmt"/>
+        <line num="225" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="226" count="0" type="stmt"/>
+        <line num="233" count="1" type="stmt"/>
+        <line num="237" count="1" type="stmt"/>
+        <line num="241" count="1" type="stmt"/>
+        <line num="245" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="249" count="1" type="stmt"/>
+        <line num="254" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="257" count="1" type="stmt"/>
+        <line num="261" count="1" type="stmt"/>
+        <line num="265" count="1" type="stmt"/>
+        <line num="272" count="4" type="stmt"/>
+        <line num="277" count="4" type="stmt"/>
+        <line num="283" count="4" type="stmt"/>
+        <line num="284" count="4" type="stmt"/>
+        <line num="286" count="4" type="cond" truecount="3" falsecount="1"/>
+        <line num="287" count="0" type="stmt"/>
+        <line num="294" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="295" count="1" type="stmt"/>
+        <line num="303" count="1" type="stmt"/>
+        <line num="307" count="1" type="stmt"/>
+        <line num="311" count="13" type="stmt"/>
+        <line num="315" count="1" type="stmt"/>
+        <line num="318" count="59" type="stmt"/>
+        <line num="320" count="1" type="stmt"/>
+        <line num="322" count="16" type="stmt"/>
+        <line num="324" count="1" type="stmt"/>
+        <line num="328" count="38" type="stmt"/>
+        <line num="339" count="1" type="stmt"/>
+        <line num="342" count="64" type="stmt"/>
+        <line num="343" count="64" type="stmt"/>
+        <line num="344" count="21" type="stmt"/>
+        <line num="345" count="64" type="stmt"/>
+        <line num="350" count="1" type="stmt"/>
+        <line num="355" count="63" type="stmt"/>
+        <line num="357" count="1" type="stmt"/>
+        <line num="372" count="1" type="stmt"/>
+        <line num="375" count="5" type="stmt"/>
+        <line num="376" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="379" count="1" type="stmt"/>
+        <line num="382" count="2" type="stmt"/>
+        <line num="383" count="2" type="stmt"/>
+        <line num="387" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="388" count="3" type="stmt"/>
+        <line num="398" count="1" type="stmt"/>
+        <line num="401" count="5" type="stmt"/>
+        <line num="409" count="1" type="stmt"/>
+        <line num="413" count="2" type="stmt"/>
+        <line num="414" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="417" count="1" type="stmt"/>
+        <line num="421" count="2" type="stmt"/>
+        <line num="422" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="425" count="1" type="stmt"/>
+        <line num="429" count="2" type="stmt"/>
+        <line num="431" count="1" type="stmt"/>
+        <line num="436" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="437" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="438" count="2" type="stmt"/>
+      </file>
+      <file name="index.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/index.ts">
+        <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      </file>
+      <file name="unitDefinitions.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/unitDefinitions.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="22" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.internal">
+      <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+      <file name="errors.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/internal/errors.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="32" count="24" type="stmt"/>
+        <line num="33" count="24" type="cond" truecount="2" falsecount="0"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="40" count="7" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="47" count="17" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.units">
+      <metrics statements="64" coveredstatements="64" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="absolute.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/absolute.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+      </file>
+      <file name="angle.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/angle.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+      </file>
+      <file name="container.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/container.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+      </file>
+      <file name="font-relative.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/font-relative.ts">
+        <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+      </file>
+      <file name="frequency.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/frequency.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+      </file>
+      <file name="grid.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/grid.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+      </file>
+      <file name="percent.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/percent.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+      </file>
+      <file name="resolution.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/resolution.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+      </file>
+      <file name="time.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/time.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+      </file>
+      <file name="viewport-dynamic.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/viewport-dynamic.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+      </file>
+      <file name="viewport-large.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/viewport-large.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+      </file>
+      <file name="viewport-small.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/viewport-small.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+      </file>
+      <file name="viewport.ts" path="/Users/stephane/Documents/GitHub/css-calipers/src/units/viewport.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

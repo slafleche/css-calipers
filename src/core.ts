@@ -90,6 +90,13 @@ class Measurement<Unit extends string>
   #unit: Unit;
 
   constructor(value: number, unit: Unit) {
+    if (!Number.isFinite(value)) {
+      throwHelperError({
+        operation: 'css-calipers.Measurement.constructor',
+        params: [],
+        message: `Non-finite measurement value: ${value}`,
+      });
+    }
     const normalizedUnit = unit.toLowerCase() as Unit;
     this.#value = value;
     this.#unit = normalizedUnit;

@@ -7,9 +7,27 @@ import {
   m,
   mPercent,
   mPx,
+  mCm,
+  mEm,
+  mVh,
+  mSvw,
+  mLvw,
+  mDvw,
+  mCqh,
+  mDeg,
+  mMs,
+  mKhz,
+  mDpi,
+  mFr,
   mCqw,
+  isPercentMeasurement,
+  assertPercentMeasurement,
+  makeUnitHelper,
+  makeUnitHelperFromDefinition,
+  measurementUnitMetadata,
   makeUnitAssert,
   makeUnitGuard,
+  hasCssMethod,
   measurementMax,
   measurementMin,
 } from '../src';
@@ -21,6 +39,17 @@ describe('CSS-Calipers core helpers', () => {
     expect(measurement.getUnit()).toBe('px');
     expect(measurement.getValue()).toBe(12.5);
     expect(measurement.toString()).toBe('12.5px');
+  });
+  it('rejects non-finite values at construction time', () => {
+    expect(() => m(Number.NaN, 'px')).toThrow(
+      'css-calipers.Measurement.constructor: Non-finite measurement value: NaN',
+    );
+    expect(() => m(Number.POSITIVE_INFINITY, 'px')).toThrow(
+      'css-calipers.Measurement.constructor: Non-finite measurement value: Infinity',
+    );
+    expect(() => mPx(Number.NEGATIVE_INFINITY)).toThrow(
+      'css-calipers.Measurement.constructor: Non-finite measurement value: -Infinity',
+    );
   });
 
   it('performs arithmetic safely within the same unit', () => {
@@ -54,6 +83,32 @@ describe('CSS-Calipers core helpers', () => {
     expect(measurement.absolute().css()).toBe('3.14159px');
   });
 
+  it('covers branches in multiply/double/half/negation and coercion', () => {
+    const base = m(5, 'px');
+
+    // multiply branches
+    expect(base.multiply(1)).toBe(base);
+    expect(base.multiply(0).css()).toBe('0px');
+    expect(base.multiply(-1).css()).toBe('-5px');
+    expect(base.multiply(3).css()).toBe('15px');
+
+    // double / half
+    expect(base.double().css()).toBe('10px');
+    expect(base.half().css()).toBe('2.5px');
+
+    // negation(false) returns the same instance
+    expect(base.negation(false)).toBe(base);
+
+    // Symbol.toPrimitive via Number() and string coercion
+    const primitiveNumber = Number(base);
+    expect(primitiveNumber).toBe(5);
+    const primitiveString = `${base}`;
+    expect(primitiveString).toBe('5px');
+
+    // Explicit valueOf path
+    expect(base.valueOf()).toBe(5);
+  });
+
   it('clamps values between given minimum and maximum', () => {
     const value = m(15);
     const clamped = value.clamp(m(10), m(12));
@@ -73,19 +128,6 @@ describe('CSS-Calipers core helpers', () => {
     );
     expect(() => value.clamp(m(8, 'px'), em)).toThrow(
       'clamp(max): css-calipers.assertMatchingUnits: measurement unit mismatch: px vs em',
-    );
-  });
-
-  it('rejects clamp when bounds are non-finite', () => {
-    const value = m(10, 'px');
-    const nonFiniteMin = m(Number.NaN, 'px');
-    const nonFiniteMax = m(Number.POSITIVE_INFINITY, 'px');
-
-    expect(() => value.clamp(nonFiniteMin, m(12, 'px'))).toThrow(
-      'css-calipers.Measurement.clamp: clamp: expected finite bounds',
-    );
-    expect(() => value.clamp(m(8, 'px'), nonFiniteMax)).toThrow(
-      'css-calipers.Measurement.clamp: clamp: expected finite bounds',
     );
   });
 
@@ -120,6 +162,80 @@ describe('CSS-Calipers core helpers', () => {
     expect(containerWidth.css()).toBe('25cqw');
   });
 
+  it('covers additional unit families via helpers', () => {
+    const cm = mCm(1.5);
+    expect(cm.css()).toBe('1.5cm');
+    expect(cm.getUnit()).toBe('cm');
+
+    const em = mEm(2);
+    expect(em.css()).toBe('2em');
+    expect(em.getUnit()).toBe('em');
+
+    const vh = mVh(50);
+    expect(vh.css()).toBe('50vh');
+    expect(vh.getUnit()).toBe('vh');
+
+    const svw = mSvw(10);
+    expect(svw.css()).toBe('10svw');
+
+    const lvw = mLvw(15);
+    expect(lvw.css()).toBe('15lvw');
+
+    const dvw = mDvw(20);
+    expect(dvw.css()).toBe('20dvw');
+
+    const cqh = mCqh(30);
+    expect(cqh.css()).toBe('30cqh');
+
+    const deg = mDeg(90);
+    expect(deg.css()).toBe('90deg');
+
+    const ms = mMs(200);
+    expect(ms.css()).toBe('200ms');
+
+    const khz = mKhz(2);
+    expect(khz.css()).toBe('2khz');
+
+    const dpi = mDpi(300);
+    expect(dpi.css()).toBe('300dpi');
+
+    const fr = mFr(1);
+    expect(fr.css()).toBe('1fr');
+
+    const p = mPercent(25);
+    expect(isPercentMeasurement(p)).toBe(true);
+    expect(isPercentMeasurement(mPx(1))).toBe(false);
+    expect(() =>
+      assertPercentMeasurement(mPx(1), 'ctx'),
+    ).toThrow(
+      'ctx: css-calipers.makeUnitAssert: Expected unit "%".',
+    );
+  });
+
+  it('exercises dynamic factories and unit metadata', () => {
+    const pxHelper = makeUnitHelper('px');
+    const dynamicPx = pxHelper(3);
+    expect(dynamicPx.css()).toBe('3px');
+    expect(pxHelper.unit).toBe('px');
+
+    const pxFromDef = makeUnitHelperFromDefinition('mPx');
+    const dynamicPxFromDef = pxFromDef(4);
+    expect(dynamicPxFromDef.css()).toBe('4px');
+    expect(pxFromDef.unit).toBe('px');
+
+    const metaPx = measurementUnitMetadata.mPx;
+    expect(metaPx.unit).toBe('px');
+    expect(metaPx.category).toBe('length-absolute');
+
+    const metaPercent = measurementUnitMetadata.mPercent;
+    expect(metaPercent.unit).toBe('%');
+    expect(metaPercent.category).toBe('percent');
+
+    const metaCqw = measurementUnitMetadata.mCqw;
+    expect(metaCqw.unit).toBe('cqw');
+    expect(metaCqw.category).toBe('length-container');
+  });
+
   it('provides guards and assertions for unit helpers', () => {
     const guard = makeUnitGuard(mPx);
     const assertPx = makeUnitAssert(mPx);
@@ -137,6 +253,20 @@ describe('CSS-Calipers core helpers', () => {
     expect(() => assertPx(m(2))).not.toThrow();
   });
 
+  it('covers guard and util helpers on non-measurement values', () => {
+    const guard = makeUnitGuard(mPx);
+
+    expect(guard(null)).toBe(false);
+    expect(guard(42 as unknown)).toBe(false);
+    expect(guard({} as unknown)).toBe(false);
+
+    expect(hasCssMethod({ css: () => 'ok' })).toBe(true);
+    expect(hasCssMethod({ css: 'not-a-function' })).toBe(false);
+    expect(hasCssMethod(null)).toBe(false);
+    expect(hasCssMethod(123 as unknown)).toBe(false);
+    expect(hasCssMethod({})).toBe(false);
+  });
+
   it('identifies Measurement instances via isMeasurement', () => {
     expect(isMeasurement(m(1))).toBe(true);
     expect(isMeasurement({ css: () => 'fake' })).toBe(false);
@@ -146,13 +276,6 @@ describe('CSS-Calipers core helpers', () => {
     const measurement = m(10);
     expect(() => measurement.divide(0)).toThrow(
       'css-calipers.Measurement.divide: Cannot divide 10px by zero',
-    );
-  });
-
-  it('rejects non-finite division results', () => {
-    const measurement = m(Number.POSITIVE_INFINITY, 'px');
-    expect(() => measurement.divide(2)).toThrow(
-      'css-calipers.Measurement.divide: Non-finite result',
     );
   });
 
