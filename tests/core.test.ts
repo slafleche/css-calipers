@@ -352,4 +352,81 @@ describe('CSS-Calipers core helpers', () => {
       measurement.assert((m) => m.getValue() > 1, 'should not throw'),
     ).not.toThrow();
   });
+
+  it('composes a simple layout flow with measurements', () => {
+    const spacing = m(8); // 8px
+    const cardPadding = spacing.multiply(2); // 16px
+    const gutter = spacing; // 8px
+
+    const minWidth = m(200, 'px');
+    const maxWidth = m(400, 'px');
+    const contentWidth = m(350, 'px');
+
+    const clampedWidth = contentWidth.clamp(minWidth, maxWidth); // remains 350px
+    expect(clampedWidth.css()).toBe('350px');
+
+    const totalInline = clampedWidth
+      .add(cardPadding.multiply(2)) // left + right padding
+      .add(gutter); // gap to next card
+
+    expect(totalInline.css()).toBe('390px');
+
+    const layoutStyles = {
+      cardWidth: clampedWidth.css(),
+      cardPaddingInline: cardPadding.css(),
+      cardGap: gutter.css(),
+    };
+
+    expect(layoutStyles).toEqual({
+      cardWidth: '350px',
+      cardPaddingInline: '16px',
+      cardGap: '8px',
+    });
+  });
+
+  it('enforces a domain invariant using asserts', () => {
+    const paddingBlock = m(12, 'px');
+    const paddingInline = m(16, 'px');
+
+    // Happy path invariant: same unit and positive values
+    expect(() =>
+      assertMatchingUnits(
+        paddingBlock,
+        paddingInline,
+        'Button padding mismatch',
+      ),
+    ).not.toThrow();
+    expect(() =>
+      assertUnit(paddingBlock, 'px', 'Button padding block'),
+    ).not.toThrow();
+    expect(() =>
+      assertUnit(paddingInline, 'px', 'Button padding inline'),
+    ).not.toThrow();
+    expect(() =>
+      assertCondition(
+        () => paddingBlock.getValue() > 0 && paddingInline.getValue() > 0,
+        'Button padding must be positive',
+      ),
+    ).not.toThrow();
+
+    // Failure path: mismatched units and zero padding
+    const badPaddingBlock = m(0, 'px');
+    const badPaddingInline = m(16, 'em');
+
+    expect(() =>
+      assertMatchingUnits(
+        badPaddingBlock,
+        badPaddingInline,
+        'Button padding mismatch',
+      ),
+    ).toThrow(
+      'Button padding mismatch: css-calipers.assertMatchingUnits: measurement unit mismatch: px vs em',
+    );
+    expect(() =>
+      assertCondition(
+        () => badPaddingBlock.getValue() > 0,
+        'Button padding must be positive',
+      ),
+    ).toThrow('css-calipers.assertCondition: Button padding must be positive');
+  });
 });
