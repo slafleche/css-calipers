@@ -5,6 +5,10 @@ import {
   type UnitDefinitionRecord,
   type UnitHelperName,
 } from './unitDefinitions';
+import {
+  throwHelperError,
+  throwMeasurementMethodError,
+} from './internal/errors';
 
 type UnitSymbol = UnitDefinitionRecord[keyof UnitDefinitionRecord]['unit'];
 
@@ -60,10 +64,12 @@ export function assertMatchingUnits(
   const leftUnit = left.getUnit();
   const rightUnit = right.getUnit();
   if (leftUnit !== rightUnit) {
-    const where = context ? `${context}: ` : '';
-    throw new Error(
-      `${where}measurement unit mismatch: ${leftUnit} vs ${rightUnit}`,
-    );
+    throwHelperError({
+      operation: 'css-calipers.assertMatchingUnits',
+      params: [left, right],
+      message: `measurement unit mismatch: ${leftUnit} vs ${rightUnit}`,
+      context,
+    });
   }
 }
 
@@ -126,10 +132,13 @@ class Measurement<Unit extends string>
 
   assertUnit(expected: string, context?: string): void {
     if (!this.isUnit(expected)) {
-      const location = context ? `${context}: ` : '';
-      throw new Error(
-        `${location}Expected unit "${expected}", received "${this.#unit}".`,
-      );
+      throwMeasurementMethodError({
+        operation: 'css-calipers.Measurement.assertUnit',
+        caller: this,
+        params: [],
+        message: `Expected unit "${expected}", received "${this.#unit}".`,
+        context,
+      });
     }
   }
 
@@ -138,7 +147,12 @@ class Measurement<Unit extends string>
     message: string,
   ): void {
     if (!predicate(this)) {
-      throw new Error(message);
+      throwMeasurementMethodError({
+        operation: 'css-calipers.Measurement.assert',
+        caller: this,
+        params: [],
+        message,
+      });
     }
   }
 
@@ -193,11 +207,21 @@ class Measurement<Unit extends string>
   divide(divisor: number): Measurement<Unit> {
     if (divisor === 1) return this;
     if (divisor === 0) {
-      throw new Error(`Cannot divide ${this.css()} by zero`);
+      throwMeasurementMethodError({
+        operation: 'css-calipers.Measurement.divide',
+        caller: this,
+        params: [],
+        message: `Cannot divide ${this.css()} by zero`,
+      });
     }
     const result = this.#value / divisor;
     if (!Number.isFinite(result)) {
-      throw new Error('Non-finite result');
+      throwMeasurementMethodError({
+        operation: 'css-calipers.Measurement.divide',
+        caller: this,
+        params: [],
+        message: 'Non-finite result',
+      });
     }
     return this.#clone(result);
   }
@@ -253,12 +277,20 @@ class Measurement<Unit extends string>
     const maxValue = max.getValue();
 
     if (!Number.isFinite(minValue) || !Number.isFinite(maxValue)) {
-      throw new Error('clamp: expected finite bounds');
+      throwMeasurementMethodError({
+        operation: 'css-calipers.Measurement.clamp',
+        caller: this,
+        params: [min, max],
+        message: 'clamp: expected finite bounds',
+      });
     }
     if (minValue > maxValue) {
-      throw new Error(
-        `clamp: min (${min.css()}) must be <= max (${max.css()})`,
-      );
+      throwMeasurementMethodError({
+        operation: 'css-calipers.Measurement.clamp',
+        caller: this,
+        params: [min, max],
+        message: `clamp: min (${min.css()}) must be <= max (${max.css()})`,
+      });
     }
 
     const clamped = Math.min(
@@ -346,10 +378,12 @@ export const makeUnitAssert = <T extends UnitHelper>(
     context?: string,
   ): asserts value is MeasurementOf<T> => {
     if (!guard(value)) {
-      const location = context ? `${context}: ` : '';
-      throw new Error(
-        `${location}Expected unit "${helper.unit}".`,
-      );
+      throwHelperError({
+        operation: 'css-calipers.makeUnitAssert',
+        params: isMeasurement(value) ? [value] : [],
+        message: `Expected unit "${helper.unit}".`,
+        context,
+      });
     }
   };
 };
@@ -394,6 +428,10 @@ export const assertCondition = (
   const passed =
     typeof condition === 'function' ? condition() : condition;
   if (!passed) {
-    throw new Error(message);
+    throwHelperError({
+      operation: 'css-calipers.assertCondition',
+      params: [],
+      message,
+    });
   }
 };
