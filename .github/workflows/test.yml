@@ -1,10 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
-      - master
   pull_request:
     branches:
       - main
@@ -29,4 +25,3 @@ jobs:
 
       - name: Run tests
         run: npm test
-
