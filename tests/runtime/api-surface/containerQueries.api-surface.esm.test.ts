@@ -5,10 +5,22 @@ const esmContainerQueries = await import(
 );
 
 describe('API surface (containerQueries ESM)', () => {
-  it('exposes an empty runtime surface for types-only entrypoint', () => {
+  it('exposes the containerQueries runtime surface', () => {
     const keys = Object.keys(esmContainerQueries).filter(
       (key) => key !== '__esModule',
     );
-    expect(keys).toEqual([]);
+    expect(keys.sort()).toEqual(
+      [
+        'buildContainerComparison',
+        'buildContainerConditionString',
+        'buildContainerQueryString',
+        'buildContainerRange',
+        'containerQueryFactory',
+        'createContainerQueryFactory',
+        'defineContainerQueryModules',
+        'formatContainerQueryValue',
+        'makeContainerQueryStyle',
+      ].sort(),
+    );
   });
 });

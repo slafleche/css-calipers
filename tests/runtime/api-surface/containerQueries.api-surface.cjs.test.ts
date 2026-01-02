@@ -5,10 +5,22 @@ const cjsContainerQueries = await import(
 );
 
 describe('API surface (containerQueries CJS)', () => {
-  it('exposes an empty runtime surface for types-only entrypoint', () => {
+  it('exposes the containerQueries runtime surface', () => {
     const keys = Object.keys(cjsContainerQueries).filter(
       (key) => key !== '__esModule',
     );
-    expect(keys).toEqual([]);
+    expect(keys.sort()).toEqual(
+      [
+        'buildContainerComparison',
+        'buildContainerConditionString',
+        'buildContainerQueryString',
+        'buildContainerRange',
+        'containerQueryFactory',
+        'createContainerQueryFactory',
+        'defineContainerQueryModules',
+        'formatContainerQueryValue',
+        'makeContainerQueryStyle',
+      ].sort(),
+    );
   });
 });

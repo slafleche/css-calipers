@@ -5,7 +5,6 @@ import type {
   CSSRange,
   CSSContainerSizeFeature,
 } from './modules/size';
-import type { CSSContainerStyleQuery } from './modules/style';
 
 export type CSSContainerType = 'inline-size' | 'size' | 'normal';
 export type CSSContainerName = string;
@@ -28,7 +27,6 @@ export type CSSContainerProperties = {
 
 export type CSSContainerCondition =
   | CSSContainerSizeFeature
-  | { style: CSSContainerStyleQuery }
   | { and: CSSContainerCondition[] }
   | { or: CSSContainerCondition[] }
   | { not: CSSContainerCondition };

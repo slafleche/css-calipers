@@ -355,10 +355,11 @@ for a wrapper module you can re-export across your project.
 
 ---
 
-## Container queries (types-only)
+## Container queries
 
-Container query types live in the `css-calipers/containerQueries` entrypoint.
-This is a types-only surface in phase 1, intended to model the CSS spec.
+Container query types and builders live in the
+`css-calipers/containerQueries` entrypoint. This mirrors the mediaQueries
+entrypoint shape, including helpers and a factory.
 
 Example types
 

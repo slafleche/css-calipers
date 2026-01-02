@@ -4,7 +4,6 @@ import { m } from '../../dist/esm';
 import type {
   CSSContainerCondition,
   CSSContainerQueryRule,
-  CSSContainerStyleQuery,
   ContainerQueryComparison,
   ContainerQueryRange,
 } from '../../dist/esm/containerQueries';
@@ -24,12 +23,8 @@ const range: ContainerQueryRange = {
   maxOperator: '<=',
 };
 
-const styleQuery: CSSContainerStyleQuery = {
-  display: 'grid',
-};
-
 const condition: CSSContainerCondition = {
-  and: [{ width: comparison }, { widthRange: range }, { style: styleQuery }],
+  and: [{ width: comparison }, { widthRange: range }],
 };
 
 const rule: CSSContainerQueryRule = {

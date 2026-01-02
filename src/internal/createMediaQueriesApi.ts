@@ -1,15 +1,13 @@
-import type { CoreApi } from './createCoreApi';
-import { createMediaQueryBuilder } from '../mediaQueries/helpers';
-import type { ComplexStyleRule, StyleRule } from '../mediaQueries/types';
-import {
-  createMediaQueryValidation,
-} from '../mediaQueries/validation';
+import type { CoreApi } from "./createCoreApi";
+import { createMediaQueryBuilder } from "../mediaQueries/helpers";
+import type { ComplexStyleRule, StyleRule } from "../mediaQueries/types";
+import { createMediaQueryValidation } from "../mediaQueries/validation";
 import {
   createEmitCoreFeatures,
   type IMediaQueries,
   type IMediaQueryProps,
   type IMediaQueryStyles,
-} from '../mediaQueries/mediaQueries';
+} from "../mediaQueries/mediaQueries";
 import {
   createEmitDimensionsFeatures,
   emitDisplayFeatures,
@@ -23,23 +21,23 @@ import {
   type IMediaQueryEnvironment,
   type IMediaQueryInteraction,
   type IMediaQueryPreferences,
-} from '../mediaQueries/modules';
+} from "../mediaQueries/modules";
 import {
   createEmitResolutionFeatures,
   type IMediaQueryResolutionRange,
-} from '../mediaQueries/modules/resolution';
+} from "../mediaQueries/modules/resolution";
 import {
   createMediaQueryFactory,
   type MediaQueryFactoryConfig,
   type MediaQueryModuleEmitters,
-} from '../mediaQueries/factory';
-import { mediaQueryOutputVanillaExtract } from '../mediaQueries/libraryHelpers/vanilla-extract';
-import type { MediaQueryBuilderHelpers } from '../mediaQueries/helpers';
-import type { MediaQueryModulesList } from '../mediaQueries/moduleRegistry';
+} from "../mediaQueries/factory";
+import { mediaQueryOutputVanillaExtract } from "../libraryHelpers/vanilla-extract";
+import type { MediaQueryBuilderHelpers } from "../mediaQueries/helpers";
+import type { MediaQueryModulesList } from "../mediaQueries/moduleRegistry";
 
 type MediaQueriesCore = Pick<
   CoreApi,
-  'assertCondition' | 'assertMatchingUnits'
+  "assertCondition" | "assertMatchingUnits"
 >;
 
 export const createMediaQueriesApi = (core: MediaQueriesCore) => {
@@ -49,16 +47,12 @@ export const createMediaQueriesApi = (core: MediaQueriesCore) => {
   });
 
   const emitCoreFeatures = createEmitCoreFeatures(validation);
-  const emitDimensionsFeatures = createEmitDimensionsFeatures(
-    validation,
-  );
-  const emitResolutionFeatures = createEmitResolutionFeatures(
-    validation,
-  );
+  const emitDimensionsFeatures = createEmitDimensionsFeatures(validation);
+  const emitResolutionFeatures = createEmitResolutionFeatures(validation);
 
   const emitBaseFeatures = (
     props: IMediaQueryProps,
-    helpers: MediaQueryBuilderHelpers,
+    helpers: MediaQueryBuilderHelpers
   ): void => {
     emitCoreFeatures(props, helpers);
     emitDimensionsFeatures(props, helpers);
@@ -80,17 +74,15 @@ export const createMediaQueriesApi = (core: MediaQueriesCore) => {
     (stylesByQuery: IMediaQueryStyles<T>): ComplexStyleRule => {
       const result: Record<string, StyleRule> = {};
 
-      (Object.keys(stylesByQuery) as (keyof T)[]).forEach(
-        (key) => {
-          const styles = stylesByQuery[key];
-          const props = queries[key];
-          if (!styles || !props) return;
-          result[buildMediaQueryString(props)] = styles;
-        },
-      );
+      (Object.keys(stylesByQuery) as (keyof T)[]).forEach((key) => {
+        const styles = stylesByQuery[key];
+        const props = queries[key];
+        if (!styles || !props) return;
+        result[buildMediaQueryString(props)] = styles;
+      });
 
       const mediaQuery: ComplexStyleRule = {
-        '@media': result,
+        "@media": result,
       };
       return mediaQuery;
     };
