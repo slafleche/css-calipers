@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { m, r } from "../../../src";
-import { createContainerQueryBuilder } from "../../../src/containerQueries/helpers";
+import {
+  buildContainerRange,
+  createContainerQueryBuilder,
+} from "../../../src/containerQueries/helpers";
 import type { IContainerQueryCore } from "../../../src/containerQueries/containerQueries";
 import { emitInlineSizeFeatures } from "../../../src/containerQueries/modules/inline";
 import type { IContainerQueryInline } from "../../../src/containerQueries/modules/inline";
@@ -27,7 +30,7 @@ describe("containerQueries linting + validation (src)", () => {
 
     expect(() =>
       builder({
-        inlineSize: { operator: ">=", value: m(10) },
+        inlineSize: compare.gte(m(10)),
       }),
     ).toThrow(
       "Container query inline validation failed: invalid inline size",
@@ -47,7 +50,7 @@ describe("containerQueries linting + validation (src)", () => {
     });
 
     const result = builder({
-      inlineSize: { operator: ">=", value: m(10) },
+      inlineSize: compare.gte(m(10)),
     });
 
     expect(result).toBe("(inline-size >= 10px)");
@@ -65,12 +68,8 @@ describe("containerQueries linting + validation (src)", () => {
 
     expect(() =>
       builder({
-        inlineSize: { operator: ">=", value: m(10) },
-        inlineSizeRange: {
-          min: m(5),
-          max: m(15),
-          minOperator: "<=",
-        },
+        inlineSize: compare.gte(m(10)),
+        inlineSizeRange: buildContainerRange(m(5), m(15)),
       }),
     ).toThrow(
       "inlineSize should not be combined with inlineSizeRange",
@@ -117,11 +116,7 @@ describe("containerQueries linting + validation (src)", () => {
 
     expect(() =>
       builder({
-        inlineSizeRange: {
-          min: m(24),
-          max: m(24),
-          minOperator: "<=",
-        },
+        inlineSizeRange: buildContainerRange(m(24), m(24)),
       }),
     ).toThrow(
       "inlineSizeRange min and max are equal; use inlineSize instead",
@@ -136,11 +131,7 @@ describe("containerQueries linting + validation (src)", () => {
 
     expect(() =>
       builder({
-        blockSizeRange: {
-          min: m(24),
-          max: m(24),
-          minOperator: "<=",
-        },
+        blockSizeRange: buildContainerRange(m(24), m(24)),
       }),
     ).toThrow(
       "blockSizeRange min and max are equal; use blockSize instead",
@@ -172,12 +163,8 @@ describe("containerQueries linting + validation (src)", () => {
     });
 
     const result = builder({
-      inlineSize: { operator: ">=", value: m(10) },
-      inlineSizeRange: {
-        min: m(5),
-        max: m(15),
-        minOperator: "<=",
-      },
+      inlineSize: compare.gte(m(10)),
+      inlineSizeRange: buildContainerRange(m(5), m(15)),
     });
 
     expect(result).toContain("(inline-size");

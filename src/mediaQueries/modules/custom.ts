@@ -5,8 +5,12 @@ import type {
   MediaQueryValidator,
 } from '../helpers';
 import { applyMediaQueryValidation } from '../helpers';
+import { normalizeToArray } from '../../internal/normalizeToArray';
 
-type MediaQueryFeatureValue = string | number | IMeasurement;
+type MediaQueryFeatureEntry = string | number | IMeasurement;
+type MediaQueryFeatureValue =
+  | MediaQueryFeatureEntry
+  | MediaQueryFeatureEntry[];
 
 export interface IMediaQueryCustomFeatures {
   customFeatures?: Record<string, MediaQueryFeatureValue>;
@@ -18,13 +22,18 @@ export type MediaQueryCustomFeaturesValidator =
 export const emitCustomFeatures = (
   props: IMediaQueryCustomFeatures,
   helpers: MediaQueryBuilderHelpers,
+  options?: {
+    allowQueryArrays?: boolean;
+  },
   validate?: MediaQueryCustomFeaturesValidator,
 ): void => {
   if (!applyMediaQueryValidation(props, helpers, validate, 'custom')) {
     return;
   }
 
-  const { addFeature } = helpers;
+  const { addFeatureUnsafe, addFeature } = helpers;
+  const allowQueryArrays =
+    options?.allowQueryArrays ?? helpers.config.allowQueryArrays ?? true;
 
   if (!props.customFeatures) return;
   Object.entries(props.customFeatures).forEach(([name, value]) => {
@@ -33,6 +42,24 @@ export const emitCustomFeatures = (
     if (!trimmedName) {
       throw new Error('Custom feature name must be non-empty.');
     }
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(
+        `Custom feature "${trimmedName}" does not allow arrays.`,
+      );
+    }
+
+    if (Array.isArray(value)) {
+      normalizeToArray(value).forEach((entry) => {
+        if (typeof entry === 'object' && !hasCssMethod(entry)) {
+          throw new Error(
+            `Custom feature "${trimmedName}" must be a primitive or a measurement.`,
+          );
+        }
+        (addFeatureUnsafe ?? addFeature)(trimmedName, entry);
+      });
+      return;
+    }
+
     if (typeof value === 'object' && !hasCssMethod(value)) {
       throw new Error(
         `Custom feature "${trimmedName}" must be a primitive or a measurement.`,

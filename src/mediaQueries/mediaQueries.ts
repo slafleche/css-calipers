@@ -35,8 +35,8 @@ export interface IMediaQueryProps
 
 export interface IMediaQueryCore {
   type?: "all" | "print" | "screen";
-  minWidth?: IMeasurement;
-  maxWidth?: IMeasurement;
+  minWidth?: IMeasurement | IMeasurement[];
+  maxWidth?: IMeasurement | IMeasurement[];
 }
 
 export interface IMediaQuery {
@@ -56,6 +56,22 @@ export const createEmitCoreFeatures = (
   props: IMediaQueryCore,
   helpers: MediaQueryBuilderHelpers,
 ): void => {
+  const allowQueryArrays = helpers.config.allowQueryArrays !== false;
+  const assertNoArray = (value: unknown, label: string): void => {
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(`${label} does not allow arrays.`);
+    }
+  };
+  const emitFeature = (name: string, value: IMeasurement | IMeasurement[]): void => {
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        (helpers.addFeatureUnsafe ?? helpers.addFeature)(name, entry);
+      });
+      return;
+    }
+    helpers.addFeature(name, value);
+  };
+
   const {
     runMediaQueryValidation,
     validateMinMaxWidth,
@@ -84,13 +100,13 @@ export const createEmitCoreFeatures = (
   ) {
     return;
   }
-  const { addFeature } = helpers;
-
-  if (props.minWidth) {
-    addFeature("min-width", props.minWidth);
+  if (props.minWidth !== undefined) {
+    assertNoArray(props.minWidth, "minWidth");
+    emitFeature("min-width", props.minWidth);
   }
-  if (props.maxWidth) {
-    addFeature("max-width", props.maxWidth);
+  if (props.maxWidth !== undefined) {
+    assertNoArray(props.maxWidth, "maxWidth");
+    emitFeature("max-width", props.maxWidth);
   }
 };
 

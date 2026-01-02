@@ -10,6 +10,7 @@ import {
   isRatio,
 } from "../core";
 import { toValidationResult } from "../validation";
+import { normalizeToArray } from "../internal/normalizeToArray";
 import type { IContainerQueryCore } from "./containerQueries";
 import type { IContainerQueryBlock } from "./modules/block";
 import type { IContainerQueryCustomFeatures } from "./modules/custom";
@@ -106,6 +107,9 @@ export const createContainerQueryValidation = (
 
   const validateMinMaxWidth = (props: IContainerQueryCore): void => {
     if (!props.minWidth || !props.maxWidth) return;
+    if (Array.isArray(props.minWidth) || Array.isArray(props.maxWidth)) {
+      return;
+    }
     assertMatchingUnits(
       props.minWidth,
       props.maxWidth,
@@ -118,18 +122,21 @@ export const createContainerQueryValidation = (
   };
 
   const validateWidthValuesPositive = (props: IContainerQueryCore): void => {
-    if (props.minWidth) {
-      assertMeasurement(props.minWidth, "minWidth");
-      assertMeasurementPositive(props.minWidth, "minWidth");
-    }
-    if (props.maxWidth) {
-      assertMeasurement(props.maxWidth, "maxWidth");
-      assertMeasurementPositive(props.maxWidth, "maxWidth");
-    }
+    normalizeToArray(props.minWidth).forEach((value) => {
+      assertMeasurement(value, "minWidth");
+      assertMeasurementPositive(value, "minWidth");
+    });
+    normalizeToArray(props.maxWidth).forEach((value) => {
+      assertMeasurement(value, "maxWidth");
+      assertMeasurementPositive(value, "maxWidth");
+    });
   };
 
   const validateMinMaxHeight = (props: IContainerQueryCore): void => {
     if (!props.minHeight || !props.maxHeight) return;
+    if (Array.isArray(props.minHeight) || Array.isArray(props.maxHeight)) {
+      return;
+    }
     assertMatchingUnits(
       props.minHeight,
       props.maxHeight,
@@ -142,84 +149,81 @@ export const createContainerQueryValidation = (
   };
 
   const validateHeightValuesPositive = (props: IContainerQueryCore): void => {
-    if (props.minHeight) {
-      assertMeasurement(props.minHeight, "minHeight");
-      assertMeasurementPositive(props.minHeight, "minHeight");
-    }
-    if (props.maxHeight) {
-      assertMeasurement(props.maxHeight, "maxHeight");
-      assertMeasurementPositive(props.maxHeight, "maxHeight");
-    }
+    normalizeToArray(props.minHeight).forEach((value) => {
+      assertMeasurement(value, "minHeight");
+      assertMeasurementPositive(value, "minHeight");
+    });
+    normalizeToArray(props.maxHeight).forEach((value) => {
+      assertMeasurement(value, "maxHeight");
+      assertMeasurementPositive(value, "maxHeight");
+    });
   };
 
   const validateInlineSizeValues = (props: IContainerQueryInline): void => {
-    if (props.inlineSize) {
-      assertMeasurement(props.inlineSize.value, "inlineSize");
-      assertMeasurementPositive(props.inlineSize.value, "inlineSize");
-    }
-    if (props.inlineSizeRange) {
-      assertMeasurement(props.inlineSizeRange.min, "inlineSizeRange.min");
-      assertMeasurement(props.inlineSizeRange.max, "inlineSizeRange.max");
-      assertMeasurementPositive(
-        props.inlineSizeRange.min,
-        "inlineSizeRange.min"
-      );
-      assertMeasurementPositive(
-        props.inlineSizeRange.max,
-        "inlineSizeRange.max"
-      );
+    normalizeToArray(props.inlineSize).forEach((value) => {
+      assertMeasurement(value.value, "inlineSize");
+      assertMeasurementPositive(value.value, "inlineSize");
+    });
+    normalizeToArray(props.inlineSizeRange).forEach((value) => {
+      assertMeasurement(value.min, "inlineSizeRange.min");
+      assertMeasurement(value.max, "inlineSizeRange.max");
+      assertMeasurementPositive(value.min, "inlineSizeRange.min");
+      assertMeasurementPositive(value.max, "inlineSizeRange.max");
       assertMatchingUnits(
-        props.inlineSizeRange.min,
-        props.inlineSizeRange.max,
+        value.min,
+        value.max,
         "containerQueries.inlineSizeRangeUnits"
       );
       assertCondition(
-        props.inlineSizeRange.min.getValue() <=
-          props.inlineSizeRange.max.getValue(),
+        value.min.getValue() <= value.max.getValue(),
         "inlineSizeRange min must be less than or equal to max"
       );
-    }
+    });
   };
 
   const validateBlockSizeValues = (props: IContainerQueryBlock): void => {
-    if (props.blockSize) {
-      assertMeasurement(props.blockSize.value, "blockSize");
-      assertMeasurementPositive(props.blockSize.value, "blockSize");
-    }
-    if (props.blockSizeRange) {
-      assertMeasurement(props.blockSizeRange.min, "blockSizeRange.min");
-      assertMeasurement(props.blockSizeRange.max, "blockSizeRange.max");
-      assertMeasurementPositive(props.blockSizeRange.min, "blockSizeRange.min");
-      assertMeasurementPositive(props.blockSizeRange.max, "blockSizeRange.max");
+    normalizeToArray(props.blockSize).forEach((value) => {
+      assertMeasurement(value.value, "blockSize");
+      assertMeasurementPositive(value.value, "blockSize");
+    });
+    normalizeToArray(props.blockSizeRange).forEach((value) => {
+      assertMeasurement(value.min, "blockSizeRange.min");
+      assertMeasurement(value.max, "blockSizeRange.max");
+      assertMeasurementPositive(value.min, "blockSizeRange.min");
+      assertMeasurementPositive(value.max, "blockSizeRange.max");
       assertMatchingUnits(
-        props.blockSizeRange.min,
-        props.blockSizeRange.max,
+        value.min,
+        value.max,
         "containerQueries.blockSizeRangeUnits"
       );
       assertCondition(
-        props.blockSizeRange.min.getValue() <=
-          props.blockSizeRange.max.getValue(),
+        value.min.getValue() <= value.max.getValue(),
         "blockSizeRange min must be less than or equal to max"
       );
-    }
+    });
   };
 
   const validateAspectRatioValues = (
     props: IContainerQueryAspectRatio
   ): void => {
-    if (props.aspectRatio) {
-      assertRatio(props.aspectRatio, "aspectRatio");
-      assertRatioPositive(props.aspectRatio, "aspectRatio");
-    }
-    if (props.minAspectRatio) {
-      assertRatio(props.minAspectRatio, "minAspectRatio");
-      assertRatioPositive(props.minAspectRatio, "minAspectRatio");
-    }
-    if (props.maxAspectRatio) {
-      assertRatio(props.maxAspectRatio, "maxAspectRatio");
-      assertRatioPositive(props.maxAspectRatio, "maxAspectRatio");
-    }
-    if (props.minAspectRatio && props.maxAspectRatio) {
+    normalizeToArray(props.aspectRatio).forEach((value) => {
+      assertRatio(value, "aspectRatio");
+      assertRatioPositive(value, "aspectRatio");
+    });
+    normalizeToArray(props.minAspectRatio).forEach((value) => {
+      assertRatio(value, "minAspectRatio");
+      assertRatioPositive(value, "minAspectRatio");
+    });
+    normalizeToArray(props.maxAspectRatio).forEach((value) => {
+      assertRatio(value, "maxAspectRatio");
+      assertRatioPositive(value, "maxAspectRatio");
+    });
+    if (
+      props.minAspectRatio &&
+      props.maxAspectRatio &&
+      !Array.isArray(props.minAspectRatio) &&
+      !Array.isArray(props.maxAspectRatio)
+    ) {
       const minValue = ratioToFloat(props.minAspectRatio);
       const maxValue = ratioToFloat(props.maxAspectRatio);
       assertCondition(
@@ -267,6 +271,15 @@ export const createContainerQueryValidation = (
         "Custom feature name must be non-empty."
       );
       if (value === undefined || value === null) return;
+      if (Array.isArray(value)) {
+        value.forEach((entry, index) => {
+          assertCondition(
+            isStyleValue(entry),
+            `Custom feature "${trimmedName}[${index}]" must be a primitive or a measurement.`
+          );
+        });
+        return;
+      }
       assertCondition(
         isStyleValue(value),
         `Custom feature "${trimmedName}" must be a primitive or a measurement.`

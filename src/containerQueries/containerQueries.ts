@@ -33,10 +33,10 @@ export interface IContainerQueryProps
     IContainerQueryCustomFeatures {}
 
 export interface IContainerQueryCore {
-  minWidth?: IMeasurement;
-  maxWidth?: IMeasurement;
-  minHeight?: IMeasurement;
-  maxHeight?: IMeasurement;
+  minWidth?: IMeasurement | IMeasurement[];
+  maxWidth?: IMeasurement | IMeasurement[];
+  minHeight?: IMeasurement | IMeasurement[];
+  maxHeight?: IMeasurement | IMeasurement[];
 }
 
 export type IContainerQueryCoreVariables =
@@ -78,6 +78,25 @@ export type IContainerQueryStyles<T extends IContainerQueries> = Partial<
 export const createEmitCoreFeatures =
   (validation: ContainerQueryValidation) =>
   (props: IContainerQueryCore, helpers: ContainerQueryBuilderHelpers): void => {
+    const allowQueryArrays = helpers.config.allowQueryArrays !== false;
+    const assertNoArray = (value: unknown, label: string): void => {
+      if (Array.isArray(value) && !allowQueryArrays) {
+        throw new Error(`${label} does not allow arrays.`);
+      }
+    };
+    const emitFeature = (
+      name: string,
+      value: IMeasurement | IMeasurement[],
+    ): void => {
+      if (Array.isArray(value)) {
+        value.forEach((entry) => {
+          (helpers.addFeatureUnsafe ?? helpers.addFeature)(name, entry);
+        });
+        return;
+      }
+      helpers.addFeature(name, value);
+    };
+
     const {
       runContainerQueryValidation,
       validateMinMaxWidth,
@@ -151,19 +170,21 @@ export const createEmitCoreFeatures =
       return;
     }
 
-    const { addFeature } = helpers;
-
-    if (props.minWidth) {
-      addFeature("min-width", props.minWidth);
+    if (props.minWidth !== undefined) {
+      assertNoArray(props.minWidth, "minWidth");
+      emitFeature("min-width", props.minWidth);
     }
-    if (props.maxWidth) {
-      addFeature("max-width", props.maxWidth);
+    if (props.maxWidth !== undefined) {
+      assertNoArray(props.maxWidth, "maxWidth");
+      emitFeature("max-width", props.maxWidth);
     }
-    if (props.minHeight) {
-      addFeature("min-height", props.minHeight);
+    if (props.minHeight !== undefined) {
+      assertNoArray(props.minHeight, "minHeight");
+      emitFeature("min-height", props.minHeight);
     }
-    if (props.maxHeight) {
-      addFeature("max-height", props.maxHeight);
+    if (props.maxHeight !== undefined) {
+      assertNoArray(props.maxHeight, "maxHeight");
+      emitFeature("max-height", props.maxHeight);
     }
   };
 

@@ -7,8 +7,12 @@ import { applyContainerQueryValidation } from "../helpers";
 import { defaultContainerQueryValidation } from "../validation";
 import { runContainerQueryLint } from "../linting";
 import { lintCustomFeatures } from "../linting/custom";
+import { normalizeToArray } from "../../internal/normalizeToArray";
 
-type ContainerQueryFeatureValue = string | number | IMeasurement;
+type ContainerQueryFeatureEntry = string | number | IMeasurement;
+type ContainerQueryFeatureValue =
+  | ContainerQueryFeatureEntry
+  | ContainerQueryFeatureEntry[];
 
 export interface IContainerQueryCustomFeatures {
   customFeatures?: Record<string, ContainerQueryFeatureValue>;
@@ -20,12 +24,14 @@ export type ContainerQueryCustomFeaturesValidator =
 export const emitCustomFeatures = (
   props: IContainerQueryCustomFeatures,
   helpers: ContainerQueryBuilderHelpers,
+  options?: {
+    allowQueryArrays?: boolean;
+  },
   validate?: ContainerQueryCustomFeaturesValidator
 ): void => {
-  const {
-    runContainerQueryValidation,
-    validateCustomFeatures,
-  } = defaultContainerQueryValidation;
+  const { runContainerQueryValidation, validateCustomFeatures } =
+    defaultContainerQueryValidation;
+  const { allowQueryArrays = true } = options || {};
 
   if (
     !runContainerQueryValidation(
@@ -33,7 +39,7 @@ export const emitCustomFeatures = (
       helpers,
       validateCustomFeatures,
       "custom",
-      "custom features must be valid and non-empty",
+      "custom features must be valid and non-empty"
     )
   ) {
     return;
@@ -44,7 +50,7 @@ export const emitCustomFeatures = (
       props,
       helpers,
       lintCustomFeatures,
-      "customFeatures should not be empty",
+      "customFeatures should not be empty"
     )
   ) {
     return;
@@ -54,13 +60,26 @@ export const emitCustomFeatures = (
     return;
   }
 
-  const { addFeature } = helpers;
+  const { addFeatureUnsafe, addFeature } = helpers;
+  const allowQueryArrays =
+    options?.allowQueryArrays ?? helpers.config.allowQueryArrays ?? true;
 
   if (!props.customFeatures) return;
   Object.entries(props.customFeatures).forEach(([name, value]) => {
     if (value === undefined || value === null) return;
     const trimmedName = name.trim();
     if (!trimmedName) return;
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(
+        `Custom feature "${trimmedName}" does not allow arrays.`,
+      );
+    }
+    if (Array.isArray(value)) {
+      normalizeToArray(value).forEach((entry) => {
+        (addFeatureUnsafe ?? addFeature)(trimmedName, entry);
+      });
+      return;
+    }
     addFeature(trimmedName, value);
   });
 };

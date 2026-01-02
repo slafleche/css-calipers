@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "types": ["vitest", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "css-calipers": ["src/index.ts"],
+      "css-calipers/*": ["src/*"]
+    }
+  },
+  "include": ["tests", "examples"],
+  "exclude": ["tests/types"]
+}

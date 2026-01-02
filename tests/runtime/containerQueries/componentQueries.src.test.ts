@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import type { IRatio } from "../../../src/ratio";
 import { compare } from "../../../src/comparisons";
 import { m, r } from "../../../src";
-import { buildContainerQueryString } from "../../../src/containerQueries";
+import {
+  buildContainerQueryString,
+  buildContainerRange,
+} from "../../../src/containerQueries";
 
 describe("componentQueries coverage (src)", () => {
   it("builds comparisons with multiple operators", () => {
@@ -17,11 +20,7 @@ describe("componentQueries coverage (src)", () => {
   it("combines conditions across modules", () => {
     const result = buildContainerQueryString({
       aspectRatio: r(16, 9),
-      inlineSizeRange: {
-        min: m(10),
-        max: m(20),
-        minOperator: "<=",
-      },
+      inlineSizeRange: buildContainerRange(m(10), m(20)),
       blockSize: compare.gte(m(30)),
       style: {
         display: "grid",
@@ -48,11 +47,7 @@ describe("componentQueries coverage (src)", () => {
   it("rejects inline ranges where min is greater than max", () => {
     expect(() =>
       buildContainerQueryString({
-        inlineSizeRange: {
-          min: m(20),
-          max: m(10),
-          minOperator: "<=",
-        },
+        inlineSizeRange: buildContainerRange(m(20), m(10)),
       })
     ).toThrow(/inlineSizeRange min must be less than or equal to max/);
   });

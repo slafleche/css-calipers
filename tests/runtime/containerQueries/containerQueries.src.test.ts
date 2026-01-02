@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { compare } from "../../../src/comparisons";
-import { m } from "../../../src";
+import { m, r } from "../../../src";
 import {
   buildContainerQueryString,
+  buildContainerRange,
   makeContainerQueryStyle,
 } from "../../../src/containerQueries";
+import { createContainerQueryBuilder } from "../../../src/containerQueries/helpers";
+import { emitCustomFeatures } from "../../../src/containerQueries/modules/custom";
+import type { IContainerQueryProps } from "../../../src/containerQueries/containerQueries";
 import { makeMediaQueryStyle } from "../../../src/mediaQueries";
 import type {
   ComplexStyleRule,
@@ -40,11 +44,7 @@ describe("containerQueries (src)", () => {
 
   it("builds block ranges with min and max operators", () => {
     const result = buildContainerQueryString({
-      blockSizeRange: {
-        min: m(10),
-        max: m(20),
-        minOperator: "<=",
-      },
+      blockSizeRange: buildContainerRange(m(10), m(20)),
     });
 
     expect(result).toBe(
@@ -66,6 +66,137 @@ describe("containerQueries (src)", () => {
     });
 
     expect(result).toBe("(custom-flag: enabled)");
+  });
+
+  it("builds core min/max width array conditions", () => {
+    const result = buildContainerQueryString({
+      minWidth: [m(10), m(20)] as unknown as IContainerQueryProps["minWidth"],
+      maxWidth: [m(30), m(40)] as unknown as IContainerQueryProps["maxWidth"],
+    });
+
+    expect(result).toBe(
+      "(min-width: 10px) and (min-width: 20px) and (max-width: 30px) and (max-width: 40px)",
+    );
+  });
+
+  it("builds core min/max height array conditions", () => {
+    const result = buildContainerQueryString({
+      minHeight: [m(50), m(60)] as unknown as IContainerQueryProps["minHeight"],
+      maxHeight: [m(70), m(80)] as unknown as IContainerQueryProps["maxHeight"],
+    });
+
+    expect(result).toBe(
+      "(min-height: 50px) and (min-height: 60px) and (max-height: 70px) and (max-height: 80px)",
+    );
+  });
+
+  it("builds inline size array conditions", () => {
+    const result = buildContainerQueryString({
+      inlineSize: [
+        compare.gte(m(10)),
+        compare.lt(m(20)),
+      ] as unknown as IContainerQueryProps["inlineSize"],
+    });
+
+    expect(result).toBe(
+      "(inline-size >= 10px) and (inline-size < 20px)",
+    );
+  });
+
+  it("builds inline size range array conditions", () => {
+    const result = buildContainerQueryString({
+      inlineSizeRange: [
+        buildContainerRange(m(10), m(20)),
+        buildContainerRange(m(24), m(30)),
+      ] as unknown as IContainerQueryProps["inlineSizeRange"],
+    });
+
+    expect(result).toBe(
+      "(10px <= inline-size) and (inline-size <= 20px) and (24px <= inline-size) and (inline-size <= 30px)",
+    );
+  });
+
+  it("builds block size array conditions", () => {
+    const result = buildContainerQueryString({
+      blockSize: [
+        compare.lt(m(24)),
+        compare.gte(m(48)),
+      ] as unknown as IContainerQueryProps["blockSize"],
+    });
+
+    expect(result).toBe(
+      "(block-size < 24px) and (block-size >= 48px)",
+    );
+  });
+
+  it("builds block size range array conditions", () => {
+    const result = buildContainerQueryString({
+      blockSizeRange: [
+        buildContainerRange(m(24), m(48)),
+        buildContainerRange(m(50), m(80)),
+      ] as unknown as IContainerQueryProps["blockSizeRange"],
+    });
+
+    expect(result).toBe(
+      "(24px <= block-size) and (block-size <= 48px) and (50px <= block-size) and (block-size <= 80px)",
+    );
+  });
+
+  it("builds aspect ratio array conditions", () => {
+    const result = buildContainerQueryString({
+      aspectRatio: [r(16, 9), r(4, 3)] as unknown as IContainerQueryProps["aspectRatio"],
+    });
+
+    expect(result).toBe(
+      "(aspect-ratio: 16/9) and (aspect-ratio: 4/3)",
+    );
+  });
+
+  it("builds min-aspect-ratio array conditions", () => {
+    const result = buildContainerQueryString({
+      minAspectRatio: [r(4, 3), r(3, 2)] as unknown as IContainerQueryProps["minAspectRatio"],
+    });
+
+    expect(result).toBe(
+      "(min-aspect-ratio: 4/3) and (min-aspect-ratio: 3/2)",
+    );
+  });
+
+  it("builds max-aspect-ratio array conditions", () => {
+    const result = buildContainerQueryString({
+      maxAspectRatio: [r(21, 9), r(16, 9)] as unknown as IContainerQueryProps["maxAspectRatio"],
+    });
+
+    expect(result).toBe(
+      "(max-aspect-ratio: 21/9) and (max-aspect-ratio: 16/9)",
+    );
+  });
+
+  it("builds custom feature array conditions", () => {
+    const result = buildContainerQueryString({
+      customFeatures: {
+        "custom-flag": ["on", "off"] as unknown as string,
+      },
+    });
+
+    expect(result).toBe(
+      "(custom-flag: on) and (custom-flag: off)",
+    );
+  });
+
+  it("rejects custom feature arrays when allowQueryArrays is false", () => {
+    const builder = createContainerQueryBuilder({
+      emitBase: (props, helpers) =>
+        emitCustomFeatures(props, helpers, { allowQueryArrays: false }),
+    });
+
+    expect(() =>
+      builder({
+        customFeatures: {
+          "custom-flag": ["on", "off"] as unknown as string,
+        },
+      }),
+    ).toThrow('Custom feature "custom-flag" does not allow arrays.');
   });
 
   it("maps query styles to @container rules", () => {

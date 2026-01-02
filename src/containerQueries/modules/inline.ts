@@ -17,10 +17,11 @@ import {
   lintInlineRangeCollapse,
   lintInlineRedundancy,
 } from "../linting/inline";
+import { normalizeToArray } from "../../internal/normalizeToArray";
 
 export interface IContainerQueryInline {
-  inlineSize?: CSSComparison<IMeasurement>;
-  inlineSizeRange?: CSSRange<IMeasurement>;
+  inlineSize?: CSSComparison<IMeasurement> | CSSComparison<IMeasurement>[];
+  inlineSizeRange?: CSSRange<IMeasurement> | CSSRange<IMeasurement>[];
 }
 
 export type ContainerQueryInlineValidator =
@@ -80,6 +81,13 @@ export const emitInlineSizeFeatures = (
   helpers: ContainerQueryBuilderHelpers,
   validate?: ContainerQueryInlineValidator,
 ): void => {
+  const allowQueryArrays = helpers.config.allowQueryArrays !== false;
+  const assertNoArray = (value: unknown, label: string): void => {
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(`${label} does not allow arrays.`);
+    }
+  };
+
   const {
     runContainerQueryValidation,
     validateInlineSizeValues,
@@ -124,10 +132,12 @@ export const emitInlineSizeFeatures = (
 
   const { addCondition } = helpers;
 
-  if (props.inlineSize) {
-    emitInlineComparison("inline-size", props.inlineSize, addCondition);
-  }
-  if (props.inlineSizeRange) {
-    emitInlineRange("inline-size", props.inlineSizeRange, addCondition);
-  }
+  assertNoArray(props.inlineSize, "inlineSize");
+  normalizeToArray(props.inlineSize).forEach((value) => {
+    emitInlineComparison("inline-size", value, addCondition);
+  });
+  assertNoArray(props.inlineSizeRange, "inlineSizeRange");
+  normalizeToArray(props.inlineSizeRange).forEach((value) => {
+    emitInlineRange("inline-size", value, addCondition);
+  });
 };

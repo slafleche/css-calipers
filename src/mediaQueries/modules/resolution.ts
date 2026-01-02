@@ -12,9 +12,9 @@ import { runMediaQueryLint } from '../linting';
 import { lintResolutionRedundancy } from '../linting/resolution';
 
 export interface IMediaQueryResolutionRange {
-  minResolution?: IMeasurement;
-  maxResolution?: IMeasurement;
-  resolutionValue?: IMeasurement;
+  minResolution?: IMeasurement | IMeasurement[];
+  maxResolution?: IMeasurement | IMeasurement[];
+  resolutionValue?: IMeasurement | IMeasurement[];
 }
 
 export type MediaQueryResolutionValidator =
@@ -27,6 +27,22 @@ export const createEmitResolutionFeatures = (
   helpers: MediaQueryBuilderHelpers,
   validate?: MediaQueryResolutionValidator,
 ): void => {
+  const allowQueryArrays = helpers.config.allowQueryArrays !== false;
+  const assertNoArray = (value: unknown, label: string): void => {
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(`${label} does not allow arrays.`);
+    }
+  };
+  const emitFeature = (name: string, value: IMeasurement | IMeasurement[]): void => {
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        (helpers.addFeatureUnsafe ?? helpers.addFeature)(name, entry);
+      });
+      return;
+    }
+    helpers.addFeature(name, value);
+  };
+
   const { runMediaQueryValidation, validateResolutionValues } =
     validation;
 
@@ -55,16 +71,17 @@ export const createEmitResolutionFeatures = (
     return;
   }
 
-  const { addFeature } = helpers;
-
-  if (props.resolutionValue) {
-    addFeature('resolution', props.resolutionValue);
+  if (props.resolutionValue !== undefined) {
+    assertNoArray(props.resolutionValue, 'resolutionValue');
+    emitFeature('resolution', props.resolutionValue);
   }
-  if (props.minResolution) {
-    addFeature('min-resolution', props.minResolution);
+  if (props.minResolution !== undefined) {
+    assertNoArray(props.minResolution, 'minResolution');
+    emitFeature('min-resolution', props.minResolution);
   }
-  if (props.maxResolution) {
-    addFeature('max-resolution', props.maxResolution);
+  if (props.maxResolution !== undefined) {
+    assertNoArray(props.maxResolution, 'maxResolution');
+    emitFeature('max-resolution', props.maxResolution);
   }
 };
 

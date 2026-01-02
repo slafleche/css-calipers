@@ -9,9 +9,7 @@
 import { style } from "@vanilla-extract/css";
 import { m, makeMediaQueryStyle } from "./factory-wrapper.example";
 import { makeContainerQueryStyle } from "../src/containerQueries";
-
-
-
+import { compare } from "../src/comparisons";
 
 const media = makeMediaQueryStyle({
   desktop: { minWidth: m(1024) },
@@ -19,7 +17,7 @@ const media = makeMediaQueryStyle({
 
 const container = makeContainerQueryStyle({
   wideCard: {
-    inlineSize: { operator: ">=", value: m(28, "rem") },
+    inlineSize: compare.gte(m(28, "rem")),
   },
 });
 
@@ -35,13 +33,12 @@ const container = makeContainerQueryStyle({
 
 const sampleClasses = {
   container: style({
-    display: "grid",
-
+    display: "flex",
+    flexDirection: "column",
   }),
   logo: style({}),
   text: style({}),
 };
-
 
 const sampleComponent = `
   <div className={container}>

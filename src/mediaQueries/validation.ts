@@ -9,6 +9,7 @@ import {
   isRatio,
   ratioToFloat,
 } from "../core";
+import { normalizeToArray } from "../internal/normalizeToArray";
 import type { IMediaQueryCore } from "./mediaQueries";
 import type { IMediaQueryDimensions } from "./modules/dimensions";
 import type { IMediaQueryResolutionRange } from "./modules/resolution";
@@ -55,6 +56,9 @@ export const createMediaQueryValidation = (core: MediaQueryCoreHelpers) => {
 
   const validateMinMaxWidth = (props: IMediaQueryCore): void => {
     if (!props.minWidth || !props.maxWidth) return;
+    if (Array.isArray(props.minWidth) || Array.isArray(props.maxWidth)) {
+      return;
+    }
     assertMatchingUnits(
       props.minWidth,
       props.maxWidth,
@@ -73,19 +77,22 @@ export const createMediaQueryValidation = (core: MediaQueryCoreHelpers) => {
       assertCondition(value.getValue() > 0, `${label} must be greater than 0`);
     };
 
-    if (props.width) {
-      assertPositive(props.width, "width");
-    }
-    if (props.minWidth) {
-      assertPositive(props.minWidth, "minWidth");
-    }
-    if (props.maxWidth) {
-      assertPositive(props.maxWidth, "maxWidth");
-    }
+    normalizeToArray(props.width).forEach((value) => {
+      assertPositive(value, "width");
+    });
+    normalizeToArray(props.minWidth).forEach((value) => {
+      assertPositive(value, "minWidth");
+    });
+    normalizeToArray(props.maxWidth).forEach((value) => {
+      assertPositive(value, "maxWidth");
+    });
   };
 
   const validateMinMaxHeight = (props: IMediaQueryDimensions): void => {
     if (!props.minHeight || !props.maxHeight) return;
+    if (Array.isArray(props.minHeight) || Array.isArray(props.maxHeight)) {
+      return;
+    }
     assertMatchingUnits(
       props.minHeight,
       props.maxHeight,
@@ -102,15 +109,15 @@ export const createMediaQueryValidation = (core: MediaQueryCoreHelpers) => {
       assertCondition(value.getValue() > 0, `${label} must be greater than 0`);
     };
 
-    if (props.height) {
-      assertPositive(props.height, "height");
-    }
-    if (props.minHeight) {
-      assertPositive(props.minHeight, "minHeight");
-    }
-    if (props.maxHeight) {
-      assertPositive(props.maxHeight, "maxHeight");
-    }
+    normalizeToArray(props.height).forEach((value) => {
+      assertPositive(value, "height");
+    });
+    normalizeToArray(props.minHeight).forEach((value) => {
+      assertPositive(value, "minHeight");
+    });
+    normalizeToArray(props.maxHeight).forEach((value) => {
+      assertPositive(value, "maxHeight");
+    });
   };
 
   const assertRatio: (
@@ -132,6 +139,12 @@ export const createMediaQueryValidation = (core: MediaQueryCoreHelpers) => {
 
   const validateMinMaxAspectRatio = (props: IMediaQueryDimensions): void => {
     if (!props.minAspectRatio || !props.maxAspectRatio) return;
+    if (
+      Array.isArray(props.minAspectRatio) ||
+      Array.isArray(props.maxAspectRatio)
+    ) {
+      return;
+    }
     assertRatio(props.minAspectRatio, "minAspectRatio");
     assertRatio(props.maxAspectRatio, "maxAspectRatio");
     const minRatio = ratioToFloat(props.minAspectRatio);
@@ -145,18 +158,18 @@ export const createMediaQueryValidation = (core: MediaQueryCoreHelpers) => {
   const validateAspectRatioValuesPositive = (
     props: IMediaQueryDimensions
   ): void => {
-    if (props.aspectRatio !== undefined) {
-      assertRatio(props.aspectRatio, "aspectRatio");
-      assertRatioPositive(props.aspectRatio, "aspectRatio");
-    }
-    if (props.minAspectRatio !== undefined) {
-      assertRatio(props.minAspectRatio, "minAspectRatio");
-      assertRatioPositive(props.minAspectRatio, "minAspectRatio");
-    }
-    if (props.maxAspectRatio !== undefined) {
-      assertRatio(props.maxAspectRatio, "maxAspectRatio");
-      assertRatioPositive(props.maxAspectRatio, "maxAspectRatio");
-    }
+    normalizeToArray(props.aspectRatio).forEach((value) => {
+      assertRatio(value, "aspectRatio");
+      assertRatioPositive(value, "aspectRatio");
+    });
+    normalizeToArray(props.minAspectRatio).forEach((value) => {
+      assertRatio(value, "minAspectRatio");
+      assertRatioPositive(value, "minAspectRatio");
+    });
+    normalizeToArray(props.maxAspectRatio).forEach((value) => {
+      assertRatio(value, "maxAspectRatio");
+      assertRatioPositive(value, "maxAspectRatio");
+    });
   };
 
   const validateResolutionValues = (
@@ -166,16 +179,21 @@ export const createMediaQueryValidation = (core: MediaQueryCoreHelpers) => {
       assertCondition(value.getValue() > 0, `${label} must be greater than 0`);
     };
 
-    if (props.resolutionValue) {
-      assertPositive(props.resolutionValue, "resolution");
-    }
-    if (props.minResolution) {
-      assertPositive(props.minResolution, "minResolution");
-    }
-    if (props.maxResolution) {
-      assertPositive(props.maxResolution, "maxResolution");
-    }
-    if (props.minResolution && props.maxResolution) {
+    normalizeToArray(props.resolutionValue).forEach((value) => {
+      assertPositive(value, "resolution");
+    });
+    normalizeToArray(props.minResolution).forEach((value) => {
+      assertPositive(value, "minResolution");
+    });
+    normalizeToArray(props.maxResolution).forEach((value) => {
+      assertPositive(value, "maxResolution");
+    });
+    if (
+      props.minResolution &&
+      props.maxResolution &&
+      !Array.isArray(props.minResolution) &&
+      !Array.isArray(props.maxResolution)
+    ) {
       assertMatchingUnits(
         props.minResolution,
         props.maxResolution,

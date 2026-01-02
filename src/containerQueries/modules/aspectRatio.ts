@@ -16,9 +16,9 @@ import {
 } from "../linting/aspectRatio";
 
 export interface IContainerQueryAspectRatio {
-  aspectRatio?: IRatio;
-  minAspectRatio?: IRatio;
-  maxAspectRatio?: IRatio;
+  aspectRatio?: IRatio | IRatio[];
+  minAspectRatio?: IRatio | IRatio[];
+  maxAspectRatio?: IRatio | IRatio[];
 }
 
 export type ContainerQueryAspectRatioValidator =
@@ -43,6 +43,13 @@ export const emitAspectRatioFeatures = (
   helpers: ContainerQueryBuilderHelpers,
   validate?: ContainerQueryAspectRatioValidator
 ): void => {
+  const allowQueryArrays = helpers.config.allowQueryArrays !== false;
+  const assertNoArray = (value: unknown, label: string): void => {
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(`${label} does not allow arrays.`);
+    }
+  };
+
   const { runContainerQueryValidation, validateAspectRatioValues } =
     defaultContainerQueryValidation;
 
@@ -83,15 +90,26 @@ export const emitAspectRatioFeatures = (
     return;
   }
 
-  const { addFeature } = helpers;
+  const emitFeature = (name: string, value: IRatio | IRatio[]): void => {
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        (helpers.addFeatureUnsafe ?? helpers.addFeature)(name, entry);
+      });
+      return;
+    }
+    helpers.addFeature(name, value);
+  };
 
-  if (props.aspectRatio) {
-    addFeature("aspect-ratio", props.aspectRatio);
+  if (props.aspectRatio !== undefined) {
+    assertNoArray(props.aspectRatio, "aspectRatio");
+    emitFeature("aspect-ratio", props.aspectRatio);
   }
-  if (props.minAspectRatio) {
-    addFeature("min-aspect-ratio", props.minAspectRatio);
+  if (props.minAspectRatio !== undefined) {
+    assertNoArray(props.minAspectRatio, "minAspectRatio");
+    emitFeature("min-aspect-ratio", props.minAspectRatio);
   }
-  if (props.maxAspectRatio) {
-    addFeature("max-aspect-ratio", props.maxAspectRatio);
+  if (props.maxAspectRatio !== undefined) {
+    assertNoArray(props.maxAspectRatio, "maxAspectRatio");
+    emitFeature("max-aspect-ratio", props.maxAspectRatio);
   }
 };

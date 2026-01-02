@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { m } from "../../../src";
+import { compare } from "../../../src/comparisons";
 import { buildContainerQueryString } from "../../../src/containerQueries";
 
 describe("Container query condition builder (src)", () => {
   it("joins multiple conditions with and", () => {
     const query = buildContainerQueryString({
-      inlineSize: { operator: ">=", value: m(28, "rem") },
-      blockSize: { operator: "<", value: m(40, "rem") },
+      inlineSize: compare.gte(m(28, "rem")),
+      blockSize: compare.lt(m(40, "rem")),
     });
 
     expect(query).toBe(

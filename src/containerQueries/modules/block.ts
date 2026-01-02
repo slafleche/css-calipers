@@ -17,10 +17,11 @@ import {
 } from "../linting/block";
 import type { CSSComparison, CSSRange } from "../types";
 import { SizeComparisonValue } from "../containerQueries";
+import { normalizeToArray } from "../../internal/normalizeToArray";
 
 export interface IContainerQueryBlock {
-  blockSize?: CSSComparison<IMeasurement>;
-  blockSizeRange?: CSSRange<IMeasurement>;
+  blockSize?: CSSComparison<IMeasurement> | CSSComparison<IMeasurement>[];
+  blockSizeRange?: CSSRange<IMeasurement> | CSSRange<IMeasurement>[];
 }
 
 export type ContainerQueryBlockValidator =
@@ -80,6 +81,13 @@ export const emitBlockSizeFeatures = (
   helpers: ContainerQueryBuilderHelpers,
   validate?: ContainerQueryBlockValidator,
 ): void => {
+  const allowQueryArrays = helpers.config.allowQueryArrays !== false;
+  const assertNoArray = (value: unknown, label: string): void => {
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(`${label} does not allow arrays.`);
+    }
+  };
+
   const {
     runContainerQueryValidation,
     validateBlockSizeValues,
@@ -124,10 +132,12 @@ export const emitBlockSizeFeatures = (
 
   const { addCondition } = helpers;
 
-  if (props.blockSize) {
-    emitBlockComparison("block-size", props.blockSize, addCondition);
-  }
-  if (props.blockSizeRange) {
-    emitBlockRange("block-size", props.blockSizeRange, addCondition);
-  }
+  assertNoArray(props.blockSize, "blockSize");
+  normalizeToArray(props.blockSize).forEach((value) => {
+    emitBlockComparison("block-size", value, addCondition);
+  });
+  assertNoArray(props.blockSizeRange, "blockSizeRange");
+  normalizeToArray(props.blockSizeRange).forEach((value) => {
+    emitBlockRange("block-size", value, addCondition);
+  });
 };

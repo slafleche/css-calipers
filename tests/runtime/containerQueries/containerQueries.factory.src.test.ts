@@ -17,7 +17,6 @@ describe("containerQueries factory (src)", () => {
             customFeatures: { "custom-flag": "on" },
           },
         },
-        styles: {},
       },
     };
 
@@ -54,7 +53,6 @@ describe("containerQueries factory (src)", () => {
             customFeatures: { "custom-flag": "on" },
           },
         },
-        styles: {},
       },
     };
 
@@ -93,7 +91,6 @@ describe("containerQueries factory (src)", () => {
     const queries = {
       coreOnly: {
         query: { condition: { minWidth: m(30) } },
-        styles: {},
       },
     };
 
@@ -115,7 +112,6 @@ describe("containerQueries factory (src)", () => {
     const queries = {
       onlyInline: {
         query: { condition: { inlineSize: compare.gte(m(24)) } },
-        styles: {},
       },
     };
 
@@ -137,7 +133,6 @@ describe("containerQueries factory (src)", () => {
     const queries = {
       onlyBlock: {
         query: { condition: { blockSize: compare.gte(m(24)) } },
-        styles: {},
       },
     };
 
@@ -159,7 +154,6 @@ describe("containerQueries factory (src)", () => {
     const queries = {
       onlyAspectRatio: {
         query: { condition: { aspectRatio: r(16, 9) } },
-        styles: {},
       },
     };
 
@@ -183,7 +177,6 @@ describe("containerQueries factory (src)", () => {
     const queries = {
       onlyStyle: {
         query: { condition: { style: { display: "grid" } } },
-        styles: {},
       },
     };
 
@@ -205,7 +198,6 @@ describe("containerQueries factory (src)", () => {
     const queries = {
       onlyCustom: {
         query: { condition: { customFeatures: { flag: "on" } } },
-        styles: {},
       },
     };
 
@@ -234,7 +226,6 @@ describe("containerQueries factory (src)", () => {
             ],
           },
         },
-        styles: {},
       },
     };
 

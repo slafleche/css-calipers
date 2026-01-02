@@ -29,10 +29,12 @@ export type ContainerQueryBuilderConfig = {
     invalidValueMode?: ContainerQueryInvalidValueMode;
     lintingMode?: ContainerQueryLintingMode;
   };
+  allowQueryArrays?: boolean;
 };
 
 export interface ContainerQueryBuilderHelpers {
   addFeature: ContainerQueryFeatureEmitter;
+  addFeatureUnsafe: ContainerQueryFeatureEmitter;
   addCondition: ContainerQueryConditionEmitter;
   config: ContainerQueryBuilderConfig;
 }
@@ -143,6 +145,7 @@ export const createContainerQueryBuilder = <TConfig>(
         emitted: emittedFeatures,
         lintingMode: options.config?.errorHandling?.lintingMode ?? "throw",
       }),
+      addFeatureUnsafe: createContainerQueryFeatureEmitter(parts),
       addCondition: createContainerQueryConditionEmitter(parts),
       config: options.config ?? {},
     };

@@ -156,6 +156,187 @@ export const runMediaQueryTests = (
       ).toThrow('Custom feature "custom-feature" must be a primitive or a measurement.');
     });
 
+    it('builds a custom feature query with a single value', () => {
+      const result = api.buildMediaQueryString({
+        customFeatures: {
+          'custom-flag': 'on',
+        },
+      });
+      expect(result).toBe('screen and (custom-flag: on)');
+    });
+
+    it('builds a min-width query from array values', () => {
+      const result = api.buildMediaQueryString({
+        minWidth: [
+          api.mPx(320),
+          api.mPx(640),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (min-width: 320px) and (min-width: 640px)',
+      );
+    });
+
+    it('builds a max-width query from array values', () => {
+      const result = api.buildMediaQueryString({
+        maxWidth: [
+          api.mPx(800),
+          api.mPx(1200),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (max-width: 800px) and (max-width: 1200px)',
+      );
+    });
+
+    it('builds a width query from array values', () => {
+      const result = api.buildMediaQueryString({
+        width: [
+          api.mPx(720),
+          api.mPx(960),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (width: 720px) and (width: 960px)',
+      );
+    });
+
+    it('builds a min-height query from array values', () => {
+      const result = api.buildMediaQueryString({
+        minHeight: [
+          api.mPx(480),
+          api.mPx(640),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (min-height: 480px) and (min-height: 640px)',
+      );
+    });
+
+    it('builds a max-height query from array values', () => {
+      const result = api.buildMediaQueryString({
+        maxHeight: [
+          api.mPx(900),
+          api.mPx(1080),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (max-height: 900px) and (max-height: 1080px)',
+      );
+    });
+
+    it('builds a height query from array values', () => {
+      const result = api.buildMediaQueryString({
+        height: [
+          api.mPx(600),
+          api.mPx(800),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (height: 600px) and (height: 800px)',
+      );
+    });
+
+    it('builds an aspect ratio query from array values', () => {
+      const result = api.buildMediaQueryString({
+        aspectRatio: [
+          api.r(16, 9),
+          api.r(4, 3),
+        ] as unknown as IRatio,
+      });
+      expect(result).toBe(
+        'screen and (aspect-ratio: 16/9) and (aspect-ratio: 4/3)',
+      );
+    });
+
+    it('builds a min-aspect-ratio query from array values', () => {
+      const result = api.buildMediaQueryString({
+        minAspectRatio: [
+          api.r(4, 3),
+          api.r(3, 2),
+        ] as unknown as IRatio,
+      });
+      expect(result).toBe(
+        'screen and (min-aspect-ratio: 4/3) and (min-aspect-ratio: 3/2)',
+      );
+    });
+
+    it('builds a max-aspect-ratio query from array values', () => {
+      const result = api.buildMediaQueryString({
+        maxAspectRatio: [
+          api.r(21, 9),
+          api.r(16, 9),
+        ] as unknown as IRatio,
+      });
+      expect(result).toBe(
+        'screen and (max-aspect-ratio: 21/9) and (max-aspect-ratio: 16/9)',
+      );
+    });
+
+    it('builds a resolution query from array values', () => {
+      const result = api.buildMediaQueryString({
+        resolutionValue: [
+          api.mDpi(144),
+          api.mDpi(192),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (resolution: 144dpi) and (resolution: 192dpi)',
+      );
+    });
+
+    it('builds a min-resolution query from array values', () => {
+      const result = api.buildMediaQueryString({
+        minResolution: [
+          api.mDpi(96),
+          api.mDpi(144),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (min-resolution: 96dpi) and (min-resolution: 144dpi)',
+      );
+    });
+
+    it('builds a max-resolution query from array values', () => {
+      const result = api.buildMediaQueryString({
+        maxResolution: [
+          api.mDpi(192),
+          api.mDpi(240),
+        ] as unknown as IMeasurement,
+      });
+      expect(result).toBe(
+        'screen and (max-resolution: 192dpi) and (max-resolution: 240dpi)',
+      );
+    });
+
+    it('builds custom feature queries from array values', () => {
+      const result = api.buildMediaQueryString({
+        customFeatures: {
+          'custom-flag': ['on', 'off'] as unknown as string,
+        },
+      });
+      expect(result).toBe(
+        'screen and (custom-flag: on) and (custom-flag: off)',
+      );
+    });
+
+    it('rejects custom feature arrays when allowQueryArrays is false', () => {
+      const builder = api.createMediaQueryBuilder({
+        emitBase: (props, helpers) =>
+          api.emitCustomFeatures(props, helpers, {
+            allowQueryArrays: false,
+          }),
+      });
+
+      expect(() =>
+        builder({
+          customFeatures: {
+            'custom-flag': ['on', 'off'] as unknown as string,
+          },
+        }),
+      ).toThrow('Custom feature "custom-flag" does not allow arrays.');
+    });
+
     it('rejects invalid aspect ratio formats', () => {
       const strictBuilder = api.createMediaQueryBuilder({
         emitBase: api.emitDimensionsFeatures,

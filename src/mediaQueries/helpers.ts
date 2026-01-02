@@ -2,12 +2,14 @@ import type { IMeasurement, IRatio } from '../core';
 import { hasCssMethod } from '../core';
 import type { ValidationResult } from '../validation';
 import { normalizeValidationResult } from '../validation';
+import { normalizeToArray } from '../internal/normalizeToArray';
 
-type MediaQueryFeatureValue = string | number | IMeasurement | IRatio;
+type MediaQueryFeatureEntry = string | number | IMeasurement | IRatio;
+type MediaQueryFeatureValue = MediaQueryFeatureEntry | MediaQueryFeatureEntry[];
 
 type MediaQueryFeatureEmitter = (
   name: string,
-  value: MediaQueryFeatureValue,
+  value: MediaQueryFeatureEntry,
 ) => void;
 
 export type MediaQueryInvalidValueMode = 'allow' | 'log' | 'throw';
@@ -18,10 +20,12 @@ export type MediaQueryBuilderConfig = {
     invalidValueMode?: MediaQueryInvalidValueMode;
     lintingMode?: MediaQueryLintingMode;
   };
+  allowQueryArrays?: boolean;
 };
 
 export interface MediaQueryBuilderHelpers {
   addFeature: MediaQueryFeatureEmitter;
+  addFeatureUnsafe: MediaQueryFeatureEmitter;
   config: MediaQueryBuilderConfig;
 }
 
@@ -44,7 +48,7 @@ type MediaQueryBuilderOptions<TConfig> = {
 };
 
 export const formatMediaQueryValue = (
-  value: MediaQueryFeatureValue,
+  value: MediaQueryFeatureEntry,
 ): string => (hasCssMethod(value) ? value.css() : String(value));
 
 export const buildMediaQueryStringFromParts = (
@@ -98,6 +102,7 @@ export const createMediaQueryBuilder = <TConfig>(
         emitted: emittedFeatures,
         lintingMode: options.config?.errorHandling?.lintingMode ?? 'throw',
       }),
+      addFeatureUnsafe: createMediaQueryFeatureEmitter(parts),
       config: options.config ?? {},
     };
 
@@ -142,14 +147,13 @@ export const buildMediaQueryFromFeatures = (
   mediaType: 'all' | 'print' | 'screen' = 'screen',
 ): string => {
   const parts: string[] = [];
-  const addFeature = createMediaQueryFeatureEmitterWithTracking(parts, {
-    emitted: new Set<string>(),
-    lintingMode: 'throw',
-  });
+  const addFeature = createMediaQueryFeatureEmitter(parts);
 
   Object.entries(features).forEach(([name, value]) => {
     if (value === undefined || value === null) return;
-    addFeature(name, value);
+    normalizeToArray(value).forEach((entry) => {
+      addFeature(name, entry);
+    });
   });
 
   return buildMediaQueryStringFromParts(mediaType, parts);

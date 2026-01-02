@@ -1,7 +1,7 @@
 import { expectAssignable, expectNotAssignable, expectType } from 'tsd';
 
 import type { IMeasurement } from '../../dist/esm';
-import { m, mPx } from '../../dist/esm';
+import { m, mDpi, mPx, r } from '../../dist/esm';
 import {
   buildMediaQueryFromFeatures,
   buildMediaQueryString,
@@ -11,6 +11,7 @@ import {
   mediaQueryFactory,
 } from '../../dist/esm/mediaQueries';
 import type { MediaQueryModulePropsMap } from '../../dist/esm/mediaQueries';
+import type { IMediaQueryProps } from '../../dist/esm/mediaQueries';
 
 const width = mPx(640);
 expectAssignable<IMeasurement<'px'>>(width);
@@ -42,6 +43,62 @@ expectType<string>(builder({ width }));
 
 expectNotAssignable<MediaQueryModulePropsMap['dimensions']>({
   aspectRatio: m('16/9'),
+});
+
+expectAssignable<IMediaQueryProps>({ minWidth: mPx(320) });
+expectAssignable<IMediaQueryProps>({ maxWidth: mPx(1024) });
+expectAssignable<IMediaQueryProps>({ width: mPx(720) });
+expectAssignable<IMediaQueryProps>({ minHeight: mPx(480) });
+expectAssignable<IMediaQueryProps>({ maxHeight: mPx(900) });
+expectAssignable<IMediaQueryProps>({ height: mPx(600) });
+expectAssignable<IMediaQueryProps>({ aspectRatio: r(16, 9) });
+expectAssignable<IMediaQueryProps>({ minAspectRatio: r(4, 3) });
+expectAssignable<IMediaQueryProps>({ maxAspectRatio: r(21, 9) });
+expectAssignable<IMediaQueryProps>({ resolutionValue: mDpi(144) });
+expectAssignable<IMediaQueryProps>({ minResolution: mDpi(96) });
+expectAssignable<IMediaQueryProps>({ maxResolution: mDpi(192) });
+expectAssignable<IMediaQueryProps>({
+  customFeatures: { 'custom-flag': 'on' },
+});
+
+expectAssignable<IMediaQueryProps>({
+  minWidth: [mPx(320), mPx(640)],
+});
+expectAssignable<IMediaQueryProps>({
+  maxWidth: [mPx(1024), mPx(1280)],
+});
+expectAssignable<IMediaQueryProps>({
+  width: [mPx(720), mPx(960)],
+});
+expectAssignable<IMediaQueryProps>({
+  minHeight: [mPx(480), mPx(640)],
+});
+expectAssignable<IMediaQueryProps>({
+  maxHeight: [mPx(900), mPx(1080)],
+});
+expectAssignable<IMediaQueryProps>({
+  height: [mPx(600), mPx(800)],
+});
+expectAssignable<IMediaQueryProps>({
+  aspectRatio: [r(16, 9), r(4, 3)],
+});
+expectAssignable<IMediaQueryProps>({
+  minAspectRatio: [r(4, 3), r(3, 2)],
+});
+expectAssignable<IMediaQueryProps>({
+  maxAspectRatio: [r(21, 9), r(16, 9)],
+});
+expectAssignable<IMediaQueryProps>({
+  resolutionValue: [mDpi(144), mDpi(192)],
+});
+expectAssignable<IMediaQueryProps>({
+  minResolution: [mDpi(96), mDpi(144)],
+});
+expectAssignable<IMediaQueryProps>({
+  maxResolution: [mDpi(192), mDpi(240)],
+});
+expectAssignable<IMediaQueryProps>({
+  customFeatures: { 'custom-flag': ['on', 'off'] },
 });
 
 const coreModules = defineMediaQueryModules('core');

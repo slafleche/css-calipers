@@ -28,33 +28,36 @@ export type CSSRange<TValue> =
     });
 
 export type CSSContainerCoreCondition = {
-  minWidth?: IMeasurement;
-  maxWidth?: IMeasurement;
-  minHeight?: IMeasurement;
-  maxHeight?: IMeasurement;
+  minWidth?: IMeasurement | IMeasurement[];
+  maxWidth?: IMeasurement | IMeasurement[];
+  minHeight?: IMeasurement | IMeasurement[];
+  maxHeight?: IMeasurement | IMeasurement[];
 };
 
 export type CSSContainerInlineCondition = {
-  inlineSize?: CSSComparison<IMeasurement>;
-  inlineSizeRange?: CSSRange<IMeasurement>;
+  inlineSize?: CSSComparison<IMeasurement> | CSSComparison<IMeasurement>[];
+  inlineSizeRange?: CSSRange<IMeasurement> | CSSRange<IMeasurement>[];
 };
 
 export type CSSContainerBlockCondition = {
-  blockSize?: CSSComparison<IMeasurement>;
-  blockSizeRange?: CSSRange<IMeasurement>;
+  blockSize?: CSSComparison<IMeasurement> | CSSComparison<IMeasurement>[];
+  blockSizeRange?: CSSRange<IMeasurement> | CSSRange<IMeasurement>[];
 };
 
 export type CSSContainerAspectRatioCondition = {
-  aspectRatio?: IRatio;
-  minAspectRatio?: IRatio;
-  maxAspectRatio?: IRatio;
+  aspectRatio?: IRatio | IRatio[];
+  minAspectRatio?: IRatio | IRatio[];
+  maxAspectRatio?: IRatio | IRatio[];
 };
 
 export type CSSContainerStyleCondition = CSSContainerProperties;
 
 export type CSSContainerCustomFeatures = Record<
   string,
-  string | number | IMeasurement
+  | string
+  | number
+  | IMeasurement
+  | Array<string | number | IMeasurement>
 >;
 
 export type CSSContainerCustomCondition = {
@@ -85,15 +88,21 @@ export interface CSSContainerQueryContainer {
   name?: CSSContainerName;
 }
 
-export interface CSSContainerQueryRule {
+export interface CSSContainerQueryRuleInput {
   container?: CSSContainerQueryContainer;
   query?: CSSContainerQuery;
+}
+
+export interface CSSContainerQueryRuleOutput
+  extends CSSContainerQueryRuleInput {
   styles: CSSContainerProperties;
 }
 
-export type CSSContainerQueryProps = CSSContainerQueryRule["query"];
+export type CSSContainerQueryRule = CSSContainerQueryRuleOutput;
 
-export type CSSContainerQueries = Record<string, CSSContainerQueryRule>;
+export type CSSContainerQueryProps = CSSContainerQueryRuleInput["query"];
+
+export type CSSContainerQueries = Record<string, CSSContainerQueryRuleInput>;
 
 export type ContainerQueryComparison = CSSComparison<IMeasurement>;
 export type ContainerQueryRange = CSSRange<IMeasurement>;

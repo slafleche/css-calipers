@@ -8,12 +8,15 @@
 
 import { m, r } from "css-calipers";
 import { makeMediaQueryStyle } from "css-calipers/mediaQueries";
-import { makeContainerQueryStyle } from "css-calipers/containerQueries";
+import {
+  containerQueryFactory,
+  makeContainerQueryStyle,
+} from "css-calipers/containerQueries";
 import {
   containerQueryOutputVanillaExtract,
   mediaQueryOutputVanillaExtract,
 } from "css-calipers/mediaQueries";
-import { compare } from "../src/comparisons";
+import { compare } from "css-calipers/comparisons";
 
 const media = makeMediaQueryStyle({
   desktop: {
@@ -49,6 +52,36 @@ const container = makeContainerQueryStyle({
     },
   },
 });
+
+// ## example
+
+const conditionBasedContainer = containerQueryFactory({
+  queries: {
+    wideCard: {
+      query: {
+        condition: {
+          and: [
+            { inlineSize: compare.gte(m(28, "rem")) },
+            { not: { aspectRatio: r(4, 3) } },
+          ],
+        },
+      },
+    },
+  },
+  config: {
+    label: "condition-based-example",
+  },
+});
+
+const conditionBasedStyles = conditionBasedContainer({
+  wideCard: {
+    display: "grid",
+    gap: "12px",
+  },
+});
+
+
+
 
 const nestedStyles = media({
   desktop: container({

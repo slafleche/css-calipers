@@ -17,13 +17,13 @@ import {
 type MediaQueryRatio = IRatio;
 
 export interface IMediaQueryDimensions {
-  width?: IMeasurement;
-  minHeight?: IMeasurement;
-  maxHeight?: IMeasurement;
-  height?: IMeasurement;
-  aspectRatio?: MediaQueryRatio;
-  minAspectRatio?: MediaQueryRatio;
-  maxAspectRatio?: MediaQueryRatio;
+  width?: IMeasurement | IMeasurement[];
+  minHeight?: IMeasurement | IMeasurement[];
+  maxHeight?: IMeasurement | IMeasurement[];
+  height?: IMeasurement | IMeasurement[];
+  aspectRatio?: MediaQueryRatio | MediaQueryRatio[];
+  minAspectRatio?: MediaQueryRatio | MediaQueryRatio[];
+  maxAspectRatio?: MediaQueryRatio | MediaQueryRatio[];
   orientation?: 'landscape' | 'portrait';
 }
 
@@ -37,6 +37,22 @@ export const createEmitDimensionsFeatures = (
   helpers: MediaQueryBuilderHelpers,
   validate?: MediaQueryDimensionsValidator,
 ): void => {
+  const allowQueryArrays = helpers.config.allowQueryArrays !== false;
+  const assertNoArray = (value: unknown, label: string): void => {
+    if (Array.isArray(value) && !allowQueryArrays) {
+      throw new Error(`${label} does not allow arrays.`);
+    }
+  };
+  const emitFeature = (name: string, value: IMeasurement | IMeasurement[] | MediaQueryRatio | MediaQueryRatio[]): void => {
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        (helpers.addFeatureUnsafe ?? helpers.addFeature)(name, entry);
+      });
+      return;
+    }
+    helpers.addFeature(name, value);
+  };
+
   const {
     runMediaQueryValidation,
     validateMinMaxHeight,
@@ -125,28 +141,33 @@ export const createEmitDimensionsFeatures = (
     return;
   }
 
-  const { addFeature } = helpers;
-
-  if (props.width) {
-    addFeature('width', props.width);
+  if (props.width !== undefined) {
+    assertNoArray(props.width, 'width');
+    emitFeature('width', props.width);
   }
-  if (props.height) {
-    addFeature('height', props.height);
+  if (props.height !== undefined) {
+    assertNoArray(props.height, 'height');
+    emitFeature('height', props.height);
   }
-  if (props.minHeight) {
-    addFeature('min-height', props.minHeight);
+  if (props.minHeight !== undefined) {
+    assertNoArray(props.minHeight, 'minHeight');
+    emitFeature('min-height', props.minHeight);
   }
-  if (props.maxHeight) {
-    addFeature('max-height', props.maxHeight);
+  if (props.maxHeight !== undefined) {
+    assertNoArray(props.maxHeight, 'maxHeight');
+    emitFeature('max-height', props.maxHeight);
   }
-  if (props.aspectRatio) {
-    addFeature('aspect-ratio', props.aspectRatio);
+  if (props.aspectRatio !== undefined) {
+    assertNoArray(props.aspectRatio, 'aspectRatio');
+    emitFeature('aspect-ratio', props.aspectRatio);
   }
-  if (props.minAspectRatio) {
-    addFeature('min-aspect-ratio', props.minAspectRatio);
+  if (props.minAspectRatio !== undefined) {
+    assertNoArray(props.minAspectRatio, 'minAspectRatio');
+    emitFeature('min-aspect-ratio', props.minAspectRatio);
   }
-  if (props.maxAspectRatio) {
-    addFeature('max-aspect-ratio', props.maxAspectRatio);
+  if (props.maxAspectRatio !== undefined) {
+    assertNoArray(props.maxAspectRatio, 'maxAspectRatio');
+    emitFeature('max-aspect-ratio', props.maxAspectRatio);
   }
   if (props.orientation) {
     addFeature('orientation', props.orientation);
