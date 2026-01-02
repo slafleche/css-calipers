@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runMediaQueryTests } from "./mediaQueries.shared";
 
-import { mDpi, mPx } from "../../../src";
+import { mDpi, mPx, r } from "../../../src";
 import {
   buildMediaQueryFromFeatures,
   buildMediaQueryString,
@@ -23,6 +23,7 @@ runMediaQueryTests("src", {
   mediaQueryFactory,
   mDpi,
   mPx,
+  r,
 });
 
 describe("mediaQueries (src) factory output mappers", () => {

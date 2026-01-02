@@ -1,9 +1,9 @@
-import type { IMeasurement } from '../core';
+import type { IMeasurement, IRatio } from '../core';
 import { hasCssMethod } from '../core';
 import type { ValidationResult } from '../validation';
 import { normalizeValidationResult } from '../validation';
 
-type MediaQueryFeatureValue = string | number | IMeasurement;
+type MediaQueryFeatureValue = string | number | IMeasurement | IRatio;
 
 type MediaQueryFeatureEmitter = (
   name: string,

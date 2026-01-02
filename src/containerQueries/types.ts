@@ -1,9 +1,9 @@
 import type { Properties } from "csstype";
-import type { IFraction } from "../fraction";
-import type { IComparisonOperator } from "../comparisons";
+import type { IRatio } from "../ratio";
+import type { ComparisonValue } from "../comparisons";
 import type { IMeasurement } from "../core";
 
-export type CSSContainerType = 'inline-size' | 'size' | 'normal';
+export type CSSContainerType = "inline-size" | "size" | "normal";
 export type CSSContainerName = string;
 
 type CSSTypeProperties = Properties<number | (string & {})>;
@@ -17,14 +17,15 @@ export type CSSContainerProperties = {
 
 type CSSRangeOperator = "<" | "<=";
 
-export type CSSComparison<TValue> = {
-  operator: IComparisonOperator;
-  value: TValue;
-};
+export type CSSComparison<TValue> = ComparisonValue<TValue>;
 
 export type CSSRange<TValue> =
-  | { min: TValue; max: TValue; minOperator: CSSRangeOperator }
-  | { min: TValue; max: TValue; maxOperator: CSSRangeOperator };
+  | ({ min: TValue; max: TValue; minOperator: CSSRangeOperator } & {
+      readonly __rangeBrand: unique symbol;
+    })
+  | ({ min: TValue; max: TValue; maxOperator: CSSRangeOperator } & {
+      readonly __rangeBrand: unique symbol;
+    });
 
 export type CSSContainerCoreCondition = {
   minWidth?: IMeasurement;
@@ -44,9 +45,9 @@ export type CSSContainerBlockCondition = {
 };
 
 export type CSSContainerAspectRatioCondition = {
-  aspectRatio?: IFraction;
-  minAspectRatio?: IFraction;
-  maxAspectRatio?: IFraction;
+  aspectRatio?: IRatio;
+  minAspectRatio?: IRatio;
+  maxAspectRatio?: IRatio;
 };
 
 export type CSSContainerStyleCondition = CSSContainerProperties;
@@ -90,7 +91,7 @@ export interface CSSContainerQueryRule {
   styles: CSSContainerProperties;
 }
 
-export type CSSContainerQueryProps = CSSContainerQueryRule['query'];
+export type CSSContainerQueryProps = CSSContainerQueryRule["query"];
 
 export type CSSContainerQueries = Record<string, CSSContainerQueryRule>;
 

@@ -127,7 +127,7 @@ if (process.env.NODE_ENV !== "production") {
 const cardGridStyles = {
   display: "grid",
   gap: gutter.css(),
-  // Keep fraction units as plain CSS alongside measurement-derived values
+  // Keep ratio units as plain CSS alongside measurement-derived values
   gridTemplateColumns: `repeat(${columns}, 1fr)`,
   // width driven by card width + gutters
   width: cardWidth

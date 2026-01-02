@@ -3,12 +3,11 @@ import { applyContainerQueryValidation } from "./helpers";
 import {
   assertCondition,
   assertMatchingUnits,
-  fractionToFloat,
   hasCssMethod,
-  isFraction,
   isMeasurement,
-  type IFraction,
+  type IRatio,
   type IMeasurement,
+  isRatio,
 } from "../core";
 import { toValidationResult } from "../validation";
 import type { IContainerQueryCore } from "./containerQueries";
@@ -17,6 +16,7 @@ import type { IContainerQueryCustomFeatures } from "./modules/custom";
 import type { IContainerQueryInline } from "./modules/inline";
 import type { IContainerQueryAspectRatio } from "./modules/aspectRatio";
 import type { IContainerQueryStyle } from "./modules/style";
+import { ratioToFloat } from "../ratio";
 
 export type ContainerQueryValidationCheck<TConfig> = (config: TConfig) => void;
 
@@ -34,39 +34,36 @@ const isFiniteNumber = (value: unknown): value is number =>
 
 const assertMeasurement: (
   value: unknown,
-  label: string,
+  label: string
 ) => asserts value is IMeasurement = (value, label) => {
   assertCondition(isMeasurement(value), `${label} must be a measurement`);
 };
 
 const assertMeasurementPositive = (
   value: IMeasurement,
-  label: string,
+  label: string
 ): void => {
   assertCondition(value.getValue() > 0, `${label} must be greater than 0`);
 };
 
-const assertFraction: (
+const assertRatio: (
   value: unknown,
-  label: string,
-) => asserts value is IFraction = (value, label) => {
+  label: string
+) => asserts value is IRatio = (value, label) => {
   assertCondition(
-    isFraction(value),
-    `${label} must be a fraction created with r()`,
+    isRatio(value),
+    `${label} must be a ratio created with r()`
   );
 };
 
-const assertFractionPositive = (
-  value: IFraction,
-  label: string,
-): void => {
+const assertRatioPositive = (value: IRatio, label: string): void => {
   assertCondition(
     value.numerator() > 0,
-    `${label} numerator must be greater than 0`,
+    `${label} numerator must be greater than 0`
   );
   assertCondition(
     value.denominator() > 0,
-    `${label} denominator must be greater than 0`,
+    `${label} denominator must be greater than 0`
   );
 };
 
@@ -78,7 +75,7 @@ const isStyleValue = (value: unknown): boolean => {
 };
 
 export const createContainerQueryValidation = (
-  core: ContainerQueryCoreHelpers,
+  core: ContainerQueryCoreHelpers
 ) => {
   const assertCondition: ContainerQueryCoreHelpers["assertCondition"] =
     core.assertCondition;
@@ -90,7 +87,7 @@ export const createContainerQueryValidation = (
     helpers: ContainerQueryBuilderHelpers,
     check?: ContainerQueryValidationCheck<TConfig>,
     context?: string,
-    fallbackMessage = "Invalid container query configuration",
+    fallbackMessage = "Invalid container query configuration"
   ): boolean => {
     if (!check) return true;
     try {
@@ -102,7 +99,7 @@ export const createContainerQueryValidation = (
         config,
         helpers,
         () => result,
-        context,
+        context
       );
     }
   };
@@ -112,17 +109,15 @@ export const createContainerQueryValidation = (
     assertMatchingUnits(
       props.minWidth,
       props.maxWidth,
-      "containerQueries.minMaxWidth",
+      "containerQueries.minMaxWidth"
     );
     assertCondition(
       props.minWidth.getValue() <= props.maxWidth.getValue(),
-      "minWidth must be less than or equal to maxWidth",
+      "minWidth must be less than or equal to maxWidth"
     );
   };
 
-  const validateWidthValuesPositive = (
-    props: IContainerQueryCore,
-  ): void => {
+  const validateWidthValuesPositive = (props: IContainerQueryCore): void => {
     if (props.minWidth) {
       assertMeasurement(props.minWidth, "minWidth");
       assertMeasurementPositive(props.minWidth, "minWidth");
@@ -138,17 +133,15 @@ export const createContainerQueryValidation = (
     assertMatchingUnits(
       props.minHeight,
       props.maxHeight,
-      "containerQueries.minMaxHeight",
+      "containerQueries.minMaxHeight"
     );
     assertCondition(
       props.minHeight.getValue() <= props.maxHeight.getValue(),
-      "minHeight must be less than or equal to maxHeight",
+      "minHeight must be less than or equal to maxHeight"
     );
   };
 
-  const validateHeightValuesPositive = (
-    props: IContainerQueryCore,
-  ): void => {
+  const validateHeightValuesPositive = (props: IContainerQueryCore): void => {
     if (props.minHeight) {
       assertMeasurement(props.minHeight, "minHeight");
       assertMeasurementPositive(props.minHeight, "minHeight");
@@ -167,17 +160,23 @@ export const createContainerQueryValidation = (
     if (props.inlineSizeRange) {
       assertMeasurement(props.inlineSizeRange.min, "inlineSizeRange.min");
       assertMeasurement(props.inlineSizeRange.max, "inlineSizeRange.max");
-      assertMeasurementPositive(props.inlineSizeRange.min, "inlineSizeRange.min");
-      assertMeasurementPositive(props.inlineSizeRange.max, "inlineSizeRange.max");
+      assertMeasurementPositive(
+        props.inlineSizeRange.min,
+        "inlineSizeRange.min"
+      );
+      assertMeasurementPositive(
+        props.inlineSizeRange.max,
+        "inlineSizeRange.max"
+      );
       assertMatchingUnits(
         props.inlineSizeRange.min,
         props.inlineSizeRange.max,
-        "containerQueries.inlineSizeRangeUnits",
+        "containerQueries.inlineSizeRangeUnits"
       );
       assertCondition(
         props.inlineSizeRange.min.getValue() <=
           props.inlineSizeRange.max.getValue(),
-        "inlineSizeRange min must be less than or equal to max",
+        "inlineSizeRange min must be less than or equal to max"
       );
     }
   };
@@ -195,37 +194,37 @@ export const createContainerQueryValidation = (
       assertMatchingUnits(
         props.blockSizeRange.min,
         props.blockSizeRange.max,
-        "containerQueries.blockSizeRangeUnits",
+        "containerQueries.blockSizeRangeUnits"
       );
       assertCondition(
         props.blockSizeRange.min.getValue() <=
           props.blockSizeRange.max.getValue(),
-        "blockSizeRange min must be less than or equal to max",
+        "blockSizeRange min must be less than or equal to max"
       );
     }
   };
 
   const validateAspectRatioValues = (
-    props: IContainerQueryAspectRatio,
+    props: IContainerQueryAspectRatio
   ): void => {
     if (props.aspectRatio) {
-      assertFraction(props.aspectRatio, "aspectRatio");
-      assertFractionPositive(props.aspectRatio, "aspectRatio");
+      assertRatio(props.aspectRatio, "aspectRatio");
+      assertRatioPositive(props.aspectRatio, "aspectRatio");
     }
     if (props.minAspectRatio) {
-      assertFraction(props.minAspectRatio, "minAspectRatio");
-      assertFractionPositive(props.minAspectRatio, "minAspectRatio");
+      assertRatio(props.minAspectRatio, "minAspectRatio");
+      assertRatioPositive(props.minAspectRatio, "minAspectRatio");
     }
     if (props.maxAspectRatio) {
-      assertFraction(props.maxAspectRatio, "maxAspectRatio");
-      assertFractionPositive(props.maxAspectRatio, "maxAspectRatio");
+      assertRatio(props.maxAspectRatio, "maxAspectRatio");
+      assertRatioPositive(props.maxAspectRatio, "maxAspectRatio");
     }
     if (props.minAspectRatio && props.maxAspectRatio) {
-      const minValue = fractionToFloat(props.minAspectRatio);
-      const maxValue = fractionToFloat(props.maxAspectRatio);
+      const minValue = ratioToFloat(props.minAspectRatio);
+      const maxValue = ratioToFloat(props.maxAspectRatio);
       assertCondition(
         minValue <= maxValue,
-        "minAspectRatio must be less than or equal to maxAspectRatio",
+        "minAspectRatio must be less than or equal to maxAspectRatio"
       );
     }
   };
@@ -238,45 +237,39 @@ export const createContainerQueryValidation = (
     entries.forEach(([name, value]) => {
       if (value === undefined || value === null) return;
       if (Array.isArray(value)) {
-        assertCondition(
-          value.length > 0,
-          `style.${name} must not be empty`,
-        );
+        assertCondition(value.length > 0, `style.${name} must not be empty`);
         value.forEach((entry, index) => {
           assertCondition(
             isStyleValue(entry),
-            `style.${name}[${index}] must be a primitive or measurement`,
+            `style.${name}[${index}] must be a primitive or measurement`
           );
         });
         return;
       }
       assertCondition(
         isStyleValue(value),
-        `style.${name} must be a primitive or measurement`,
+        `style.${name} must be a primitive or measurement`
       );
     });
   };
 
   const validateCustomFeatures = (
-    props: IContainerQueryCustomFeatures,
+    props: IContainerQueryCustomFeatures
   ): void => {
     if (!props.customFeatures) return;
     const entries = Object.entries(props.customFeatures);
-    assertCondition(
-      entries.length > 0,
-      "customFeatures should not be empty.",
-    );
+    assertCondition(entries.length > 0, "customFeatures should not be empty.");
 
     entries.forEach(([name, value]) => {
       const trimmedName = name.trim();
       assertCondition(
         trimmedName.length > 0,
-        "Custom feature name must be non-empty.",
+        "Custom feature name must be non-empty."
       );
       if (value === undefined || value === null) return;
       assertCondition(
         isStyleValue(value),
-        `Custom feature "${trimmedName}" must be a primitive or a measurement.`,
+        `Custom feature "${trimmedName}" must be a primitive or a measurement.`
       );
     });
   };

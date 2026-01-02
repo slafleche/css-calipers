@@ -1,43 +1,20 @@
 # CSS Query Types (Non-@media)
-# Single-file export — CSS Types + IMeasurement only
+# Single-file e
+
+- [ ] applyContainerQueryValidation
+- [ ] identify modules for linting
+
 
 ```ts
 /* =====================================================
    1. Container Queries (@container)
    ===================================================== */
 
-export type CSSContainerType = 'inline-size' | 'size' | 'normal';
-export type CSSContainerName = string;
+Final look:
 
-export type CSSContainerSizeFeature =
-  | { minWidth: IMeasurement }
-  | { maxWidth: IMeasurement }
-  | { minHeight: IMeasurement }
-  | { maxHeight: IMeasurement }
-  | { width: CSSComparison<IMeasurement> }
-  | { height: CSSComparison<IMeasurement> }
-  | { inlineSize: CSSComparison<IMeasurement> }
-  | { blockSize: CSSComparison<IMeasurement> }
-  | { widthRange: CSSRange<IMeasurement> }
-  | { heightRange: CSSRange<IMeasurement> }
-  | { orientation: 'portrait' | 'landscape' };
-
-export type CSSContainerStyleQuery =
-  Record<`${string}`, string | number>;
-
-export type CSSContainerCondition =
-  | CSSContainerSizeFeature
-  | { style: CSSContainerStyleQuery }
-  | { and: CSSContainerCondition[] }
-  | { or: CSSContainerCondition[] }
-  | { not: CSSContainerCondition };
-
-export interface CSSContainerQueryRule {
+export interface ContainerQueryRule {
   container?: {
     type?: CSSContainerType;
-    name?: CSSContainerName;
-  };
-  query?: {
     name?: CSSContainerName;
     condition: CSSContainerCondition;
   };

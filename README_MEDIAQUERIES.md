@@ -62,6 +62,57 @@ const styles = {
 };
 ```
 
+## Media + container queries together
+
+Media queries handle device-level breakpoints, while container queries adjust
+per-component layout. Combine them when a component needs to adapt to both the
+viewport and its own container size.
+
+```ts
+import { m } from "css-calipers";
+import { makeMediaQueryStyle } from "css-calipers/mediaQueries";
+import { makeContainerQueryStyle } from "css-calipers/containerQueries";
+
+const media = makeMediaQueryStyle({
+  mobile: { maxWidth: m(639) },
+  desktop: { minWidth: m(1024) },
+});
+
+const container = makeContainerQueryStyle({
+  wideCard: {
+    inlineSize: { operator: ">=", value: m(28, "rem") },
+  },
+});
+
+const styles = {
+  ".cardList": {
+    display: "grid",
+    gap: "16px",
+    gridTemplateColumns: "1fr",
+  },
+  ".card": {
+    display: "grid",
+    gridTemplateRows: "auto 1fr",
+    alignItems: "start",
+    ...container({
+      wideCard: {
+        gridTemplateColumns: "1fr 2fr",
+        gridTemplateRows: "none",
+        alignItems: "stretch",
+      },
+    }),
+  },
+  ...media({
+    desktop: {
+      ".cardList": { gridTemplateColumns: "repeat(2, 1fr)" },
+    },
+  }),
+};
+```
+
+If you want to scope container queries to a device range, nest the container
+styles inside the media styles.
+
 ## Status and scope
 
 The media queries module ships as a separate entrypoint so it can be omitted
@@ -187,6 +238,7 @@ All modules expose an emitter and a type interface for the config:
 - Fields: `width`, `height`, `minHeight`, `maxHeight`, `aspectRatio`,
   `minAspectRatio`, `maxAspectRatio`, `orientation`
 - Emitter: `emitDimensionsFeatures`
+- Aspect ratios use `r()` values (for example, `r(1)` or `r(16, 9)`).
 
 ### Resolution
 

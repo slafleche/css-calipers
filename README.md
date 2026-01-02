@@ -13,6 +13,7 @@ Module guides:
 
 - Measurements core: README_MEASUREMENT.md
 - Media queries: README_MEDIAQUERIES.md
+- Container queries: README_CONTAINERQUERIES.md
 
 At a glance:
 
@@ -86,6 +87,39 @@ const styles = {
 ```
 
 See README_MEDIAQUERIES.md for the full media queries guide.
+
+---
+
+## Container queries
+
+```ts
+import { m, r } from "css-calipers";
+import { makeContainerQueryStyle } from "css-calipers/containerQueries";
+
+const container = makeContainerQueryStyle({
+  wideCard: {
+    inlineSize: { operator: ">=", value: m(28, "rem") },
+  },
+  squareCard: { aspectRatio: r(1) },
+});
+
+const styles = {
+  ".card": {
+    display: "grid",
+    gridTemplateRows: "auto 1fr",
+    ...container({
+      wideCard: {
+        gridTemplateColumns: "1fr 2fr",
+        gridTemplateRows: "none",
+        alignItems: "stretch",
+      },
+      squareCard: { aspectRatio: "1 / 1" },
+    }),
+  },
+};
+```
+
+See README_CONTAINERQUERIES.md for the full container queries guide.
 
 ---
 
@@ -185,7 +219,7 @@ if (process.env.NODE_ENV !== "production") {
 const cardGridStyles = {
   display: "grid",
   gap: gutter.css(),
-  // Keep fraction units as plain CSS alongside measurement-derived values
+  // Keep ratio units as plain CSS alongside measurement-derived values
   gridTemplateColumns: `repeat(${columns}, 1fr)`,
   // width driven by card width + gutters
   width: cardWidth

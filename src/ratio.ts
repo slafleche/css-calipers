@@ -1,21 +1,19 @@
-export interface IFraction {
+export interface IRatio {
   css: () => string;
   toString: () => string;
   valueOf: () => number;
   numerator: () => number;
   denominator: () => number;
-  withNumerator: (numerator: number) => IFraction;
-  withDenominator: (denominator: number) => IFraction;
+  withNumerator: (numerator: number) => IRatio;
+  withDenominator: (denominator: number) => IRatio;
 }
-
-export type Fraction = IFraction;
 
 export type RatioParts = {
   numerator: number;
   denominator: number;
 };
 
-class FractionImpl implements IFraction {
+class RatioImpl implements IRatio {
   #numerator: number;
   #denominator: number;
   #omitDenominatorWhenOne: boolean;
@@ -23,18 +21,17 @@ class FractionImpl implements IFraction {
   constructor(
     numerator: number,
     denominator: number,
-    options: { omitDenominatorWhenOne?: boolean } = {},
+    options: { omitDenominatorWhenOne?: boolean } = {}
   ) {
     if (!Number.isFinite(numerator) || !Number.isFinite(denominator)) {
-      throw new Error('Fraction values must be finite numbers.');
+      throw new Error("Ratio values must be finite numbers.");
     }
     if (denominator === 0) {
-      throw new Error('Fraction denominator cannot be zero.');
+      throw new Error("Ratio denominator cannot be zero.");
     }
     this.#numerator = numerator;
     this.#denominator = denominator;
-    this.#omitDenominatorWhenOne =
-      options.omitDenominatorWhenOne ?? false;
+    this.#omitDenominatorWhenOne = options.omitDenominatorWhenOne ?? false;
   }
 
   numerator(): number {
@@ -45,12 +42,12 @@ class FractionImpl implements IFraction {
     return this.#denominator;
   }
 
-  withNumerator(numerator: number): IFraction {
-    return new FractionImpl(numerator, this.#denominator);
+  withNumerator(numerator: number): IRatio {
+    return new RatioImpl(numerator, this.#denominator);
   }
 
-  withDenominator(denominator: number): IFraction {
-    return new FractionImpl(this.#numerator, denominator);
+  withDenominator(denominator: number): IRatio {
+    return new RatioImpl(this.#numerator, denominator);
   }
 
   valueOf(): number {
@@ -69,35 +66,38 @@ class FractionImpl implements IFraction {
   }
 }
 
-export function r(denominator: number): Fraction;
-export function r(numerator: number, denominator: number): Fraction;
+export function r(denominator: number): IRatio;
+export function r(numerator: number, denominator: number): IRatio;
 export function r(
   numeratorOrDenominator: number,
-  denominator?: number,
-): Fraction {
-  const numerator = denominator === undefined ? numeratorOrDenominator : numeratorOrDenominator;
+  denominator?: number
+): IRatio {
+  const numerator =
+    denominator === undefined ? numeratorOrDenominator : numeratorOrDenominator;
   const resolvedDenominator = denominator === undefined ? 1 : denominator;
-  return new FractionImpl(numerator, resolvedDenominator);
+  return new RatioImpl(numerator, resolvedDenominator);
 }
 
-export const isFraction = (value: unknown): value is IFraction => {
+export const isRatio = (value: unknown): value is IRatio => {
   return (
     typeof value === "object" &&
     value !== null &&
     "css" in value &&
     "numerator" in value &&
     "denominator" in value &&
-    typeof (value as IFraction).css === "function" &&
-    typeof (value as IFraction).numerator === "function" &&
-    typeof (value as IFraction).denominator === "function"
+    typeof (value as IRatio).css === "function" &&
+    typeof (value as IRatio).numerator === "function" &&
+    typeof (value as IRatio).denominator === "function"
   );
 };
 
-export const parseRatio = (value: number | string | IFraction): RatioParts | null => {
+export const parseRatio = (
+  value: number | string | IRatio
+): RatioParts | null => {
   if (typeof value === "number") {
     return Number.isFinite(value) ? { numerator: value, denominator: 1 } : null;
   }
-  if (isFraction(value)) {
+  if (isRatio(value)) {
     return { numerator: value.numerator(), denominator: value.denominator() };
   }
   const trimmed = value.trim();
@@ -107,7 +107,8 @@ export const parseRatio = (value: number | string | IFraction): RatioParts | nul
     if (left === undefined || right === undefined) return null;
     const numerator = Number(left.trim());
     const denominator = Number(right.trim());
-    if (!Number.isFinite(numerator) || !Number.isFinite(denominator)) return null;
+    if (!Number.isFinite(numerator) || !Number.isFinite(denominator))
+      return null;
     if (denominator === 0) return null;
     return { numerator, denominator };
   }
@@ -115,19 +116,19 @@ export const parseRatio = (value: number | string | IFraction): RatioParts | nul
   return Number.isFinite(parsed) ? { numerator: parsed, denominator: 1 } : null;
 };
 
-export const normalizeFraction = (fraction: IFraction): IFraction => {
-  let numerator = fraction.numerator();
-  let denominator = fraction.denominator();
+export const normalizeRatio = (ratio: IRatio): IRatio => {
+  let numerator = ratio.numerator();
+  let denominator = ratio.denominator();
 
   if (!Number.isFinite(numerator) || !Number.isFinite(denominator)) {
-    throw new Error("Fraction values must be finite numbers.");
+    throw new Error("Ratio values must be finite numbers.");
   }
   if (denominator === 0) {
-    throw new Error("Fraction denominator cannot be zero.");
+    throw new Error("Ratio denominator cannot be zero.");
   }
 
   if (!Number.isInteger(numerator) || !Number.isInteger(denominator)) {
-    return new FractionImpl(numerator, denominator);
+    return new RatioImpl(numerator, denominator);
   }
 
   if (denominator < 0) {
@@ -147,20 +148,16 @@ export const normalizeFraction = (fraction: IFraction): IFraction => {
   };
 
   const divisor = gcd(numerator, denominator);
-  return new FractionImpl(numerator / divisor, denominator / divisor);
+  return new RatioImpl(numerator / divisor, denominator / divisor);
 };
 
-export const reduceFraction = (fraction: IFraction): IFraction =>
-  normalizeFraction(fraction);
-
-export const simplifyFraction = (fraction: IFraction): IFraction => {
-  const reduced = normalizeFraction(fraction);
-  return new FractionImpl(
-    reduced.numerator(),
-    reduced.denominator(),
-    { omitDenominatorWhenOne: true },
-  );
+export const reduceRatio = (ratio: IRatio): IRatio => normalizeRatio(ratio);
+export const simplifyRatio = (ratio: IRatio): IRatio => {
+  const reduced = normalizeRatio(ratio);
+  return new RatioImpl(reduced.numerator(), reduced.denominator(), {
+    omitDenominatorWhenOne: true,
+  });
 };
 
-export const fractionToFloat = (fraction: IFraction): number =>
-  fraction.numerator() / fraction.denominator();
+export const ratioToFloat = (ratio: IRatio): number =>
+  ratio.numerator() / ratio.denominator();

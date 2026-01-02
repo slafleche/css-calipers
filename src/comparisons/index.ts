@@ -23,6 +23,7 @@ export type Comparison<
 export type ComparisonValue<Value = ContentQueryComparisonValue> = {
   operator: IComparisonOperator;
   value: Value;
+  readonly __comparisonBrand: unique symbol;
 };
 
 export const compare = {
@@ -31,29 +32,29 @@ export const compare = {
   ): ComparisonValue<T> => ({
     operator: "=",
     value,
-  }),
+  } as ComparisonValue<T>),
   lt: <T extends ContentQueryComparisonValue>(
     value: T,
   ): ComparisonValue<T> => ({
     operator: "<",
     value,
-  }),
+  } as ComparisonValue<T>),
   lte: <T extends ContentQueryComparisonValue>(
     value: T,
   ): ComparisonValue<T> => ({
     operator: "<=",
     value,
-  }),
+  } as ComparisonValue<T>),
   gt: <T extends ContentQueryComparisonValue>(
     value: T,
   ): ComparisonValue<T> => ({
     operator: ">",
     value,
-  }),
+  } as ComparisonValue<T>),
   gte: <T extends ContentQueryComparisonValue>(
     value: T,
   ): ComparisonValue<T> => ({
     operator: ">=",
     value,
-  }),
+  } as ComparisonValue<T>),
 };

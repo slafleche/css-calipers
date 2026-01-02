@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "types": ["vitest"]
   },
-  "include": ["src", "tests"]
+  "include": ["src", "tests", "examples"]
 }

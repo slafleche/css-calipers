@@ -12,7 +12,7 @@ import type {
   MediaQueryBuilderHelpers,
   MediaQueryValidationResult,
 } from '../../../src/mediaQueries/helpers';
-import type { IMeasurement } from '../../../src/core';
+import type { IRatio, IMeasurement } from '../../../src/core';
 import type { StyleRule } from '../../../src/mediaQueries/types';
 import type { IMediaQueryProps } from '../../../src/mediaQueries/mediaQueries';
 import type {
@@ -33,6 +33,7 @@ type MediaQueriesApi = {
   mediaQueryFactory: typeof mediaQueryFactory;
   mDpi: (value: number) => MeasurementLike;
   mPx: (value: number) => MeasurementLike;
+  r: (numerator: number, denominator?: number) => IRatio;
   styleRuleSample?: StyleRule;
 };
 
@@ -73,13 +74,31 @@ export const runMediaQueryTests = (
 
     it('builds an aspect ratio query with min and max values', () => {
       const result = api.buildMediaQueryString({
-        aspectRatio: '16/9',
-        minAspectRatio: '4/3',
-        maxAspectRatio: '21/9',
+        aspectRatio: api.r(16, 9),
+        minAspectRatio: api.r(4, 3),
+        maxAspectRatio: api.r(21, 9),
       });
       expect(result).toBe(
         'screen and (aspect-ratio: 16/9) and (min-aspect-ratio: 4/3) and (max-aspect-ratio: 21/9)',
       );
+    });
+
+    it('rejects aspect ratio values that are not created with r()', () => {
+      expect(() =>
+        api.buildMediaQueryString({
+          aspectRatio: '16/9' as unknown as IRatio,
+        }),
+      ).toThrow(/aspectRatio must be a ratio created with r\(\)/);
+      expect(() =>
+        api.buildMediaQueryString({
+          minAspectRatio: '4/3' as unknown as IRatio,
+        }),
+      ).toThrow(/minAspectRatio must be a ratio created with r\(\)/);
+      expect(() =>
+        api.buildMediaQueryString({
+          maxAspectRatio: '21/9' as unknown as IRatio,
+        }),
+      ).toThrow(/maxAspectRatio must be a ratio created with r\(\)/);
     });
 
     it('builds a dimensions query with width and orientation', () => {
@@ -143,13 +162,13 @@ export const runMediaQueryTests = (
         config: { errorHandling: { invalidValueMode: 'throw' } },
       });
       expect(() =>
-        strictBuilder({ aspectRatio: '0/0' }),
+        strictBuilder({ aspectRatio: api.r(0, 1) }),
       ).toThrow(
         /aspectRatio must be a valid ratio greater than 0.*code=CALIPERS_E_ASSERT_CONDITION/,
       );
 
       expect(() =>
-        strictBuilder({ minAspectRatio: 'abc' }),
+        strictBuilder({ minAspectRatio: api.r(1, -2) }),
       ).toThrow(
         /minAspectRatio must be a valid ratio greater than 0.*code=CALIPERS_E_ASSERT_CONDITION/,
       );
@@ -220,9 +239,10 @@ export const runMediaQueryTests = (
         config: { errorHandling: { invalidValueMode: 'throw' } },
       });
 
-      expect(() => allowBuilder({ aspectRatio: '0/0' })).not.toThrow();
-      expect(() => logBuilder({ aspectRatio: '0/0' })).not.toThrow();
-      expect(() => throwBuilder({ aspectRatio: '0/0' })).toThrow(
+      const invalid = { aspectRatio: api.r(0, 1) };
+      expect(() => allowBuilder(invalid)).not.toThrow();
+      expect(() => logBuilder(invalid)).not.toThrow();
+      expect(() => throwBuilder(invalid)).toThrow(
         /aspectRatio must be a valid ratio greater than 0.*code=CALIPERS_E_ASSERT_CONDITION/,
       );
     });
@@ -303,7 +323,7 @@ export const runMediaQueryTests = (
           });
 
           const props = {
-            aspectRatio: '0/0',
+            aspectRatio: api.r(0, 1),
             width: api.mPx(640),
             minWidth: api.mPx(320),
           };
@@ -333,7 +353,7 @@ export const runMediaQueryTests = (
         config: { errorHandling: { invalidValueMode: 'log' } },
       });
 
-      expect(() => logBuilder({ aspectRatio: '0/0' })).not.toThrow();
+      expect(() => logBuilder({ aspectRatio: api.r(0, 1) })).not.toThrow();
     });
 
     it('handles multiple factory instances with independent configs', () => {
@@ -341,7 +361,7 @@ export const runMediaQueryTests = (
       const lintModes = ['allow', 'log', 'throw'] as const;
 
       const props = {
-        aspectRatio: '0/0',
+        aspectRatio: api.r(0, 1),
         width: api.mPx(640),
         minWidth: api.mPx(320),
       };

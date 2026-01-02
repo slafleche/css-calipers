@@ -82,6 +82,7 @@
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.50.1",
     "@typescript-eslint/parser": "^8.50.1",
+    "@vanilla-extract/css": "^1.18.0",
     "@vitest/coverage-v8": "^4.0.14",
     "eslint": "^9.39.2",
     "tsd": "^0.31.0",
@@ -118,6 +119,8 @@
     "test:factory": "vitest run tests/runtime/factory/factory.src.test.ts",
     "test:factory:cjs": "vitest run tests/runtime/factory/factory.cjs.test.ts tests/runtime/api-surface/factory.api-surface.cjs.test.ts",
     "test:factory:esm": "vitest run tests/runtime/factory/factory.esm.test.ts tests/runtime/api-surface/factory.api-surface.esm.test.ts",
-    "test:factory:dist": "npm run test:factory:cjs && npm run test:factory:esm"
+    "test:factory:dist": "npm run test:factory:cjs && npm run test:factory:esm",
+    "test:examples": "node tests/examples/testExamples.mjs",
+    "build:examples": "npm run build && tsc -p tsconfig.examples.json"
   }
 }

@@ -2,7 +2,7 @@ import type {
   ContentQueryVariable,
   IComparisonOperator,
 } from "../../comparisons";
-import type { IFraction } from "../../fraction";
+import type { IRatio } from "../../ratio";
 import type {
   ContainerQueryBuilderHelpers,
   ContainerQueryValidator,
@@ -16,9 +16,9 @@ import {
 } from "../linting/aspectRatio";
 
 export interface IContainerQueryAspectRatio {
-  aspectRatio?: IFraction;
-  minAspectRatio?: IFraction;
-  maxAspectRatio?: IFraction;
+  aspectRatio?: IRatio;
+  minAspectRatio?: IRatio;
+  maxAspectRatio?: IRatio;
 }
 
 export type ContainerQueryAspectRatioValidator =
@@ -31,7 +31,7 @@ export type AspectRatioComparisonVariable =
 
 export type ComparisonAspectRatio<
   Variable = ContentQueryVariable,
-  Value = IFraction
+  Value = IRatio
 > = {
   variable: Variable;
   operator: IComparisonOperator;
@@ -41,12 +41,10 @@ export type ComparisonAspectRatio<
 export const emitAspectRatioFeatures = (
   props: IContainerQueryAspectRatio,
   helpers: ContainerQueryBuilderHelpers,
-  validate?: ContainerQueryAspectRatioValidator,
+  validate?: ContainerQueryAspectRatioValidator
 ): void => {
-  const {
-    runContainerQueryValidation,
-    validateAspectRatioValues,
-  } = defaultContainerQueryValidation;
+  const { runContainerQueryValidation, validateAspectRatioValues } =
+    defaultContainerQueryValidation;
 
   if (
     !runContainerQueryValidation(
@@ -54,7 +52,7 @@ export const emitAspectRatioFeatures = (
       helpers,
       validateAspectRatioValues,
       "aspectRatio",
-      "aspect ratio values must be valid fractions greater than 0",
+      "aspect ratio values must be valid ratio greater than 0"
     )
   ) {
     return;
@@ -65,7 +63,7 @@ export const emitAspectRatioFeatures = (
       props,
       helpers,
       lintAspectRatioRedundancy,
-      "aspectRatio should not be combined with minAspectRatio or maxAspectRatio",
+      "aspectRatio should not be combined with minAspectRatio or maxAspectRatio"
     )
   ) {
     return;
@@ -75,20 +73,13 @@ export const emitAspectRatioFeatures = (
       props,
       helpers,
       lintAspectRatioRangeCollapse,
-      "minAspectRatio and maxAspectRatio are equal; use aspectRatio instead",
+      "minAspectRatio and maxAspectRatio are equal; use aspectRatio instead"
     )
   ) {
     return;
   }
 
-  if (
-    !applyContainerQueryValidation(
-      props,
-      helpers,
-      validate,
-      "aspectRatio",
-    )
-  ) {
+  if (!applyContainerQueryValidation(props, helpers, validate, "aspectRatio")) {
     return;
   }
 

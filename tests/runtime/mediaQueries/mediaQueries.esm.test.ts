@@ -14,7 +14,7 @@ const {
   emitResolutionFeatures,
   mediaQueryFactory,
 } = mediaQueriesModule;
-const { mDpi, mPx } = coreModule;
+const { mDpi, mPx, r } = coreModule;
 
 runMediaQueryTests('esm', {
   buildMediaQueryString,
@@ -26,4 +26,5 @@ runMediaQueryTests('esm', {
   mediaQueryFactory,
   mDpi,
   mPx,
+  r,
 });

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "examples",
+    "noEmit": true,
+    "strict": true,
+    "declaration": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "css-calipers": ["dist/esm/index.d.ts"],
+      "css-calipers/*": ["dist/esm/*"]
+    }
+  },
+  "include": ["examples"]
+}

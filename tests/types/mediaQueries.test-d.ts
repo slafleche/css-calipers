@@ -1,7 +1,7 @@
 import { expectAssignable, expectNotAssignable, expectType } from 'tsd';
 
 import type { IMeasurement } from '../../dist/esm';
-import { mPx } from '../../dist/esm';
+import { m, mPx } from '../../dist/esm';
 import {
   buildMediaQueryFromFeatures,
   buildMediaQueryString,
@@ -39,6 +39,10 @@ const builder = createMediaQueryBuilder({
 });
 
 expectType<string>(builder({ width }));
+
+expectNotAssignable<MediaQueryModulePropsMap['dimensions']>({
+  aspectRatio: m('16/9'),
+});
 
 const coreModules = defineMediaQueryModules('core');
 type CoreProps = MediaQueryModulePropsMap[(typeof coreModules)[number]];

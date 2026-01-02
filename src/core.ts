@@ -2,25 +2,26 @@ import {
   type UnitCategory,
   type UnitDefinition,
   type UnitDefinitionRecord,
-} from './unitDefinitions';
-import { createCoreApi } from './internal/createCoreApi';
+} from "./unitDefinitions";
+import { createCoreApi } from "./internal/createCoreApi";
 import {
   createErrorConfigStore,
   type ErrorConfig,
   type ErrorCode,
-} from './internal/errors';
-import type { Fraction, IFraction, RatioParts } from './fraction';
+} from "./internal/errors";
 import {
-  fractionToFloat,
-  isFraction,
-  normalizeFraction,
+  type IRatio,
+  isRatio,
+  normalizeRatio,
   parseRatio,
   r,
-  reduceFraction,
-  simplifyFraction,
-} from './fraction';
+  type RatioParts,
+  ratioToFloat,
+  reduceRatio,
+  simplifyRatio,
+} from "./ratio";
 
-type UnitSymbol = UnitDefinitionRecord[keyof UnitDefinitionRecord]['unit'];
+type UnitSymbol = UnitDefinitionRecord[keyof UnitDefinitionRecord]["unit"];
 
 export type MeasurementString<Unit extends string = UnitSymbol> =
   `${number}${Unit}`;
@@ -38,7 +39,7 @@ export interface IMeasurement<Unit extends string = string> {
   assertUnit: (unit: string, context?: string) => void;
   assert: (
     predicate: (measurement: IMeasurement<Unit>) => boolean,
-    message: string,
+    message: string
   ) => void;
   equals: (other: IMeasurement<string>) => boolean;
   compare: (other: IMeasurement<string>) => number;
@@ -55,7 +56,7 @@ export interface IMeasurement<Unit extends string = string> {
   ceil: () => IMeasurement<Unit>;
   clamp: (
     min: IMeasurement<string>,
-    max: IMeasurement<string>,
+    max: IMeasurement<string>
   ) => IMeasurement<Unit>;
 }
 
@@ -64,7 +65,7 @@ export type BrandedMeasurement<Unit extends string> = IMeasurement<Unit> &
 
 export type UnitHelper<Unit extends string = string> = ((
   value: number,
-  context?: string,
+  context?: string
 ) => BrandedMeasurement<Unit>) & {
   unit: Unit;
 };
@@ -72,12 +73,12 @@ export type UnitHelper<Unit extends string = string> = ((
 export type MeasurementOf<T extends UnitHelper> = ReturnType<T>;
 
 export type UnitGuard<T extends UnitHelper> = (
-  value: unknown,
+  value: unknown
 ) => value is MeasurementOf<T>;
 
 export type UnitAssertion<T extends UnitHelper> = (
   value: unknown,
-  context?: string,
+  context?: string
 ) => asserts value is MeasurementOf<T>;
 
 const defaultErrorStore = createErrorConfigStore();
@@ -105,14 +106,13 @@ export type MeasurementUnitDefinition = UnitDefinition;
 export type MeasurementUnitCategory = UnitCategory;
 export { type ErrorConfig, type ErrorCode };
 export {
-  fractionToFloat,
-  isFraction,
-  normalizeFraction,
+  ratioToFloat,
+  isRatio,
+  normalizeRatio,
   parseRatio,
   r,
-  reduceFraction,
-  simplifyFraction,
-  type Fraction,
-  type IFraction,
+  reduceRatio,
+  simplifyRatio,
+  type IRatio,
   type RatioParts,
 };
