@@ -24,7 +24,7 @@ const range: ContainerQueryRange = {
 };
 
 const condition: CSSContainerCondition = {
-  and: [{ width: comparison }, { widthRange: range }],
+  and: [{ inlineSize: comparison }, { inlineSizeRange: range }],
 };
 
 const rule: CSSContainerQueryRule = {

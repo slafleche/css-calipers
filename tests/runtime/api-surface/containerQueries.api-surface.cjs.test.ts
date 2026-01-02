@@ -7,7 +7,10 @@ const cjsContainerQueries = await import(
 describe('API surface (containerQueries CJS)', () => {
   it('exposes the containerQueries runtime surface', () => {
     const keys = Object.keys(cjsContainerQueries).filter(
-      (key) => key !== '__esModule',
+      (key) =>
+        key !== '__esModule' &&
+        key !== 'default' &&
+        key !== 'module.exports',
     );
     expect(keys.sort()).toEqual(
       [

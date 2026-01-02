@@ -1,5 +1,12 @@
-import { hasCssMethod, IMeasurement } from "../../core";
-import { ContainerQueryValidator } from "../helpers";
+import { IMeasurement } from "../../core";
+import type {
+  ContainerQueryBuilderHelpers,
+  ContainerQueryValidator,
+} from "../helpers";
+import { applyContainerQueryValidation } from "../helpers";
+import { defaultContainerQueryValidation } from "../validation";
+import { runContainerQueryLint } from "../linting";
+import { lintCustomFeatures } from "../linting/custom";
 
 type ContainerQueryFeatureValue = string | number | IMeasurement;
 
@@ -15,6 +22,34 @@ export const emitCustomFeatures = (
   helpers: ContainerQueryBuilderHelpers,
   validate?: ContainerQueryCustomFeaturesValidator
 ): void => {
+  const {
+    runContainerQueryValidation,
+    validateCustomFeatures,
+  } = defaultContainerQueryValidation;
+
+  if (
+    !runContainerQueryValidation(
+      props,
+      helpers,
+      validateCustomFeatures,
+      "custom",
+      "custom features must be valid and non-empty",
+    )
+  ) {
+    return;
+  }
+
+  if (
+    !runContainerQueryLint(
+      props,
+      helpers,
+      lintCustomFeatures,
+      "customFeatures should not be empty",
+    )
+  ) {
+    return;
+  }
+
   if (!applyContainerQueryValidation(props, helpers, validate, "custom")) {
     return;
   }
@@ -25,14 +60,7 @@ export const emitCustomFeatures = (
   Object.entries(props.customFeatures).forEach(([name, value]) => {
     if (value === undefined || value === null) return;
     const trimmedName = name.trim();
-    if (!trimmedName) {
-      throw new Error("Custom feature name must be non-empty.");
-    }
-    if (typeof value === "object" && !hasCssMethod(value)) {
-      throw new Error(
-        `Custom feature "${trimmedName}" must be a primitive or a measurement.`
-      );
-    }
+    if (!trimmedName) return;
     addFeature(trimmedName, value);
   });
 };

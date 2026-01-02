@@ -132,10 +132,17 @@ describe('API surface (ESM)', () => {
       'hasCssMethod',
       'assertUnit',
       'assertCondition',
+      'fractionToFloat',
+      'isFraction',
       'isPercentMeasurement',
       'assertPercentMeasurement',
       'getErrorConfig',
+      'normalizeFraction',
+      'parseRatio',
+      'r',
+      'reduceFraction',
       'setErrorConfig',
+      'simplifyFraction',
     ];
 
     const unitHelperKeys = Object.keys(

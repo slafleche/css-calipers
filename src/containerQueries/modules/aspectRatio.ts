@@ -1,36 +1,28 @@
 import type {
-  ContentQueryComparisonValue,
   ContentQueryVariable,
   IComparisonOperator,
 } from "../../comparisons";
-import type { IFraction, RatioParts } from "../../fraction";
-import type { ContainerQueryValidator } from "../helpers";
+import type { IFraction } from "../../fraction";
+import type {
+  ContainerQueryBuilderHelpers,
+  ContainerQueryValidator,
+} from "../helpers";
+import { applyContainerQueryValidation } from "../helpers";
+import { defaultContainerQueryValidation } from "../validation";
+import { runContainerQueryLint } from "../linting";
+import {
+  lintAspectRatioRangeCollapse,
+  lintAspectRatioRedundancy,
+} from "../linting/aspectRatio";
 
 export interface IContainerQueryAspectRatio {
-  aspectRatio?: RatioValue;
-  minAspectRatio?: RatioValue;
-  maxAspectRatio?: RatioValue;
+  aspectRatio?: IFraction;
+  minAspectRatio?: IFraction;
+  maxAspectRatio?: IFraction;
 }
 
 export type ContainerQueryAspectRatioValidator =
   ContainerQueryValidator<IContainerQueryAspectRatio>;
-
-type UnsignedIntegerString = Exclude<`${bigint}`, `-${string}`>;
-type UnsignedFloatString =
-  | UnsignedIntegerString
-  | `${UnsignedIntegerString}.${UnsignedIntegerString}`;
-
-export type RatioString =
-  | UnsignedFloatString
-  | `${UnsignedFloatString}/${UnsignedFloatString}`;
-
-type NumericRatioValue = Extract<ContentQueryComparisonValue, number | string>;
-
-export type RatioValue =
-  | NumericRatioValue
-  | RatioString
-  | IFraction
-  | RatioParts;
 
 export type AspectRatioComparisonVariable =
   | "aspectRatio"
@@ -44,4 +36,71 @@ export type ComparisonAspectRatio<
   variable: Variable;
   operator: IComparisonOperator;
   value: Value;
+};
+
+export const emitAspectRatioFeatures = (
+  props: IContainerQueryAspectRatio,
+  helpers: ContainerQueryBuilderHelpers,
+  validate?: ContainerQueryAspectRatioValidator,
+): void => {
+  const {
+    runContainerQueryValidation,
+    validateAspectRatioValues,
+  } = defaultContainerQueryValidation;
+
+  if (
+    !runContainerQueryValidation(
+      props,
+      helpers,
+      validateAspectRatioValues,
+      "aspectRatio",
+      "aspect ratio values must be valid fractions greater than 0",
+    )
+  ) {
+    return;
+  }
+
+  if (
+    !runContainerQueryLint(
+      props,
+      helpers,
+      lintAspectRatioRedundancy,
+      "aspectRatio should not be combined with minAspectRatio or maxAspectRatio",
+    )
+  ) {
+    return;
+  }
+  if (
+    !runContainerQueryLint(
+      props,
+      helpers,
+      lintAspectRatioRangeCollapse,
+      "minAspectRatio and maxAspectRatio are equal; use aspectRatio instead",
+    )
+  ) {
+    return;
+  }
+
+  if (
+    !applyContainerQueryValidation(
+      props,
+      helpers,
+      validate,
+      "aspectRatio",
+    )
+  ) {
+    return;
+  }
+
+  const { addFeature } = helpers;
+
+  if (props.aspectRatio) {
+    addFeature("aspect-ratio", props.aspectRatio);
+  }
+  if (props.minAspectRatio) {
+    addFeature("min-aspect-ratio", props.minAspectRatio);
+  }
+  if (props.maxAspectRatio) {
+    addFeature("max-aspect-ratio", props.maxAspectRatio);
+  }
 };

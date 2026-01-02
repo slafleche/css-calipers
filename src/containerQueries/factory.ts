@@ -5,8 +5,8 @@ import type {
 } from "./types";
 import type {
   ContainerQueryBuilderConfig,
-} from "./types";
-import { buildContainerQueryString } from "./containerQueries";
+} from "./helpers";
+import { buildContainerConditionString } from "./containerQueries";
 import type {
   ContainerQueryModuleId,
   ContainerQueryModulesList,
@@ -18,21 +18,20 @@ type ContainerQueryStyleMap<TQueries> = Partial<
 
 const ALL_CONTAINER_QUERY_MODULES: ContainerQueryModuleId[] = [
   "core",
-  "block",
-  "custom",
-  "exact",
   "inline",
-  "orientation",
-  "range",
+  "block",
+  "aspectRatio",
+  "style",
+  "custom",
 ];
 
 const MODULE_KEYS: Record<ContainerQueryModuleId, readonly string[]> = {
   core: ["minWidth", "maxWidth", "minHeight", "maxHeight"],
-  block: ["blockSize", "blockSizeRange"],
-  exact: ["width", "height"],
   inline: ["inlineSize", "inlineSizeRange"],
-  orientation: ["orientation"],
-  range: ["widthRange", "heightRange"],
+  block: ["blockSize", "blockSizeRange"],
+  aspectRatio: ["aspectRatio", "minAspectRatio", "maxAspectRatio"],
+  style: ["style"],
+  custom: ["customFeatures"],
 };
 
 const KEY_TO_MODULE: Record<string, ContainerQueryModuleId> =
@@ -45,24 +44,38 @@ const KEY_TO_MODULE: Record<string, ContainerQueryModuleId> =
     ),
   );
 
-// const collectConditionKeys = (
-//   condition: CSSContainerCondition,
-//   keys: Set<string>,
-// ): void => {
-//   if ("and" in condition) {
-//     condition.and.forEach((entry) => collectConditionKeys(entry, keys));
-//     return;
-//   }
-//   if ("or" in condition) {
-//     condition.or.forEach((entry) => collectConditionKeys(entry, keys));
-//     return;
-//   }
-//   if ("not" in condition) {
-//     collectConditionKeys(condition.not, keys);
-//     return;
-//   }
-//   Object.keys(condition).forEach((key) => keys.add(key));
-// };
+const collectConditionKeys = (
+  condition: CSSContainerCondition,
+  keys: Set<string>,
+): void => {
+  if ("and" in condition) {
+    condition.and.forEach((entry) => collectConditionKeys(entry, keys));
+    return;
+  }
+  if ("or" in condition) {
+    condition.or.forEach((entry) => collectConditionKeys(entry, keys));
+    return;
+  }
+  if ("not" in condition) {
+    collectConditionKeys(condition.not, keys);
+    return;
+  }
+  Object.keys(condition).forEach((key) => keys.add(key));
+};
+
+const collectAndConditionKeys = (
+  condition: CSSContainerCondition,
+  keys: string[],
+): void => {
+  if ("and" in condition) {
+    condition.and.forEach((entry) => collectAndConditionKeys(entry, keys));
+    return;
+  }
+  if ("or" in condition || "not" in condition) {
+    return;
+  }
+  Object.keys(condition).forEach((key) => keys.push(key));
+};
 
 const guardUnsupportedCondition = (
   condition: CSSContainerCondition,
@@ -100,6 +113,40 @@ const guardUnsupportedCondition = (
   });
 };
 
+const guardDuplicateConditions = (
+  condition: CSSContainerCondition,
+  config: ContainerQueryBuilderConfig,
+  label: string,
+): void => {
+  const keys: string[] = [];
+  collectAndConditionKeys(condition, keys);
+
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  keys.forEach((key) => {
+    if (seen.has(key)) {
+      duplicates.add(key);
+      return;
+    }
+    seen.add(key);
+  });
+
+  if (!duplicates.size) return;
+
+  const mode = config.errorHandling?.invalidValueMode ?? "throw";
+  const message = `Container query factory "${label}" received duplicate condition "${Array.from(
+    duplicates,
+  ).join('", "')}".`;
+
+  if (mode === "log") {
+    console.warn(message);
+    return;
+  }
+  if (mode === "allow") return;
+
+  throw new Error(message);
+};
+
 export type ContainerQueryFactoryConfig<
   TModules extends ContainerQueryModulesList | undefined = undefined,
   TOutput = ComplexStyleRule,
@@ -132,7 +179,12 @@ export const createContainerQueryFactory = () => <
         options.config,
         options.config.label,
       );
-      result[buildContainerQueryString(rule.query)] = styles;
+      guardDuplicateConditions(
+        rule.query.condition,
+        options.config,
+        options.config.label,
+      );
+      result[buildContainerConditionString(rule.query.condition)] = styles;
     });
 
     const containerQuery: ComplexStyleRule = {

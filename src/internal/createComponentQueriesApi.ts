@@ -1,4 +1,32 @@
-import { IContainerQueries, IContainerQueryStyles } from "../containerQueries";
+import type { CoreApi } from "./createCoreApi";
+import { createContainerQueryBuilder } from "../containerQueries/helpers";
+import type { ContainerQueryBuilderHelpers } from "../containerQueries/helpers";
+import type { StyleRule } from "../mediaQueries/types";
+import { createContainerQueryValidation } from "../containerQueries/validation";
+import {
+  createEmitCoreFeatures,
+  type IContainerQueries,
+  type IContainerQueryProps,
+  type IContainerQueryStyles,
+} from "../containerQueries/containerQueries";
+import {
+  emitAspectRatioFeatures,
+  emitBlockSizeFeatures,
+  emitCustomFeatures,
+  emitInlineSizeFeatures,
+  emitStyleFeatures,
+  type IContainerQueryAspectRatio,
+  type IContainerQueryBlock,
+  type IContainerQueryCustomFeatures,
+  type IContainerQueryInline,
+  type IContainerQueryStyle,
+} from "../containerQueries/modules";
+import {
+  createContainerQueryFactory,
+  type ContainerQueryFactoryConfig,
+} from "../containerQueries/factory";
+import { containerQueryOutputVanillaExtract } from "../libraryHelpers/vanilla-extract";
+import type { ContainerQueryModulesList } from "../containerQueries/moduleRegistry";
 
 type ContainerQueriesCore = Pick<
   CoreApi,
@@ -12,8 +40,6 @@ export const createContainerQueriesApi = (core: ContainerQueriesCore) => {
   });
 
   const emitCoreFeatures = createEmitCoreFeatures(validation);
-  const emitDimensionsFeatures = createEmitDimensionsFeatures(validation);
-  const emitResolutionFeatures = createEmitResolutionFeatures(validation);
 
   const emitBaseFeatures = (
     props: IContainerQueryProps,
@@ -23,22 +49,17 @@ export const createContainerQueriesApi = (core: ContainerQueriesCore) => {
     emitAspectRatioFeatures(props, helpers);
     emitBlockSizeFeatures(props, helpers);
     emitInlineSizeFeatures(props, helpers);
-    emitResolutionFeatures(props, helpers);
-    emitInteractionFeatures(props, helpers);
-    emitPreferencesFeatures(props, helpers);
-    emitDisplayFeatures(props, helpers);
-    emitEnvironmentFeatures(props, helpers);
+    emitStyleFeatures(props, helpers);
     emitCustomFeatures(props, helpers);
   };
 
   const buildContainerQueryString = createContainerQueryBuilder({
     emitBase: emitBaseFeatures,
-    resolveType: (props: IContainerQueryProps) => props.type,
   });
 
   const makeContainerQueryStyle =
     <T extends IContainerQueries>(queries: T) =>
-    (stylesByQuery: IContainerQueryStyles<T>): ComplexStyleRule => {
+    (stylesByQuery: IContainerQueryStyles<T>): StyleRule => {
       const result: Record<string, StyleRule> = {};
 
       (Object.keys(stylesByQuery) as (keyof T)[]).forEach((key) => {
@@ -48,38 +69,25 @@ export const createContainerQueriesApi = (core: ContainerQueriesCore) => {
         result[buildContainerQueryString(props)] = styles;
       });
 
-      const ContainerQuery: ComplexStyleRule = {
-        "@Container": result,
+      const containerQuery: StyleRule = {
+        "@container": result,
       };
-      return ContainerQuery;
+      return containerQuery;
     };
 
-  const moduleEmitters: ContainerQueryModuleEmitters = {
-    core: emitCoreFeatures,
-    dimensions: emitDimensionsFeatures,
-    resolution: emitResolutionFeatures,
-    interaction: emitInteractionFeatures,
-    preferences: emitPreferencesFeatures,
-    display: emitDisplayFeatures,
-    environment: emitEnvironmentFeatures,
-    custom: emitCustomFeatures,
-  };
-
-  const ContainerQueryFactory = createContainerQueryFactory(moduleEmitters);
+  const containerQueryFactory = createContainerQueryFactory();
 
   return {
     buildContainerQueryString,
     makeContainerQueryStyle,
-    ContainerQueryFactory,
+    containerQueryFactory,
     emitCoreFeatures,
-    emitDimensionsFeatures,
-    emitResolutionFeatures,
-    emitInteractionFeatures,
-    emitPreferencesFeatures,
-    emitDisplayFeatures,
-    emitEnvironmentFeatures,
+    emitAspectRatioFeatures,
+    emitBlockSizeFeatures,
+    emitInlineSizeFeatures,
+    emitStyleFeatures,
     emitCustomFeatures,
-    ContainerQueryOutputVanillaExtract,
+    containerQueryOutputVanillaExtract,
     createContainerQueryBuilder,
   } as const;
 };
@@ -90,12 +98,10 @@ export type {
   IContainerQueryProps,
   IContainerQueryStyles,
   IContainerQueryCustomFeatures,
-  IContainerQueryDimensions,
-  IContainerQueryResolutionRange,
-  IContainerQueryInteraction,
-  IContainerQueryPreferences,
-  IContainerQueryDisplay,
-  IContainerQueryEnvironment,
+  IContainerQueryAspectRatio,
+  IContainerQueryBlock,
+  IContainerQueryInline,
+  IContainerQueryStyle,
   ContainerQueryFactoryConfig,
   ContainerQueryModulesList,
 };

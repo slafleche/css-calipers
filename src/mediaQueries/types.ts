@@ -2,19 +2,6 @@ import type { AtRule, Properties } from "csstype";
 import type {
   ClassNames,
   CSSVarFunction,
-  MapLeafNodes,
-  NullableTokens,
-  PropertySyntax,
-  QueryAll,
-  QueryContainer,
-  QueryFeature,
-  QueryLayer,
-  QueryMedia,
-  QueryRule,
-  QueryStartingStyle,
-  Resolve,
-  ThemeVars,
-  Tokens,
   WithQuery,
 } from "../types";
 

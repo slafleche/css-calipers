@@ -1,6 +1,6 @@
 import type { CoreApi } from "./createCoreApi";
 import { createMediaQueryBuilder } from "../mediaQueries/helpers";
-import type { ComplexStyleRule, StyleRule } from "../mediaQueries/types";
+import type { StyleRule } from "../mediaQueries/types";
 import { createMediaQueryValidation } from "../mediaQueries/validation";
 import {
   createEmitCoreFeatures,
@@ -71,7 +71,7 @@ export const createMediaQueriesApi = (core: MediaQueriesCore) => {
 
   const makeMediaQueryStyle =
     <T extends IMediaQueries>(queries: T) =>
-    (stylesByQuery: IMediaQueryStyles<T>): ComplexStyleRule => {
+    (stylesByQuery: IMediaQueryStyles<T>): StyleRule => {
       const result: Record<string, StyleRule> = {};
 
       (Object.keys(stylesByQuery) as (keyof T)[]).forEach((key) => {
@@ -81,7 +81,7 @@ export const createMediaQueriesApi = (core: MediaQueriesCore) => {
         result[buildMediaQueryString(props)] = styles;
       });
 
-      const mediaQuery: ComplexStyleRule = {
+      const mediaQuery: StyleRule = {
         "@media": result,
       };
       return mediaQuery;

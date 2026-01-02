@@ -1,62 +1,45 @@
 import type {
   IContainerQueryCore,
-  IContainerQueryCoreVariables,
 } from "./containerQueries";
 import type {
   IContainerQueryBlock,
   IContainerQueryInline,
-  IContainerQueryOrientation,
-  IContainerQueryRange,
-  IContainerQueryExact,
-  IContainerQueryBlockVariables,
-  IContainerQueryInlineVariables,
-  IContainerQueryResolutionVariables,
-  IContainerQueryOrientationVariables,
-  IContainerQueryAspectRatioVariables,
-  IContainerQueryResolution,
+  IContainerQueryAspectRatio,
+  IContainerQueryStyle,
 } from "./modules";
 import { IContainerQueryCustomFeatures } from "./modules/custom";
 
 export type ContainerQueryModuleId =
   | "core"
-  | "size"
-  | "range"
   | "inline"
   | "block"
-  | "orientation"
+  | "aspectRatio"
+  | "style"
   | "custom";
 
 export type ContainerQueryModulePropsMap = {
   core: IContainerQueryCore;
-  aspectRatio: IContainerQueryExact;
   block: IContainerQueryBlock;
   custom: IContainerQueryCustomFeatures;
   inline: IContainerQueryInline;
-  orientation: IContainerQueryOrientation;
-  resolution: IContainerQueryResolution;
+  aspectRatio: IContainerQueryAspectRatio;
+  style: IContainerQueryStyle;
 };
 
 export type ContentQueryValues =
-  | IContainerQueryCoreVariables
-  | IContainerQueryAspectRatioVariables
-  | IContainerQueryBlockVariables
-  | IContainerQueryInlineVariables
-  | IContainerQueryOrientationVariables
-  | IContainerQueryResolutionVariables;
+  | IContainerQueryCore[keyof IContainerQueryCore]
+  | IContainerQueryInline[keyof IContainerQueryInline]
+  | IContainerQueryBlock[keyof IContainerQueryBlock]
+  | IContainerQueryAspectRatio[keyof IContainerQueryAspectRatio]
+  | IContainerQueryStyle[keyof IContainerQueryStyle]
+  | IContainerQueryCustomFeatures[keyof IContainerQueryCustomFeatures];
 
 export type ContainerQueryModuleKeysMap = {
-  core: "type" | "minWidth" | "maxWidth" | "minHeight" | "maxHeight";
-  size:
-    | "width"
-    | "height"
-    | "aspectRatio"
-    | "minAspectRatio"
-    | "maxAspectRatio"
-    | "orientation";
-  range: "minWidth" | "maxWidth" | "minHeight" | "maxHeight";
-  inline: "inlineSize" | "minInlineSize" | "maxInlineSize";
-  block: "blockSize" | "minBlockSize" | "maxBlockSize";
-  orientation: "orientation";
+  core: "minWidth" | "maxWidth" | "minHeight" | "maxHeight";
+  inline: "inlineSize" | "inlineSizeRange";
+  block: "blockSize" | "blockSizeRange";
+  aspectRatio: "aspectRatio" | "minAspectRatio" | "maxAspectRatio";
+  style: "style";
   custom: "customFeatures";
 };
 

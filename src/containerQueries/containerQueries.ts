@@ -1,28 +1,36 @@
 import { IMeasurement } from "../core";
 import type { Comparison, IComparisonOperator } from "../comparisons";
 import type {
-  emitContainerQueryValue,
-  emitContainerQueryBlock,
-  emitContainerQueryInline,
-  emitContainerQueryOrientation,
-  emitContainerQueryRange,
+  IContainerQueryAspectRatio,
   IContainerQueryBlock,
-  IContainerQueryExact,
+  IContainerQueryCustomFeatures,
   IContainerQueryInline,
-  IContainerQueryOrientation,
-  IContainerQueryRange,
+  IContainerQueryStyle,
 } from "./modules";
-import { ContainerQueryValidation } from "./validation";
-import { ContainerQueryBuilderHelpers } from "./helpers";
-import { defaultMediaQueryValidation } from "../mediaQueries/validation";
-import { StyleRule } from "../mediaQueries";
+import {
+  emitAspectRatioFeatures,
+  emitBlockSizeFeatures,
+  emitCustomFeatures,
+  emitInlineSizeFeatures,
+  emitStyleFeatures,
+} from "./modules";
+import { runContainerQueryLint } from "./linting";
+import {
+  lintHeightExactRedundancy,
+  lintWidthExactRedundancy,
+} from "./linting/core";
+import { ContainerQueryValidation, defaultContainerQueryValidation } from "./validation";
+import { ContainerQueryBuilderHelpers, createContainerQueryBuilder } from "./helpers";
+import type { StyleRule } from "../mediaQueries/types";
+import type { CSSContainerCondition } from "./types";
 
 export interface IContainerQueryProps
-  extends IContainerQueryExact,
-    IContainerQueryRange,
+  extends IContainerQueryCore,
     IContainerQueryInline,
     IContainerQueryBlock,
-    IContainerQueryOrientation {}
+    IContainerQueryAspectRatio,
+    IContainerQueryStyle,
+    IContainerQueryCustomFeatures {}
 
 export interface IContainerQueryCore {
   minWidth?: IMeasurement;
@@ -122,6 +130,26 @@ export const createEmitCoreFeatures =
     ) {
       return;
     }
+    if (
+      !runContainerQueryLint(
+        props,
+        helpers,
+        lintWidthExactRedundancy,
+        "minWidth should not be combined with maxWidth when both are equal",
+      )
+    ) {
+      return;
+    }
+    if (
+      !runContainerQueryLint(
+        props,
+        helpers,
+        lintHeightExactRedundancy,
+        "minHeight should not be combined with maxHeight when both are equal",
+      )
+    ) {
+      return;
+    }
 
     const { addFeature } = helpers;
 
@@ -140,29 +168,59 @@ export const createEmitCoreFeatures =
   };
 
 export const emitCoreFeatures = createEmitCoreFeatures(
-  defaultMediaQueryValidation
+  defaultContainerQueryValidation
 );
 
 const emitBaseFeatures = (
-  props: IContainerQueryCore,
+  props: IContainerQueryProps,
   helpers: ContainerQueryBuilderHelpers
 ): void => {
   emitCoreFeatures(props, helpers);
-  emitContainerQueryValue(props, helpers);
-  emitContainerQueryRange(props, helpers);
-  emitContainerQueryInline(props, helpers);
-  emitContainerQueryBlock(props, helpers);
-  emitContainerQueryOrientation(props, helpers);
+  emitAspectRatioFeatures(props, helpers);
+  emitInlineSizeFeatures(props, helpers);
+  emitBlockSizeFeatures(props, helpers);
+  emitStyleFeatures(props, helpers);
+  emitCustomFeatures(props, helpers);
 };
 
 export const buildContainerQueryString = createContainerQueryBuilder({
   emitBase: emitBaseFeatures,
-  resolveType: (props) => props.type,
 });
+
+const wrapContainerCondition = (value: string): string => {
+  const trimmed = value.trim();
+  if (
+    trimmed.includes(" and ") ||
+    trimmed.includes(" or ") ||
+    trimmed.startsWith("not ")
+  ) {
+    return `(${trimmed})`;
+  }
+  return trimmed;
+};
+
+export const buildContainerConditionString = (
+  condition: CSSContainerCondition,
+): string => {
+  if ("and" in condition) {
+    return condition.and
+      .map((entry) => wrapContainerCondition(buildContainerConditionString(entry)))
+      .join(" and ");
+  }
+  if ("or" in condition) {
+    return condition.or
+      .map((entry) => wrapContainerCondition(buildContainerConditionString(entry)))
+      .join(" or ");
+  }
+  if ("not" in condition) {
+    return `not ${wrapContainerCondition(buildContainerConditionString(condition.not))}`;
+  }
+  return buildContainerQueryString(condition as IContainerQueryProps);
+};
 
 export const makeContainerQueryStyle =
   <T extends IContainerQueries>(queries: T) =>
-  (stylesByQuery: IContainerQueryStyles<T>): ComplexStyleRule => {
+  (stylesByQuery: IContainerQueryStyles<T>): StyleRule => {
     const result: Record<string, StyleRule> = {};
 
     (Object.keys(stylesByQuery) as (keyof T)[]).forEach((key) => {
@@ -172,7 +230,7 @@ export const makeContainerQueryStyle =
       result[buildContainerQueryString(props)] = styles;
     });
 
-    const containerQuery: ComplexStyleRule = {
+    const containerQuery: StyleRule = {
       "@container": result,
     };
     return containerQuery;

@@ -1,5 +1,5 @@
 import type { IMeasurement } from "../core";
-import type { ComplexStyleRule, StyleRule } from "./types";
+import type { StyleRule } from "./types";
 import type { MediaQueryBuilderHelpers } from "./helpers";
 import { createMediaQueryBuilder } from "./helpers";
 import {
@@ -119,7 +119,7 @@ export const buildMediaQueryString = createMediaQueryBuilder({
 
 export const makeMediaQueryStyle =
   <T extends IMediaQueries>(queries: T) =>
-  (stylesByQuery: IMediaQueryStyles<T>): ComplexStyleRule => {
+  (stylesByQuery: IMediaQueryStyles<T>): StyleRule => {
     const result: Record<string, StyleRule> = {};
 
     (Object.keys(stylesByQuery) as (keyof T)[]).forEach((key) => {
@@ -129,7 +129,7 @@ export const makeMediaQueryStyle =
       result[buildMediaQueryString(props)] = styles;
     });
 
-    const mediaQuery: ComplexStyleRule = {
+    const mediaQuery: StyleRule = {
       "@media": result,
     };
     return mediaQuery;

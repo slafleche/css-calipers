@@ -115,7 +115,10 @@ describe('API surface (CJS)', () => {
 
   it('exposes the full root runtime export map', () => {
     const rootKeys = Object.keys(cjsRoot).filter(
-      (key) => key !== '__esModule',
+      (key) =>
+        key !== '__esModule' &&
+        key !== 'default' &&
+        key !== 'module.exports',
     );
 
     const coreRuntimeKeys = [
@@ -132,10 +135,17 @@ describe('API surface (CJS)', () => {
       'hasCssMethod',
       'assertUnit',
       'assertCondition',
+      'fractionToFloat',
+      'isFraction',
       'isPercentMeasurement',
       'assertPercentMeasurement',
       'getErrorConfig',
+      'normalizeFraction',
+      'parseRatio',
+      'r',
+      'reduceFraction',
       'setErrorConfig',
+      'simplifyFraction',
     ];
 
     const unitHelperKeys = Object.keys(cjsRoot.measurementUnitMetadata);

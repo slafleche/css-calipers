@@ -26,23 +26,33 @@ export type ComparisonValue<Value = ContentQueryComparisonValue> = {
 };
 
 export const compare = {
-  eq: (value: ContentQueryComparisonValue): ComparisonValue => ({
+  eq: <T extends ContentQueryComparisonValue>(
+    value: T,
+  ): ComparisonValue<T> => ({
     operator: "=",
     value,
   }),
-  lt: (value: ContentQueryComparisonValue): ComparisonValue => ({
+  lt: <T extends ContentQueryComparisonValue>(
+    value: T,
+  ): ComparisonValue<T> => ({
     operator: "<",
     value,
   }),
-  lte: (value: ContentQueryComparisonValue): ComparisonValue => ({
+  lte: <T extends ContentQueryComparisonValue>(
+    value: T,
+  ): ComparisonValue<T> => ({
     operator: "<=",
     value,
   }),
-  gt: (value: ContentQueryComparisonValue): ComparisonValue => ({
+  gt: <T extends ContentQueryComparisonValue>(
+    value: T,
+  ): ComparisonValue<T> => ({
     operator: ">",
     value,
   }),
-  gte: (value: ContentQueryComparisonValue): ComparisonValue => ({
+  gte: <T extends ContentQueryComparisonValue>(
+    value: T,
+  ): ComparisonValue<T> => ({
     operator: ">=",
     value,
   }),

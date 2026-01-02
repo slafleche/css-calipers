@@ -26,10 +26,16 @@ Scope direction:
 ## Answers
 - 1) Only data shapes, but cover full CSS spec and use CSSTypes.
 - 2) Mirror mediaQueries naming (buildContainerQueryString, makeContainerQueryStyle, containerQueryFactory).
-- 3) Include style() conditions in the types-only pass.
+- 3) Do not include style() conditions; styles are separate from queries.
 - 4) Include config types for validation and linting modes, mirroring mediaQueries.
 - 5) Require IMeasurement for unit-bearing values; otherwise use CSSTypes types.
 - 6) Deferred to phase 2 discussion; phase 1 is CSS spec only.
+- 7) Split size types into modules per comment blocks: core, exact, range, inline,
+     block, orientation.
+- 8) Runtime factory should default to all modules; missing module errors should
+     be helpful and name the module to add.
+- 9) Remove style conditions from types/helpers to mirror mediaQueries handling
+     of styles as results, not query inputs.
 - 2) TODO
 - 3) TODO
 - 4) TODO
@@ -42,11 +48,12 @@ Scope direction:
 - [x] Add style query types for style() conditions (if in scope).
 - [x] Add container query props + styles mapping types.
 - [x] Add public index exports and per-module exports for tree shaking.
+- [x] Split size feature types into core/exact/range/inline/block/orientation modules.
 - [x] Add types tests for containerQueries public API surface.
 - [x] Add docs or README section stub describing container query types.
 
 ## TODO (runtime phase, later)
-- [ ] Build container query builders mirroring mediaQueries core.
+- [x] Build container query builders mirroring mediaQueries core.
 - [ ] Add validation/linting hooks and config, matching mediaQueries patterns.
-- [ ] Add factory helpers and module selection support.
+- [x] Add factory helpers and module selection support.
 - [ ] Add runtime tests for builder behavior and error handling.

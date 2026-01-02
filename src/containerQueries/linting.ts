@@ -1,4 +1,7 @@
-import type {} from "./helpers";
+import type {
+  ContainerQueryBuilderHelpers,
+  ContainerQueryLintingMode,
+} from "./helpers";
 
 export type ContainerQueryLintCheck<TConfig> = (config: TConfig) => void;
 
