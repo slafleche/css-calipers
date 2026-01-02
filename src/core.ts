@@ -9,6 +9,16 @@ import {
   type ErrorConfig,
   type ErrorCode,
 } from './internal/errors';
+import type { Fraction, IFraction, RatioParts } from './fraction';
+import {
+  fractionToFloat,
+  isFraction,
+  normalizeFraction,
+  parseRatio,
+  r,
+  reduceFraction,
+  simplifyFraction,
+} from './fraction';
 
 type UnitSymbol = UnitDefinitionRecord[keyof UnitDefinitionRecord]['unit'];
 
@@ -94,3 +104,15 @@ export const {
 export type MeasurementUnitDefinition = UnitDefinition;
 export type MeasurementUnitCategory = UnitCategory;
 export { type ErrorConfig, type ErrorCode };
+export {
+  fractionToFloat,
+  isFraction,
+  normalizeFraction,
+  parseRatio,
+  r,
+  reduceFraction,
+  simplifyFraction,
+  type Fraction,
+  type IFraction,
+  type RatioParts,
+};

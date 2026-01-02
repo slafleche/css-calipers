@@ -1,5 +1,5 @@
 import { IMeasurement } from "../core";
-import type { ComplexStyleRule, StyleRule } from "../mediaQueries/types";
+import type { Comparison, IComparisonOperator } from "../comparisons";
 import type {
   emitContainerQueryValue,
   emitContainerQueryBlock,
@@ -12,9 +12,13 @@ import type {
   IContainerQueryOrientation,
   IContainerQueryRange,
 } from "./modules";
+import { ContainerQueryValidation } from "./validation";
+import { ContainerQueryBuilderHelpers } from "./helpers";
+import { defaultMediaQueryValidation } from "../mediaQueries/validation";
+import { StyleRule } from "../mediaQueries";
 
-export interface IContainerQueryProps extends
-    IContainerQueryExact,
+export interface IContainerQueryProps
+  extends IContainerQueryExact,
     IContainerQueryRange,
     IContainerQueryInline,
     IContainerQueryBlock,
@@ -27,6 +31,31 @@ export interface IContainerQueryCore {
   maxHeight?: IMeasurement;
 }
 
+export type IContainerQueryCoreVariables =
+  | IContainerQueryCore["minWidth"]
+  | IContainerQueryCore["maxWidth"]
+  | IContainerQueryCore["minHeight"]
+  | IContainerQueryCore["maxHeight"];
+
+export type SizeComparisonValue = IMeasurement | string | number;
+
+export type CoreComparisonVariable =
+  | "minWidth"
+  | "maxWidth"
+  | "minHeight"
+  | "maxHeight";
+
+export type CoreComparison = Comparison<CoreComparisonVariable, IMeasurement>;
+
+export type CoreComparisonBlock<
+  Variable = CoreComparisonVariable,
+  Value = IMeasurement
+> = {
+  variable: Variable;
+  operator: IComparisonOperator;
+  value: Value;
+};
+
 export interface IContainerQuery {
   props: IContainerQueryProps;
   styles: StyleRule;
@@ -38,55 +67,85 @@ export type IContainerQueryStyles<T extends IContainerQueries> = Partial<
   Record<keyof T, StyleRule>
 >;
 
-export const createEmitCoreFeatures = (
-  validation: ContainerQueryValidation,
-) => (
-  props: IContainerQueryCore,
-  helpers: ContainerQueryBuilderHelpers,
-): void => {
-  // const {
-  //   // TODO
-  // } = validation;
+export const createEmitCoreFeatures =
+  (validation: ContainerQueryValidation) =>
+  (props: IContainerQueryCore, helpers: ContainerQueryBuilderHelpers): void => {
+    const {
+      runContainerQueryValidation,
+      validateMinMaxWidth,
+      validateWidthValuesPositive,
+      validateMinMaxHeight,
+      validateHeightValuesPositive,
+    } = validation;
 
-  // if (
-  //   !runMediaQueryValidation(
-  //     props,
-  //     helpers,
-  //     validateMinMaxWidth,
-  //     "core",
-  //     "minWidth must be less than or equal to maxWidth"
-  //   )
-  // ) {
-  //   return;
-  // }
-  // if (
-  //   !runMediaQueryValidation(
-  //     props,
-  //     helpers,
-  //     validateWidthValuesPositive,
-  //     "core",
-  //     "width values must be greater than 0"
-  //   )
-  // ) {
-  //   return;
-  // }
-  // const { addFeature } = helpers;
+    if (
+      !runContainerQueryValidation(
+        props,
+        helpers,
+        validateMinMaxWidth,
+        "core",
+        "minWidth must be less than or equal to maxWidth"
+      )
+    ) {
+      return;
+    }
+    if (
+      !runContainerQueryValidation(
+        props,
+        helpers,
+        validateMinMaxHeight,
+        "core",
+        "minHeight must be less than or equal to maxHeight"
+      )
+    ) {
+      return;
+    }
+    if (
+      !runContainerQueryValidation(
+        props,
+        helpers,
+        validateWidthValuesPositive,
+        "core",
+        "width values must be greater than 0"
+      )
+    ) {
+      return;
+    }
+    if (
+      !runContainerQueryValidation(
+        props,
+        helpers,
+        validateHeightValuesPositive,
+        "core",
+        "height values must be greater than 0"
+      )
+    ) {
+      return;
+    }
 
-  // if (props.minWidth) {
-  //   addFeature("min-width", props.minWidth);
-  // }
-  // if (props.maxWidth) {
-  //   addFeature("max-width", props.maxWidth);
-  // }
-};
+    const { addFeature } = helpers;
+
+    if (props.minWidth) {
+      addFeature("min-width", props.minWidth);
+    }
+    if (props.maxWidth) {
+      addFeature("max-width", props.maxWidth);
+    }
+    if (props.minHeight) {
+      addFeature("min-height", props.minHeight);
+    }
+    if (props.maxHeight) {
+      addFeature("max-height", props.maxHeight);
+    }
+  };
 
 export const emitCoreFeatures = createEmitCoreFeatures(
-  defaultMediaQueryValidation,
+  defaultMediaQueryValidation
 );
 
 const emitBaseFeatures = (
-  props: IMediaQueryProps,
-  helpers: MediaQueryBuilderHelpers
+  props: IContainerQueryCore,
+  helpers: ContainerQueryBuilderHelpers
 ): void => {
   emitCoreFeatures(props, helpers);
   emitContainerQueryValue(props, helpers);

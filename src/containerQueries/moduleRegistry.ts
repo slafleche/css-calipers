@@ -1,26 +1,19 @@
-// export type ContainerQueryModuleId =
-//   | "core"
-//   | "exact"
-//   | "range"
-//   | "inline"
-//   | "block"
-//   | "orientation";
-
-// export type ContainerQueryModulesList = readonly ContainerQueryModuleId[];
-
-// export const defineContainerQueryModules = <
-//   T extends ContainerQueryModulesList,
-// >(
-//   ...modules: T
-// ): T => modules;
-
-import type { IContainerQueryCore } from "./containerQueries";
+import type {
+  IContainerQueryCore,
+  IContainerQueryCoreVariables,
+} from "./containerQueries";
 import type {
   IContainerQueryBlock,
   IContainerQueryInline,
   IContainerQueryOrientation,
   IContainerQueryRange,
   IContainerQueryExact,
+  IContainerQueryBlockVariables,
+  IContainerQueryInlineVariables,
+  IContainerQueryResolutionVariables,
+  IContainerQueryOrientationVariables,
+  IContainerQueryAspectRatioVariables,
+  IContainerQueryResolution,
 } from "./modules";
 import { IContainerQueryCustomFeatures } from "./modules/custom";
 
@@ -35,13 +28,21 @@ export type ContainerQueryModuleId =
 
 export type ContainerQueryModulePropsMap = {
   core: IContainerQueryCore;
-  range: IContainerQueryRange;
-  inline: IContainerQueryInline;
+  aspectRatio: IContainerQueryExact;
   block: IContainerQueryBlock;
-  exact: IContainerQueryExact;
-  orientation: IContainerQueryOrientation;
   custom: IContainerQueryCustomFeatures;
+  inline: IContainerQueryInline;
+  orientation: IContainerQueryOrientation;
+  resolution: IContainerQueryResolution;
 };
+
+export type ContentQueryValues =
+  | IContainerQueryCoreVariables
+  | IContainerQueryAspectRatioVariables
+  | IContainerQueryBlockVariables
+  | IContainerQueryInlineVariables
+  | IContainerQueryOrientationVariables
+  | IContainerQueryResolutionVariables;
 
 export type ContainerQueryModuleKeysMap = {
   core: "type" | "minWidth" | "maxWidth" | "minHeight" | "maxHeight";

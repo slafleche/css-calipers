@@ -1,5 +1,7 @@
 import type { IMeasurement } from '../core';
 import { hasCssMethod } from '../core';
+import type { ValidationResult } from '../validation';
+import { normalizeValidationResult } from '../validation';
 
 type MediaQueryFeatureValue = string | number | IMeasurement;
 
@@ -23,15 +25,7 @@ export interface MediaQueryBuilderHelpers {
   config: MediaQueryBuilderConfig;
 }
 
-export type MediaQueryValidationResult =
-  | boolean
-  | string
-  | null
-  | undefined
-  | {
-      valid: boolean;
-      message?: string;
-    };
+export type MediaQueryValidationResult = ValidationResult;
 
 export type MediaQueryValidator<TConfig> = (
   config: TConfig,
@@ -113,17 +107,6 @@ export const createMediaQueryBuilder = <TConfig>(
     const mediaType = options.resolveType?.(config) ?? 'screen';
     return buildMediaQueryStringFromParts(mediaType, parts);
   };
-};
-
-const normalizeValidationResult = (
-  result: MediaQueryValidationResult,
-): { valid: boolean; message?: string } => {
-  if (result === undefined || result === null) return { valid: true };
-  if (typeof result === 'boolean') return { valid: result };
-  if (typeof result === 'string') {
-    return result ? { valid: false, message: result } : { valid: true };
-  }
-  return result;
 };
 
 export const applyMediaQueryValidation = <TConfig>(
