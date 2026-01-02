@@ -355,6 +355,22 @@ for a wrapper module you can re-export across your project.
 
 ---
 
+## Container queries (types-only)
+
+Container query types live in the `css-calipers/containerQueries` entrypoint.
+This is a types-only surface in phase 1, intended to model the CSS spec.
+
+Example types
+
+```
+import type {
+  CSSContainerCondition,
+  CSSContainerQueryRule,
+} from "css-calipers/containerQueries";
+```
+
+---
+
 ## Co-existing with other systems
 
 You don’t have to convert everything at once, or at all. If it fits your setup,

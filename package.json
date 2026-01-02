@@ -52,10 +52,20 @@
       "import": "./dist/esm/factory.js",
       "require": "./dist/cjs/factory.js"
     },
+    "./containerQueries": {
+      "types": "./dist/esm/containerQueries/index.d.ts",
+      "import": "./dist/esm/containerQueries/index.js",
+      "require": "./dist/cjs/containerQueries/index.js"
+    },
     "./units": {
       "types": "./dist/esm/units/index.d.ts",
       "import": "./dist/esm/units/index.js",
       "require": "./dist/cjs/units/index.js"
+    },
+    "./containerQueries/*": {
+      "types": "./dist/esm/containerQueries/*.d.ts",
+      "import": "./dist/esm/containerQueries/*.js",
+      "require": "./dist/cjs/containerQueries/*.js"
     },
     "./units/*": {
       "types": "./dist/esm/units/*.d.ts",
@@ -87,7 +97,7 @@
     "prepublishOnly": "node -e \"if (!process.env.CSS_CALIPERS_RELEASE) { console.error('Direct npm publish is disabled; use \\\"npm run release\\\" instead.'); process.exit(1); }\"",
     "release": "node scripts/release.mjs",
     "release:dry": "node scripts/release.mjs --dry-run",
-    "test": "npm run test:core && npm run test:mediaQueries && npm run test:factory && npm run test:dist && npm run test:types && npm run test:tsc && npm run lint",
+    "test": "npm run test:core && npm run test:mediaQueries && npm run test:factory && npm run test:containerQueries && npm run test:dist && npm run test:types && npm run test:tsc && npm run lint",
     "test:mediaQueries": "vitest run tests/runtime/mediaQueries/mediaQueries.src.test.ts",
     "test:mediaQueries:cjs": "vitest run tests/runtime/mediaQueries/mediaQueries.cjs.test.ts tests/runtime/api-surface/mediaQueries.api-surface.cjs.test.ts",
     "test:mediaQueries:esm": "vitest run tests/runtime/mediaQueries/mediaQueries.esm.test.ts tests/runtime/api-surface/mediaQueries.api-surface.esm.test.ts",
@@ -96,11 +106,15 @@
     "test:core:cjs": "vitest run tests/runtime/core/core.cjs.test.ts tests/runtime/api-surface/api-surface.cjs.test.ts",
     "test:core:esm": "vitest run tests/runtime/core/core.esm.test.ts tests/runtime/api-surface/api-surface.esm.test.ts",
     "test:core:dist": "npm run test:core:cjs && npm run test:core:esm",
+    "test:containerQueries:cjs": "vitest run tests/runtime/api-surface/containerQueries.api-surface.cjs.test.ts",
+    "test:containerQueries:esm": "vitest run tests/runtime/api-surface/containerQueries.api-surface.esm.test.ts",
+    "test:containerQueries:dist": "npm run test:containerQueries:cjs && npm run test:containerQueries:esm",
+    "test:containerQueries": "npm run test:containerQueries:dist",
     "lint": "eslint . --max-warnings=0",
     "test:lint": "npm run lint",
     "test:types": "echo \"\n 🧪 Starting tsd type checks...\n\" && tsd --files tests/types/**/*.test-d.ts && echo \"✅ tsd type checks passed!\n\"",
     "test:tsc": "tsc -p tsconfig.json --noEmit",
-    "test:dist": "npm run build && npm run test:core:dist && npm run test:mediaQueries:dist && npm run test:factory:dist",
+    "test:dist": "npm run build && npm run test:core:dist && npm run test:mediaQueries:dist && npm run test:factory:dist && npm run test:containerQueries:dist",
     "test:factory": "vitest run tests/runtime/factory/factory.src.test.ts",
     "test:factory:cjs": "vitest run tests/runtime/factory/factory.cjs.test.ts tests/runtime/api-surface/factory.api-surface.cjs.test.ts",
     "test:factory:esm": "vitest run tests/runtime/factory/factory.esm.test.ts tests/runtime/api-surface/factory.api-surface.esm.test.ts",
