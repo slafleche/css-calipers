@@ -1,59 +1,71 @@
 # Container Queries (@container) TODO
 
-## Primer
-Goal: add container query support that mirrors the mediaQueries module in
-structure and ergonomics, but starts with full types first.
+## Arrays
 
-Scope direction:
-- Full type layer first (no runtime builders yet).
-- Follow the same core/modular approach as mediaQueries.
-- Provide a containerQueries module with sub-modules to enable tree shaking.
+### Media queries
 
-## Clarifying Questions (please answer)
-1) Do you want the type layer to include builder helpers and output mappers
-   (type-only signatures), or strictly data shapes?
-2) Should the container query API mirror mediaQueries naming (buildContainerQueryString,
-   makeContainerQueryStyle, containerQueryFactory), or use new names?
-3) Do you want container style queries in v1 (style() conditions), or only size
-   features initially?
-4) Should the type layer include a config object for validation/linting modes
-   like mediaQueries, even before runtime helpers exist?
-5) Do you want container query rules to accept IMeasurement only, or allow raw
-   numbers/strings like mediaQueries custom features?
-6) For CSSComparison and CSSRange shapes, do you prefer object forms like
-   { operator: ">=", value } and { min, max }, or something else?
+- [ ] minWidth
+- [ ] maxWidth
+- [ ] width
+- [ ] minHeight
+- [ ] maxHeight
+- [ ] height
+- [ ] aspectRatio
+- [ ] minAspectRatio
+- [ ] maxAspectRatio
+- [ ] resolutionValue
+- [ ] minResolution
+- [ ] maxResolution
 
-## Answers
-- 1) Only data shapes, but cover full CSS spec and use CSSTypes.
-- 2) Mirror mediaQueries naming (buildContainerQueryString, makeContainerQueryStyle, containerQueryFactory).
-- 3) Do not include style() conditions; styles are separate from queries.
-- 4) Include config types for validation and linting modes, mirroring mediaQueries.
-- 5) Require IMeasurement for unit-bearing values; otherwise use CSSTypes types.
-- 6) Deferred to phase 2 discussion; phase 1 is CSS spec only.
-- 7) Split size types into modules per comment blocks: core, exact, range, inline,
-     block, orientation.
-- 8) Runtime factory should default to all modules; missing module errors should
-     be helpful and name the module to add.
-- 9) Remove style conditions from types/helpers to mirror mediaQueries handling
-     of styles as results, not query inputs.
-- 2) TODO
-- 3) TODO
-- 4) TODO
-- 5) TODO
+### Container queries
 
-## TODO (types-first phase)
-- [x] Define containerQueries module layout mirroring mediaQueries (index + modules).
-- [x] Add core container query types (names, types, and rule shapes).
-- [x] Add size feature types and comparison/range helpers (type-level only).
-- [x] Add style query types for style() conditions (if in scope).
-- [x] Add container query props + styles mapping types.
-- [x] Add public index exports and per-module exports for tree shaking.
-- [x] Split size feature types into core/exact/range/inline/block/orientation modules.
-- [x] Add types tests for containerQueries public API surface.
-- [x] Add docs or README section stub describing container query types.
+- [ ] minWidth
+- [ ] maxWidth
+- [ ] minHeight
+- [ ] maxHeight
+- [ ] inlineSize
+- [ ] inlineSizeRange
+- [ ] blockSize
+- [ ] blockSizeRange
+- [ ] aspectRatio
+- [ ] minAspectRatio
+- [ ] maxAspectRatio
+- [ ] Custom feature values
+- [ ] media custom features
+- [ ] container custom features
+
+### Notes
+
+- Step 1: Add tests for custom media queries and custom container queries where single value passes and array fails. These are expected to fail now and will flip once array support is added or custom features are configured to allow arrays.
+  We clarified that array support is about fields inside queries, not about queries themselves.
+
+We clarified that arrays should be considered for both media queries and container queries, not just one of them.
+
+We clarified that tests should be added in both type tests and runtime tests, with separate coverage for media queries and container queries.
+
+We clarified the expected test behavior: single values should pass as they do now, while arrays should fail for now so tests are red until the feature is implemented.
+
+We clarified that custom features should be included in the first step: add tests that show single values pass and arrays fail, even though custom features can later be configured to allow arrays.
+
+We clarified that tests should live in the existing media and container test locations.
+
+
+## Check on custom tests
+- [ ] simplify/lint bad array data
+
+
+
+## logical nesting
+
+- [ ] and
+- [ ] or
+- [ ] not
 
 ## TODO (runtime phase, later)
-- [x] Build container query builders mirroring mediaQueries core.
+
 - [ ] Add validation/linting hooks and config, matching mediaQueries patterns.
-- [x] Add factory helpers and module selection support.
 - [ ] Add runtime tests for builder behavior and error handling.
+
+## Update Docs
+
+- [ ] Update docs, search for inconsistencies

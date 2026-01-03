@@ -320,8 +320,142 @@ export const runMediaQueryTests = (
       );
     });
 
+    it('builds a base query with an attached or condition', () => {
+      const result = api.buildMediaQueryString({
+        anyHover: 'hover',
+        anyPointer: 'fine',
+        reducedMotion: 'no-preference',
+        or: {
+          maxWidth: api.mPx(639),
+          minWidth: api.mPx(1024),
+        },
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe(
+        'screen and (((any-hover: hover) and (any-pointer: fine) and (prefers-reduced-motion: no-preference)) or ((max-width: 639px) and (min-width: 1024px)))',
+      );
+    });
+
+    it('builds nested operators within a child query', () => {
+      const result = api.buildMediaQueryString({
+        anyHover: 'hover',
+        and: {
+          anyPointer: 'fine',
+          or: {
+            maxWidth: api.mPx(639),
+            minWidth: api.mPx(1024),
+          },
+        },
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe(
+        'screen and ((any-hover: hover) and ((any-pointer: fine) or ((max-width: 639px) and (min-width: 1024px))))',
+      );
+    });
+
+    it('builds not conditions from array values as an implicit and group', () => {
+      const result = api.buildMediaQueryString({
+        minHeight: api.mPx(480),
+        not: [
+          { maxWidth: api.mPx(600) },
+          { minWidth: api.mPx(1200) },
+        ],
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe(
+        'screen and ((min-height: 480px) and (not ((max-width: 600px) and (min-width: 1200px))))',
+      );
+    });
+
+    it('builds and conditions from array values as an implicit and group', () => {
+      const result = api.buildMediaQueryString({
+        minWidth: api.mPx(640),
+        and: [
+          { maxWidth: api.mPx(800) },
+          { orientation: 'landscape' },
+        ],
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe(
+        'screen and ((min-width: 640px) and ((max-width: 800px) and (orientation: landscape)))',
+      );
+    });
+
+    it('builds a nested or group inside an and condition', () => {
+      const result = api.buildMediaQueryString({
+        minWidth: api.mPx(600),
+        and: {
+          maxWidth: api.mPx(800),
+          or: { forcedColors: 'active' },
+        },
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe(
+        'screen and ((min-width: 600px) and ((max-width: 800px) or (forced-colors: active)))',
+      );
+    });
+
+    it('builds not wrapping an or group', () => {
+      const result = api.buildMediaQueryString({
+        orientation: 'landscape',
+        not: {
+          or: {
+            minWidth: api.mPx(500),
+            maxWidth: api.mPx(900),
+          },
+        },
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe(
+        'screen and ((orientation: landscape) and (not ((min-width: 500px) or (max-width: 900px))))',
+      );
+    });
+
+    it('builds or conditions with array values as an implicit and group', () => {
+      const result = api.buildMediaQueryString({
+        anyHover: 'hover',
+        or: [
+          { anyPointer: 'fine' },
+          { reducedMotion: 'reduce' },
+        ],
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe(
+        'screen and ((any-hover: hover) or ((any-pointer: fine) and (prefers-reduced-motion: reduce)))',
+      );
+    });
+
+    it('builds a root-level not condition', () => {
+      const result = api.buildMediaQueryString({
+        not: { maxWidth: api.mPx(600) },
+      } as unknown as IMediaQueryProps);
+
+      expect(result).toBe('screen and (not (max-width: 600px))');
+    });
+
+    it('rejects root and/or operators', () => {
+      expect(() =>
+        api.buildMediaQueryString({
+          and: { maxWidth: api.mPx(600) },
+        } as unknown as IMediaQueryProps),
+      ).toThrow('root logical operators are limited to not');
+      expect(() =>
+        api.buildMediaQueryString({
+          or: { maxWidth: api.mPx(600) },
+        } as unknown as IMediaQueryProps),
+      ).toThrow('root logical operators are limited to not');
+    });
+
+    it('rejects not with a direct and/or child', () => {
+      expect(() =>
+        api.buildMediaQueryString({
+          not: { and: { maxWidth: api.mPx(600) } },
+        } as unknown as IMediaQueryProps),
+      ).toThrow('not cannot have a direct and/or child');
+    });
+
     it('rejects custom feature arrays when allowQueryArrays is false', () => {
-      const builder = api.createMediaQueryBuilder({
+      const builder = api.createMediaQueryBuilder<IMediaQueryCustomFeatures>({
         emitBase: (props, helpers) =>
           api.emitCustomFeatures(props, helpers, {
             allowQueryArrays: false,

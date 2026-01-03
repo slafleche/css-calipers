@@ -17,6 +17,12 @@ export const lintAspectRatioRangeCollapse = (
 ): void => {
   if (!props.minAspectRatio || !props.maxAspectRatio) return;
   if (
+    Array.isArray(props.minAspectRatio) ||
+    Array.isArray(props.maxAspectRatio)
+  ) {
+    return;
+  }
+  if (
     ratioToFloat(props.minAspectRatio) === ratioToFloat(props.maxAspectRatio)
   ) {
     throw new Error(

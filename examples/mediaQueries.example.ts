@@ -88,16 +88,33 @@ const gridStyles = {
 // Note
 const interactionMedia = mediaQueryFactory({
   queries: {
-    hoverReady: {
-      anyHover: "hover",
-      anyPointer: "fine",
-      reducedMotion: "no-preference",
-    },
-    hoverDisabled: {
-      anyHover: "none",
-      anyPointer: "coarse",
-      reducedMotion: "reduce",
-    },
+    not: {
+      hoverReady: {
+        anyHover: "hover",
+        anyPointer: "fine",
+        reducedMotion: "no-preference",
+        and: {
+          hoverDisabled: {
+            anyHover: "none",
+            anyPointer: "coarse",
+            reducedMotion: "reduce",
+          },
+          or: {
+            maxWidth: m(639),
+            minWidth: m(1024),
+          }
+        },
+        not: {
+          hoverDisabled: {
+            anyHover: "none",
+            anyPointer: "coarse",
+            reducedMotion: "reduce",
+        },
+        or: {
+          maxWidth: m(639),
+        }
+      },
+    }
   },
   config: {
     label: "interaction",

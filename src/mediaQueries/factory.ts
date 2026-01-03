@@ -1,6 +1,5 @@
 import type { ComplexStyleRule, StyleRule } from './types';
 import type { MediaQueryBuilderConfig } from './helpers';
-import { createMediaQueryBuilder } from './helpers';
 import type { IMediaQueryProps } from './mediaQueries';
 import { emitCoreFeatures } from './mediaQueries';
 import {
@@ -12,6 +11,12 @@ import {
   emitPreferencesFeatures,
   emitResolutionFeatures,
 } from './modules';
+import {
+  buildMediaQueryStringFromLogical,
+  createMediaQueryConditionBuilder,
+  type MediaQueryLogicalRoot,
+} from './logical';
+import { MEDIA_QUERY_FEATURE_KEYS } from './featureKeys';
 import type {
   MediaQueryModuleId,
   MediaQueryModulePropsMap,
@@ -31,6 +36,9 @@ type FactoryQueryProps<TModules extends MediaQueryModulesList | undefined> =
   TModules extends MediaQueryModulesList
     ? ModulesToProps<TModules>
     : IMediaQueryProps;
+
+type FactoryQueryInput<TModules extends MediaQueryModulesList | undefined> =
+  MediaQueryLogicalRoot<IMediaQueryProps>;
 
 type MediaQueryStyleMap<TQueries> = Partial<
   Record<keyof TQueries, StyleRule>
@@ -218,14 +226,14 @@ export const createMediaQueryFactory = (
   emitters: MediaQueryModuleEmitters,
 ) => <
   TModules extends MediaQueryModulesList | undefined,
-  TQueries extends Record<string, FactoryQueryProps<TModules>>,
+  TQueries extends Record<string, FactoryQueryInput<TModules>>,
   TOutput = ComplexStyleRule
 >(options: {
   queries: TQueries;
   config: MediaQueryFactoryConfig<TModules, TOutput>;
 }) => {
   const modules = options.config.modules ?? ALL_MEDIA_QUERY_MODULES;
-  const buildMediaQuery = createMediaQueryBuilder({
+  const buildBaseCondition = createMediaQueryConditionBuilder({
     emitBase: (props, helpers) => {
       guardUnsupportedProps(
         props as Record<string, unknown>,
@@ -242,9 +250,16 @@ export const createMediaQueryFactory = (
         );
       });
     },
-    resolveType: (props: IMediaQueryProps) => props.type,
     config: options.config,
   });
+  const featureKeySet = new Set<string>(MEDIA_QUERY_FEATURE_KEYS);
+  const buildMediaQuery = (props: FactoryQueryInput<TModules>): string =>
+    buildMediaQueryStringFromLogical(props, {
+      buildBaseCondition: (baseProps) =>
+        buildBaseCondition(baseProps as FactoryQueryProps<TModules>),
+      resolveType: (baseProps) => (baseProps as IMediaQueryProps).type,
+      featureKeys: featureKeySet,
+    });
 
   return (stylesByQuery: MediaQueryStyleMap<TQueries>): TOutput => {
     const result: Record<string, StyleRule> = {};
@@ -253,7 +268,7 @@ export const createMediaQueryFactory = (
       const styles = stylesByQuery[key];
       const props = options.queries[key];
       if (!styles || !props) return;
-      result[buildMediaQuery(props as IMediaQueryProps)] = styles;
+      result[buildMediaQuery(props)] = styles;
     });
 
     const mediaQuery: ComplexStyleRule = {

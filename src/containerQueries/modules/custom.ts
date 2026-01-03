@@ -31,7 +31,6 @@ export const emitCustomFeatures = (
 ): void => {
   const { runContainerQueryValidation, validateCustomFeatures } =
     defaultContainerQueryValidation;
-  const { allowQueryArrays = true } = options || {};
 
   if (
     !runContainerQueryValidation(

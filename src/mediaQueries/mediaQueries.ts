@@ -1,7 +1,6 @@
 import type { IMeasurement } from "../core";
 import type { StyleRule } from "./types";
 import type { MediaQueryBuilderHelpers } from "./helpers";
-import { createMediaQueryBuilder } from "./helpers";
 import {
   defaultMediaQueryValidation,
   type MediaQueryValidation,
@@ -22,6 +21,14 @@ import {
   IMediaQueryPreferences,
   IMediaQueryResolutionRange,
 } from "./modules";
+import {
+  buildMediaQueryStringFromLogical,
+  createMediaQueryConditionBuilder,
+  type MediaQueryLogicalOperator,
+  type MediaQueryLogicalRoot,
+  type MediaQueryLogicalTarget,
+} from "./logical";
+import { MEDIA_QUERY_FEATURE_KEYS } from "./featureKeys";
 
 export interface IMediaQueryProps
   extends IMediaQueryCore,
@@ -33,6 +40,13 @@ export interface IMediaQueryProps
     IMediaQueryEnvironment,
     IMediaQueryCustomFeatures {}
 
+export type IMediaQueryLogicalProps = IMediaQueryProps &
+  MediaQueryLogicalOperator<IMediaQueryProps>;
+
+export type IMediaQueryRootProps = MediaQueryLogicalRoot<IMediaQueryProps>;
+
+export type IMediaQueryLogicalTarget = MediaQueryLogicalTarget<IMediaQueryProps>;
+
 export interface IMediaQueryCore {
   type?: "all" | "print" | "screen";
   minWidth?: IMeasurement | IMeasurement[];
@@ -40,11 +54,11 @@ export interface IMediaQueryCore {
 }
 
 export interface IMediaQuery {
-  props: IMediaQueryProps;
+  props: IMediaQueryLogicalProps;
   styles: StyleRule;
 }
 
-export type IMediaQueries = Record<string, IMediaQueryProps>;
+export type IMediaQueries = Record<string, IMediaQueryLogicalProps>;
 
 export type IMediaQueryStyles<T extends IMediaQueries> = Partial<
   Record<keyof T, StyleRule>
@@ -128,10 +142,26 @@ const emitBaseFeatures = (
   emitCustomFeatures(props, helpers);
 };
 
-export const buildMediaQueryString = createMediaQueryBuilder({
+const MEDIA_QUERY_FEATURE_KEY_SET = new Set<string>(MEDIA_QUERY_FEATURE_KEYS);
+const buildBaseCondition = createMediaQueryConditionBuilder({
   emitBase: emitBaseFeatures,
-  resolveType: (props) => props.type,
 });
+
+export const buildMediaQueryStringWithLogical = (
+  props: MediaQueryLogicalRoot<IMediaQueryProps>,
+): string => {
+  return buildMediaQueryStringFromLogical(props, {
+    buildBaseCondition,
+    resolveType: (input) => input.type,
+    featureKeys: MEDIA_QUERY_FEATURE_KEY_SET,
+  });
+};
+
+export const buildMediaQueryLogicalString = buildMediaQueryStringWithLogical;
+
+export const buildMediaQueryString = (
+  props: IMediaQueryLogicalProps,
+): string => buildMediaQueryStringWithLogical(props);
 
 export const makeMediaQueryStyle =
   <T extends IMediaQueries>(queries: T) =>
@@ -142,7 +172,7 @@ export const makeMediaQueryStyle =
       const styles = stylesByQuery[key];
       const props = queries[key];
       if (!styles || !props) return;
-      result[buildMediaQueryString(props)] = styles;
+      result[buildMediaQueryStringWithLogical(props)] = styles;
     });
 
     const mediaQuery: StyleRule = {

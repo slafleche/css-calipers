@@ -1,4 +1,5 @@
 import type { IContainerQueryBlock } from "../modules/block";
+import { normalizeToArray } from "../../internal/normalizeToArray";
 
 export const lintBlockRedundancy = (
   props: IContainerQueryBlock,
@@ -15,10 +16,12 @@ export const lintBlockRangeCollapse = (
   props: IContainerQueryBlock,
 ): void => {
   if (!props.blockSizeRange) return;
-  const { min, max } = props.blockSizeRange;
-  if (min.equals(max)) {
-    throw new Error(
-      "blockSizeRange min and max are equal; use blockSize instead",
-    );
-  }
+  normalizeToArray(props.blockSizeRange).forEach((range) => {
+    const { min, max } = range;
+    if (min.equals(max)) {
+      throw new Error(
+        "blockSizeRange min and max are equal; use blockSize instead",
+      );
+    }
+  });
 };

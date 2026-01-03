@@ -8,6 +8,7 @@ import {
 } from "../../../src/containerQueries";
 import { createContainerQueryBuilder } from "../../../src/containerQueries/helpers";
 import { emitCustomFeatures } from "../../../src/containerQueries/modules/custom";
+import type { IContainerQueryCustomFeatures } from "../../../src/containerQueries/modules/custom";
 import type { IContainerQueryProps } from "../../../src/containerQueries/containerQueries";
 import { makeMediaQueryStyle } from "../../../src/mediaQueries";
 import type {
@@ -185,7 +186,7 @@ describe("containerQueries (src)", () => {
   });
 
   it("rejects custom feature arrays when allowQueryArrays is false", () => {
-    const builder = createContainerQueryBuilder({
+    const builder = createContainerQueryBuilder<IContainerQueryCustomFeatures>({
       emitBase: (props, helpers) =>
         emitCustomFeatures(props, helpers, { allowQueryArrays: false }),
     });

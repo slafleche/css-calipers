@@ -73,6 +73,24 @@ const conditionBasedContainer = containerQueryFactory({
   },
 });
 
+
+// const conditionBasedContainer = containerQueryFactory({
+//   queries: {
+//     wideCard: {
+//       inlineSize: compare.gte(m(28, "rem")),
+//       not: { aspectRatio: r(4, 3) } },
+//           ],
+//         },
+//       },
+//     },
+//   },
+//   config: {
+//     label: "condition-based-example",
+//   },
+// });
+
+
+
 const conditionBasedStyles = conditionBasedContainer({
   wideCard: {
     display: "grid",

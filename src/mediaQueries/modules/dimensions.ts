@@ -170,7 +170,7 @@ export const createEmitDimensionsFeatures = (
     emitFeature('max-aspect-ratio', props.maxAspectRatio);
   }
   if (props.orientation) {
-    addFeature('orientation', props.orientation);
+    helpers.addFeature('orientation', props.orientation);
   }
 };
 
