@@ -23,8 +23,9 @@
     "css-calipers"
   ],
   "engines": {
-    "node": ">=18"
+    "node": "24.x"
   },
+  "packageManager": "yarn@4.12.0",
   "files": [
     "dist",
     "README.md",
@@ -77,37 +78,41 @@
     "eslint": "^9.39.2",
     "tsd": "^0.31.0",
     "typescript": "^5.6.3",
+    "vitepress": "1.6.4",
     "vitest": "^4.0.14"
   },
   "scripts": {
-    "build": "npm run build:cjs && npm run build:esm && npm run build:examples",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "build": "yarn build:cjs && yarn build:esm && yarn build:examples",
     "build:cjs": "echo \"🛠️  Building CommonJS (cjs) bundle...\" && tsc -p tsconfig.build.cjs.json",
     "build:esm": "echo \"🛠️  Building ES module (esm) bundle...\" && tsc -p tsconfig.build.esm.json && node scripts/emit-esm-package.mjs",
     "build:examples": "tsc -p tsconfig.examples.json --noEmit",
-    "build:test": "npm run build && npm run test",
+    "build:test": "yarn build && yarn test",
     "build:delete": "node -e \"const { existsSync, rmSync } = require('fs'); const paths = ['dist/cjs', 'dist/esm']; for (const p of paths) { console.log('Scanning', p + '...'); if (existsSync(p)) { console.log('Found', p + ', deleting...'); rmSync(p, { recursive: true, force: true }); console.log('Deleted', p); } else { console.log(p + ' not found, skipping.'); } }\"",
-    "prepublishOnly": "node -e \"if (!process.env.CSS_CALIPERS_RELEASE) { console.error('Direct npm publish is disabled; use \\\"npm run release\\\" instead.'); process.exit(1); }\" && npm run test:internal",
+    "prepublishOnly": "node -e \"if (!process.env.CSS_CALIPERS_RELEASE) { console.error('Direct npm publish is disabled; use \\\"yarn release\\\" instead.'); process.exit(1); }\" && yarn test:internal",
     "release": "node scripts/release.mjs",
     "release:dry": "node scripts/release.mjs --dry-run",
-    "test": "npm run build && npm run test:core && npm run test:ratio && npm run test:mediaQueries && npm run test:factory && npm run test:dist && npm run test:types && npm run test:tsc && npm run lint && npm run test:internal",
+    "test": "yarn build && yarn test:core && yarn test:ratio && yarn test:mediaQueries && yarn test:factory && yarn test:dist && yarn test:types && yarn test:tsc && yarn lint && yarn test:internal",
     "test:mediaQueries": "vitest run tests/runtime/mediaQueries/mediaQueries.src.test.ts",
     "test:mediaQueries:cjs": "vitest run tests/runtime/mediaQueries/mediaQueries.cjs.test.ts tests/runtime/api-surface/mediaQueries.api-surface.cjs.test.ts",
     "test:mediaQueries:esm": "vitest run tests/runtime/mediaQueries/mediaQueries.esm.test.ts tests/runtime/api-surface/mediaQueries.api-surface.esm.test.ts",
-    "test:mediaQueries:dist": "npm run test:mediaQueries:cjs && npm run test:mediaQueries:esm",
+    "test:mediaQueries:dist": "yarn test:mediaQueries:cjs && yarn test:mediaQueries:esm",
     "test:core": "vitest run tests/runtime/core/core.src.test.ts",
     "test:ratio": "vitest run tests/runtime/ratio/ratio.src.test.ts",
     "test:core:cjs": "vitest run tests/runtime/core/core.cjs.test.ts tests/runtime/api-surface/api-surface.cjs.test.ts",
     "test:core:esm": "vitest run tests/runtime/core/core.esm.test.ts tests/runtime/api-surface/api-surface.esm.test.ts",
-    "test:core:dist": "npm run test:core:cjs && npm run test:core:esm",
+    "test:core:dist": "yarn test:core:cjs && yarn test:core:esm",
     "lint": "eslint . --max-warnings=0",
-    "test:lint": "npm run lint",
+    "test:lint": "yarn lint",
     "test:types": "echo \"\n 🧪 Starting tsd type checks...\n\" && tsd --files tests/types/**/*.test-d.ts && echo \"✅ tsd type checks passed!\n\"",
     "test:tsc": "tsc -p tsconfig.json --noEmit",
-    "test:dist": "npm run test:core:dist && npm run test:mediaQueries:dist && npm run test:factory:dist",
+    "test:dist": "yarn test:core:dist && yarn test:mediaQueries:dist && yarn test:factory:dist",
     "test:factory": "vitest run tests/runtime/factory/factory.src.test.ts",
     "test:factory:cjs": "vitest run tests/runtime/factory/factory.cjs.test.ts tests/runtime/api-surface/factory.api-surface.cjs.test.ts",
     "test:factory:esm": "vitest run tests/runtime/factory/factory.esm.test.ts tests/runtime/api-surface/factory.api-surface.esm.test.ts",
-    "test:factory:dist": "npm run test:factory:cjs && npm run test:factory:esm",
+    "test:factory:dist": "yarn test:factory:cjs && yarn test:factory:esm",
     "test:internal": "tsc -p tsconfig.internal.json --noEmit"
   }
 }
