@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(vercel --version)",
+      "Bash(vercel inspect *)",
+      "Bash(vercel switch *)",
+      "Read(//Users/stephane/**)",
+      "Bash(command -v op)",
+      "Bash(op --version)",
+      "Bash(op whoami *)",
+      "Bash(git -C ~/Documents/GitHub/configs config --get core.hooksPath)",
+      "Bash(git -C ~/Documents/GitHub/configs-tnb config --get core.hooksPath)",
+      "Bash(env)",
+      "Bash(git -C ~/Documents/GitHub/configs status --short dotfiles/.zprofile)",
+      "Bash(git -C ~/Documents/GitHub/configs log --oneline -5 -- dotfiles/.zprofile)"
+    ]
+  }
+}

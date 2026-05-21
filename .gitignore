@@ -8,3 +8,5 @@ docs/.vitepress/dist/
 *.log
 TODO.*.md
 AGENTS.md
+.vercel
+.env*.local
