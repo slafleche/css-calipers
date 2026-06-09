@@ -67,6 +67,7 @@ If you prefer, you can also import unit helpers from dedicated subpaths. For exa
 - Status: early `0.x` release. Backwards compatibility is not guaranteed until `1.0.0`.
 - Questions or bugs: open an issue on GitHub (see the repository link at the top of this page or in `package.json`).
 - Tooling: tested primarily with TypeScript 5.6+ on Node 18+.
+- Support: this is a solo, early-stage project. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/slafleche) to support continued work.
 
 ---
 
