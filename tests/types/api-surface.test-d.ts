@@ -48,11 +48,6 @@ import {
   type IRatio,
   type RatioParts,
 } from '../../dist/esm';
-import type { StyleRule } from '../../dist/esm/mediaQueries/types';
-import {
-  mediaQueryOutputVanillaExtract,
-  outputVanillaExtract,
-} from '../../dist/esm/mediaQueries';
 
 import * as Units from '../../dist/esm/units';
 import * as PercentUnits from '../../dist/esm/units/percent';
@@ -205,14 +200,6 @@ expectAssignable<IMeasurement<'dpi'>>(resolution);
 
 const grid = GridUnits.mFr(2);
 expectAssignable<IMeasurement<'fr'>>(grid);
-
-const sampleStyleRule: StyleRule = { color: 'red' };
-const vanillaExtractOutput =
-  mediaQueryOutputVanillaExtract(sampleStyleRule);
-expectAssignable<Record<string, unknown>>(vanillaExtractOutput);
-
-const vanillaExtractOutputAlias = outputVanillaExtract(sampleStyleRule);
-expectAssignable<Record<string, unknown>>(vanillaExtractOutputAlias);
 
 // Alias types are consistent with their underlying measurement units
 expectAssignable<IMeasurement<'em'>>({} as EmMeasurement);

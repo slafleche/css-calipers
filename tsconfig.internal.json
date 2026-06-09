@@ -6,8 +6,8 @@
     "types": ["vitest", "node"],
     "baseUrl": ".",
     "paths": {
-      "css-calipers": ["src/index.ts"],
-      "css-calipers/*": ["src/*"]
+      "@css-bookends/css-calipers": ["src/index.ts"],
+      "@css-bookends/css-calipers/*": ["src/*"]
     }
   },
   "include": ["tests", "examples"],

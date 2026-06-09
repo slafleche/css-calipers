@@ -4,9 +4,6 @@ import { describe, expect, it } from 'vitest';
 
 const esmRoot = await import('../../../dist/esm/index.js');
 const esmUnits = await import('../../../dist/esm/units/index.js');
-const esmMediaQueries = await import(
-  '../../../dist/esm/mediaQueries/index.js'
-);
 
 const esmUnitsPercent = await import('../../../dist/esm/units/percent.js');
 const esmUnitsAbsolute = await import('../../../dist/esm/units/absolute.js');
@@ -157,20 +154,5 @@ describe('API surface (ESM)', () => {
     const actualKeys = rootKeys.sort();
 
     expect(actualKeys).toEqual(expectedKeys);
-  });
-
-  it('exposes media query helpers via the mediaQueries entrypoint', () => {
-    expect(esmMediaQueries).toHaveProperty('buildMediaQueryString');
-    expect(typeof esmMediaQueries.buildMediaQueryString).toBe('function');
-
-    expect(esmMediaQueries).toHaveProperty('makeMediaQueryStyle');
-    expect(typeof esmMediaQueries.makeMediaQueryStyle).toBe('function');
-
-    expect(esmMediaQueries).toHaveProperty('mediaQueryOutputVanillaExtract');
-    expect(typeof esmMediaQueries.mediaQueryOutputVanillaExtract).toBe(
-      'function',
-    );
-    expect(esmMediaQueries).toHaveProperty('outputVanillaExtract');
-    expect(typeof esmMediaQueries.outputVanillaExtract).toBe('function');
   });
 });

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import type { IMediaQueryProps } from '../../../src/mediaQueries/mediaQueries';
 
 type FactoryApi = {
   createCalipers: (config?: {
@@ -11,9 +10,6 @@ type FactoryApi = {
     setErrorConfig: (next: { stackHints?: 'auto' | 'on' | 'off' }) => void;
     units: {
       mPx: (value: number, context?: string) => { css: () => string };
-    };
-    mediaQueries: {
-      buildMediaQueryString: (props: IMediaQueryProps) => string;
     };
   };
 };
@@ -48,14 +44,11 @@ export const runFactoryTests = (
       expect(second.getErrorConfig().stackHints).toBe('off');
     });
 
-    it('exposes core, units, and mediaQueries helpers', () => {
+    it('exposes core and units helpers', () => {
       const instance = api.createCalipers();
       expect(instance.m(1).css()).toBe('1px');
       expect(instance.mPx(2).css()).toBe('2px');
       expect(instance.units.mPx(3).css()).toBe('3px');
-      expect(
-        instance.mediaQueries.buildMediaQueryString({}),
-      ).toContain('screen');
     });
 
     it('scopes stack hint behavior per instance', () => {

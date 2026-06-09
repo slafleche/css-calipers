@@ -8,7 +8,7 @@
  */
 
 import type * as csstype from 'csstype';
-import { isMeasurement, m } from 'css-calipers';
+import { isMeasurement, m } from '@css-bookends/css-calipers';
 
 type LineHeightInput = number | string;
 

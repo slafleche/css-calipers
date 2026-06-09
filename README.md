@@ -1,7 +1,7 @@
 # CSS-Calipers
 
-[![npm](https://img.shields.io/npm/v/css-calipers.svg)](https://www.npmjs.com/package/css-calipers)
-[![types](https://img.shields.io/npm/types/css-calipers.svg)](https://www.npmjs.com/package/css-calipers)
+[![npm](https://img.shields.io/npm/v/@css-bookends/css-calipers.svg)](https://www.npmjs.com/package/@css-bookends/css-calipers)
+[![types](https://img.shields.io/npm/types/@css-bookends/css-calipers.svg)](https://www.npmjs.com/package/@css-bookends/css-calipers)
 [![license](https://img.shields.io/npm/l/css-calipers.svg)](./LICENSE.txt)
 
 **CSS is code. Treat it that way.**  
@@ -31,7 +31,7 @@ At a glance:
 ## Install
 
 ```bash
-npm install css-calipers
+npm install @css-bookends/css-calipers
 ```
 
 ---
@@ -39,7 +39,7 @@ npm install css-calipers
 ## Quick start
 
 ```ts
-import { m } from "css-calipers";
+import { m } from "@css-bookends/css-calipers";
 
 // Declare vars
 const paddingBase = m(4); // defaults to px (and is typed as a px measurement) when no unit is specified
@@ -56,15 +56,13 @@ const style = {
 };
 ```
 
-If you prefer, you can also import unit helpers from dedicated subpaths. For example, `mPercent` is available from the root entrypoint and from `css-calipers/units/percent`, and all unit helpers are aggregated under `css-calipers/units`.
+If you prefer, you can also import unit helpers from dedicated subpaths. For example, `mPercent` is available from the root entrypoint and from `@css-bookends/css-calipers/units/percent`, and all unit helpers are aggregated under `@css-bookends/css-calipers/units`.
 
 ---
 
 ## Status & support
 
-> API surface and docs may change between `0.x` releases until the first stable version.
-
-- Status: early `0.x` release. Backwards compatibility is not guaranteed until `1.0.0`.
+- Status: stable `1.0` release of the measurement layer, part of the [CSS-Bookends](https://github.com/slafleche/css-bookends) umbrella.
 - Questions or bugs: open an issue on GitHub (see the repository link at the top of this page or in `package.json`).
 - Tooling: tested primarily with TypeScript 5.6+ on Node 18+.
 - Support: this is a solo, early-stage project. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/slafleche) to support continued work.
@@ -73,29 +71,25 @@ If you prefer, you can also import unit helpers from dedicated subpaths. For exa
 
 ## Media queries
 
-```ts
-import { m } from "css-calipers";
-import { mediaQueryFactory } from "css-calipers/mediaQueries";
+Media queries have moved out of CSS-Calipers. From `0.15` on, CSS-Calipers is
+purely the measurement layer.
 
-const media = mediaQueryFactory({
-  queries: {
-    mobile: { maxWidth: m(639) },
-    desktop: { minWidth: m(640) },
-  },
-  config: {
-    label: "layout",
-  },
-});
+CSS-Calipers itself is part of
+[CSS-Bookends](https://github.com/slafleche/css-bookends): it is the measurement
+lexicon at the centre of the umbrella. The first CSS-Bookends beta gives you
+exactly what `css-calipers@0.14` does today, the same measurement layer and the
+same media query helper, just split into two installable pieces (`css-calipers`
+plus `@css-bookends/media-queries`). Nothing is lost.
 
-const styles = {
-  ...media({
-    mobile: { gridTemplateColumns: "1fr" },
-    desktop: { gridTemplateColumns: "repeat(4, 1fr)" },
-  }),
-};
-```
+If you use the media query helper:
 
-See README_MEDIAQUERIES.md for the full media queries guide.
+- **Switch to CSS-Bookends** and add `@css-bookends/media-queries` alongside
+  `css-calipers`. Same helper, now maintained in the umbrella.
+- **Or stay on `css-calipers@0.14`**, which still bundles the media query helper
+  and remains the `latest` release for now.
+
+CSS-Bookends is the long-term home for everything beyond measurement (spacing,
+colours, borders, and more), so moving over is the recommended path.
 
 ---
 
@@ -149,7 +143,7 @@ It’s probably overkill if:
 ### Layout tokens example
 
 ```ts
-import { m, mPercent, mVw, mVh, assertCondition } from "css-calipers";
+import { m, mPercent, mVw, mVh, assertCondition } from "@css-bookends/css-calipers";
 
 // Token-style measurements (px by default)
 const spacing = m(8); // Defaults to px and is typed as a PxMeasurement
@@ -221,7 +215,7 @@ a theme override, hardcode a debug routine, or wire a global invariant; the
 structure is up to you:
 
 ```ts
-import { assertMatchingUnits } from "css-calipers";
+import { assertMatchingUnits } from "@css-bookends/css-calipers";
 import { formTokens } from "@/tokens/forms.tokens";
 
 if (process.env.NODE_ENV !== "production") {
@@ -341,7 +335,7 @@ For m and unit helpers, errors include a trimmed stack hint in non-production by
 You can disable or force stack hints globally:
 
 ```
-import { setErrorConfig } from "css-calipers";
+import { setErrorConfig } from "@css-bookends/css-calipers";
 
 // Disable stack hints everywhere (for production).
 setErrorConfig({ stackHints: "off" });
@@ -355,17 +349,16 @@ setErrorConfig({ stackHints: "on" });
 ## Factory entrypoint (optional)
 
 If you want instance-scoped configuration and a single re-export surface, use
-the factory entrypoint. The instance includes core helpers, unit helpers, and
-mediaQueries.
+the factory entrypoint. The instance includes core helpers and unit helpers.
 
 ```
-import { createCalipers } from "css-calipers/factory";
+import { createCalipers } from "@css-bookends/css-calipers/factory";
 
 const calipers = createCalipers({
   errorConfig: { stackHints: "on" },
 });
 
-export const { m, mPx, mediaQueries, units } = calipers;
+export const { m, mPx, units } = calipers;
 ```
 
 See [examples/factory-wrapper.example.ts](examples/factory-wrapper.example.ts)
@@ -394,7 +387,7 @@ property typings (for example, the `Property` types from the `csstype`
 package):
 
 ```ts
-import type { MeasurementString } from "css-calipers";
+import type { MeasurementString } from "@css-bookends/css-calipers";
 import type { Property } from "csstype";
 
 type SpacingKeyword = Exclude<
@@ -479,7 +472,7 @@ parts inside a broader styling solution.
 Deeper guides live alongside this README:
 
 - Measurements core: [README_MEASUREMENT.md](README_MEASUREMENT.md)
-- Media queries: [README_MEDIAQUERIES.md](README_MEDIAQUERIES.md)
+- Media queries: now in [`@css-bookends/media-queries`](https://github.com/slafleche/css-bookends)
 
 ### Further examples in this repo
 

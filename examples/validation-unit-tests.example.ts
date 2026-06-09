@@ -8,7 +8,7 @@
  */
 
 import { describe, it } from "vitest";
-import { m, assertMatchingUnits } from "css-calipers";
+import { m, assertMatchingUnits } from "@css-bookends/css-calipers";
 
 // Pretend these spacing tokens come from a design token file or configuration
 // layer. The intent is a simple invariant: small <= large and both share units.

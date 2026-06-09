@@ -1,4 +1,4 @@
-import { createCalipers } from "css-calipers/factory";
+import { createCalipers } from "@css-bookends/css-calipers/factory";
 
 /**
  * Example wrapper module.
@@ -14,11 +14,8 @@ export const {
   mPercent,
   assertMatchingUnits,
   assertCondition,
-  mediaQueries,
   units,
 } = calipers;
-
-export const { buildMediaQueryString, makeMediaQueryStyle } = mediaQueries;
 
 export const { mEm, mVw } = units;
 

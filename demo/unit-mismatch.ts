@@ -5,7 +5,7 @@
 // (px vs deg) with no terminal step. This folder is intentionally outside
 // every build/test tsconfig, so the deliberate type error never breaks CI.
 
-import { m } from "css-calipers";
+import { m } from "@css-bookends/css-calipers";
 
 const paddingBase = m(4); // defaults to px
 const margins = paddingBase.add(4);

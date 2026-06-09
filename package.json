@@ -1,11 +1,12 @@
 {
-  "name": "css-calipers",
-  "version": "0.14.0",
+  "name": "@css-bookends/css-calipers",
+  "version": "1.0.0",
   "description": "Compile-time unit safety for numeric, unit-bearing CSS values via typed measurements.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/slafleche/css-calipers.git"
+    "url": "git+https://github.com/slafleche/css-bookends.git",
+    "directory": "lexicons/calipers"
   },
   "bugs": {
     "url": "https://github.com/slafleche/css-calipers/issues"
@@ -28,8 +29,7 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE.txt",
-    "RELEASING.md"
+    "LICENSE.txt"
   ],
   "sideEffects": false,
   "type": "commonjs",
@@ -41,11 +41,6 @@
       "types": "./dist/esm/index.d.ts",
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
-    },
-    "./mediaQueries": {
-      "types": "./dist/esm/mediaQueries/index.d.ts",
-      "import": "./dist/esm/mediaQueries/index.js",
-      "require": "./dist/cjs/mediaQueries/index.js"
     },
     "./factory": {
       "types": "./dist/esm/factory.d.ts",
@@ -86,14 +81,7 @@
     "build:examples": "tsc -p tsconfig.examples.json --noEmit",
     "build:test": "npm run build && npm run test",
     "build:delete": "node -e \"const { existsSync, rmSync } = require('fs'); const paths = ['dist/cjs', 'dist/esm']; for (const p of paths) { console.log('Scanning', p + '...'); if (existsSync(p)) { console.log('Found', p + ', deleting...'); rmSync(p, { recursive: true, force: true }); console.log('Deleted', p); } else { console.log(p + ' not found, skipping.'); } }\"",
-    "prepublishOnly": "node -e \"if (!process.env.CSS_CALIPERS_RELEASE) { console.error('Direct npm publish is disabled; use \\\"npm run release\\\" instead.'); process.exit(1); }\" && npm run test:internal",
-    "release": "node scripts/release.mjs",
-    "release:dry": "node scripts/release.mjs --dry-run",
-    "test": "npm run build && npm run test:core && npm run test:ratio && npm run test:mediaQueries && npm run test:factory && npm run test:dist && npm run test:types && npm run test:tsc && npm run lint && npm run test:internal",
-    "test:mediaQueries": "vitest run tests/runtime/mediaQueries/mediaQueries.src.test.ts",
-    "test:mediaQueries:cjs": "vitest run tests/runtime/mediaQueries/mediaQueries.cjs.test.ts tests/runtime/api-surface/mediaQueries.api-surface.cjs.test.ts",
-    "test:mediaQueries:esm": "vitest run tests/runtime/mediaQueries/mediaQueries.esm.test.ts tests/runtime/api-surface/mediaQueries.api-surface.esm.test.ts",
-    "test:mediaQueries:dist": "npm run test:mediaQueries:cjs && npm run test:mediaQueries:esm",
+    "test": "npm run build && npm run test:core && npm run test:ratio && npm run test:factory && npm run test:dist && npm run test:types && npm run test:tsc && npm run lint && npm run test:internal",
     "test:core": "vitest run tests/runtime/core/core.src.test.ts",
     "test:ratio": "vitest run tests/runtime/ratio/ratio.src.test.ts",
     "test:core:cjs": "vitest run tests/runtime/core/core.cjs.test.ts tests/runtime/api-surface/api-surface.cjs.test.ts",
@@ -103,7 +91,7 @@
     "test:lint": "npm run lint",
     "test:types": "echo \"\n 🧪 Starting tsd type checks...\n\" && tsd --files tests/types/**/*.test-d.ts && echo \"✅ tsd type checks passed!\n\"",
     "test:tsc": "tsc -p tsconfig.json --noEmit",
-    "test:dist": "npm run test:core:dist && npm run test:mediaQueries:dist && npm run test:factory:dist",
+    "test:dist": "npm run test:core:dist && npm run test:factory:dist",
     "test:factory": "vitest run tests/runtime/factory/factory.src.test.ts",
     "test:factory:cjs": "vitest run tests/runtime/factory/factory.cjs.test.ts tests/runtime/api-surface/factory.api-surface.cjs.test.ts",
     "test:factory:esm": "vitest run tests/runtime/factory/factory.esm.test.ts tests/runtime/api-surface/factory.api-surface.esm.test.ts",
