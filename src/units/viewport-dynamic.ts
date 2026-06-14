@@ -16,4 +16,3 @@ export type DviMeasurement = MeasurementOf<typeof mDvi>;
 export type DvbMeasurement = MeasurementOf<typeof mDvb>;
 export type DvminMeasurement = MeasurementOf<typeof mDvmin>;
 export type DvmaxMeasurement = MeasurementOf<typeof mDvmax>;
-

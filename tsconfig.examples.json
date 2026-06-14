@@ -10,12 +10,20 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@css-bookends/css-calipers": ["src/index.ts"],
-      "@css-bookends/css-calipers/*": ["src/*"]
+      "@css-bookends/css-calipers": [
+        "src/index.ts"
+      ],
+      "@css-bookends/css-calipers/*": [
+        "src/*"
+      ]
     }
   },
-  "include": ["examples"]
+  "include": [
+    "examples"
+  ]
 }

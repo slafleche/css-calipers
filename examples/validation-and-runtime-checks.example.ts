@@ -17,34 +17,36 @@
  *
  */
 
-import { m, assertMatchingUnits } from "@css-bookends/css-calipers";
+import { assertMatchingUnits, m } from '@css-bookends/css-calipers';
 
 // Pretend these tokens come from a design token file or configuration layer.
 // Two different components will enforce different invariants against the same
 // underlying line-height measurement.
-const bodyLineHeight = m(1.4, "rem");
-const iconTokenSize = m(1.2, "rem");
-const tocHeadingRowHeightToken = m(2, "rem");
+const bodyLineHeight = m(1.4, 'rem');
+const iconTokenSize = m(1.2, 'rem');
+const tocHeadingRowHeightToken = m(2, 'rem');
 
 // An icon+label row where you don't want the icon to visually dominate the
 // text. In development, assert that the icon's size does not exceed the
 // line-height it sits next to. Here we return a small HTML snippet to
 // illustrate string-based consumers.
-export const renderIconWithLabelHtml = (labelText: string): string => {
+export const renderIconWithLabelHtml = (
+  labelText: string,
+): string => {
   const iconSize = iconTokenSize;
 
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     // Make sure both measurements use the same unit family before comparing.
     assertMatchingUnits(
       iconSize,
       bodyLineHeight,
-      "iconWithLabel: icon and line-height units must match"
+      'iconWithLabel: icon and line-height units must match',
     );
 
     if (iconSize.getValue() > bodyLineHeight.getValue()) {
       throw new Error(
         `iconWithLabel: icon must not exceed line-height; ` +
-          `iconSize=${iconSize.css()}, bodyLineHeight=${bodyLineHeight.css()}`
+          `iconSize=${iconSize.css()}, bodyLineHeight=${bodyLineHeight.css()}`,
       );
     }
   }
@@ -65,11 +67,11 @@ export const renderIconWithLabelHtml = (labelText: string): string => {
 export const buildTocHeadingStyles = () => {
   const tocHeadingRowHeight = tocHeadingRowHeightToken;
 
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     // Require body line-height to stay within a reasonable range for body
     // text, using the same measurement token.
-    const minBodyLineHeight = m(1.2, "rem");
-    const maxBodyLineHeight = m(1.8, "rem");
+    const minBodyLineHeight = m(1.2, 'rem');
+    const maxBodyLineHeight = m(1.8, 'rem');
     const bodyValue = bodyLineHeight.getValue();
 
     if (
@@ -81,7 +83,7 @@ export const buildTocHeadingStyles = () => {
       throw new Error(
         `tocHeading: body line-height out of range; ` +
           `${bodyLineHeight.css()} (expected between ` +
-          `${minBodyLineHeight.css()} and ${maxBodyLineHeight.css()})`
+          `${minBodyLineHeight.css()} and ${maxBodyLineHeight.css()})`,
       );
     }
 
@@ -89,13 +91,13 @@ export const buildTocHeadingStyles = () => {
     assertMatchingUnits(
       tocHeadingRowHeight,
       bodyLineHeight,
-      "tocHeading: row height and line-height units must match"
+      'tocHeading: row height and line-height units must match',
     );
 
     if (tocHeadingRowHeight.getValue() < bodyLineHeight.getValue()) {
       throw new Error(
         `tocHeading: row height must be >= line-height; ` +
-          `row=${tocHeadingRowHeight.css()}, bodyLineHeight=${bodyLineHeight.css()}`
+          `row=${tocHeadingRowHeight.css()}, bodyLineHeight=${bodyLineHeight.css()}`,
       );
     }
   }

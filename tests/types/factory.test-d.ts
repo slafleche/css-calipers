@@ -1,9 +1,9 @@
 import { expectAssignable } from 'tsd';
 
 import {
-  createCalipers,
   type CalipersFactoryConfig,
   type CalipersInstance,
+  createCalipers,
 } from '../../dist/esm/factory';
 
 const config: CalipersFactoryConfig = {

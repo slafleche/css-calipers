@@ -10,4 +10,3 @@ export const mDppx = makeUnitHelperFromDefinition('mDppx');
 export type DpiMeasurement = MeasurementOf<typeof mDpi>;
 export type DpcmMeasurement = MeasurementOf<typeof mDpcm>;
 export type DppxMeasurement = MeasurementOf<typeof mDppx>;
-

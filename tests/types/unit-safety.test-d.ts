@@ -1,17 +1,17 @@
 import { expectError, expectNotAssignable, expectType } from 'tsd';
 
 import {
-  mPx,
-  mEm,
-  mPercent,
-  mDeg,
-  mVh,
-  mMs,
-  mDpi,
-  measurementMin,
-  measurementMax,
   type IMeasurement,
   type InscribedMeasurement,
+  mDeg,
+  mDpi,
+  measurementMax,
+  measurementMin,
+  mEm,
+  mMs,
+  mPercent,
+  mPx,
+  mVh,
 } from '../../dist/esm';
 
 // Representative measurements spanning multiple unit categories:

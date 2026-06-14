@@ -33,17 +33,19 @@ export interface MeasurementLike {
 export type UnitHelperLike = ((
   value: number,
   context?: string,
-) => MeasurementLike) & { unit: string };
+) => MeasurementLike) & {
+  unit: string;
+};
 
 export interface CoreApi {
   m: (
     value: number,
-    unitOrOptions?:
-      | string
-      | { unit?: string; context?: string },
+    unitOrOptions?: string | { unit?: string; context?: string },
     context?: string,
   ) => MeasurementLike;
-  setErrorConfig: (next: { stackHints?: 'auto' | 'on' | 'off' }) => void;
+  setErrorConfig: (next: {
+    stackHints?: 'auto' | 'on' | 'off';
+  }) => void;
   getErrorConfig: () => { stackHints: 'auto' | 'on' | 'off' };
   mPercent: UnitHelperLike;
   mPx: UnitHelperLike;
@@ -86,11 +88,12 @@ export interface CoreApi {
     string,
     { unit: string; category: string }
   >;
-  makeUnitAssert: (helper: UnitHelperLike) => (
-    value: unknown,
-    context?: string,
-  ) => void;
-  makeUnitGuard: (helper: UnitHelperLike) => (value: unknown) => boolean;
+  makeUnitAssert: (
+    helper: UnitHelperLike,
+  ) => (value: unknown, context?: string) => void;
+  makeUnitGuard: (
+    helper: UnitHelperLike,
+  ) => (value: unknown) => boolean;
   hasCssMethod: (value: unknown) => value is { css: () => string };
   measurementMin: (
     a: MeasurementLike,
@@ -172,7 +175,9 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
         expect(missingValueMessage).toContain(
           'css-calipers.m: Non-finite measurement value: undefined',
         );
-        expect(missingValueMessage).toContain('code=CALIPERS_E_NONFINITE');
+        expect(missingValueMessage).toContain(
+          'code=CALIPERS_E_NONFINITE',
+        );
         expect(missingValueMessage).toContain('helper=m');
         expect(missingValueMessage).toContain(
           'inputs=value=undefined, unit=px',
@@ -386,7 +391,9 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
           const b = right(5);
 
           expect(() => a.add(b)).toThrow(/CALIPERS_E_UNIT_MISMATCH/);
-          expect(() => a.subtract(b)).toThrow(/CALIPERS_E_UNIT_MISMATCH/);
+          expect(() => a.subtract(b)).toThrow(
+            /CALIPERS_E_UNIT_MISMATCH/,
+          );
           expect(() => a.clamp(b, left(20))).toThrow(
             /CALIPERS_E_UNIT_MISMATCH/,
           );
@@ -411,8 +418,12 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
           const a = left(10);
           const b = right(10);
 
-          expect(() => a.equals(b)).toThrow(/CALIPERS_E_UNIT_MISMATCH/);
-          expect(() => a.compare(b)).toThrow(/CALIPERS_E_UNIT_MISMATCH/);
+          expect(() => a.equals(b)).toThrow(
+            /CALIPERS_E_UNIT_MISMATCH/,
+          );
+          expect(() => a.compare(b)).toThrow(
+            /CALIPERS_E_UNIT_MISMATCH/,
+          );
 
           expect(a.equals(b, false)).toBe(false);
           expect(typeof a.compare(b, false)).toBe('number');
@@ -510,9 +521,7 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       const p = mPercent(25);
       expect(isPercentMeasurement(p)).toBe(true);
       expect(isPercentMeasurement(mPx(1))).toBe(false);
-      expect(() =>
-        assertPercentMeasurement(mPx(1), 'ctx'),
-      ).toThrow(
+      expect(() => assertPercentMeasurement(mPx(1), 'ctx')).toThrow(
         'ctx: css-calipers.makeUnitAssert: Expected unit "%". [code=CALIPERS_E_ASSERT_UNIT]',
       );
     });
@@ -562,13 +571,13 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       const guard = makeUnitGuard(mPx);
 
       expect(guard(null)).toBe(false);
-      expect(guard(42 as unknown)).toBe(false);
-      expect(guard({} as unknown)).toBe(false);
+      expect(guard(42)).toBe(false);
+      expect(guard({})).toBe(false);
 
       expect(hasCssMethod({ css: () => 'ok' })).toBe(true);
       expect(hasCssMethod({ css: 'not-a-function' })).toBe(false);
       expect(hasCssMethod(null)).toBe(false);
-      expect(hasCssMethod(123 as unknown)).toBe(false);
+      expect(hasCssMethod(123)).toBe(false);
       expect(hasCssMethod({})).toBe(false);
     });
 
@@ -589,9 +598,7 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       expect(() => measurement.assertUnit('em')).toThrow(
         'css-calipers.Measurement.assertUnit: Expected unit "em", received "px". [code=CALIPERS_E_ASSERT_UNIT]',
       );
-      expect(() =>
-        measurement.assertUnit('em', 'ctx'),
-      ).toThrow(
+      expect(() => measurement.assertUnit('em', 'ctx')).toThrow(
         'ctx: css-calipers.Measurement.assertUnit: Expected unit "em", received "px". [code=CALIPERS_E_ASSERT_UNIT]',
       );
     });
@@ -601,9 +608,7 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       expect(() => assertUnit(measurement, 'em')).toThrow(
         'css-calipers.Measurement.assertUnit: Expected unit "em", received "px". [code=CALIPERS_E_ASSERT_UNIT]',
       );
-      expect(() =>
-        assertUnit(measurement, 'em', 'ctx'),
-      ).toThrow(
+      expect(() => assertUnit(measurement, 'em', 'ctx')).toThrow(
         'ctx: css-calipers.Measurement.assertUnit: Expected unit "em", received "px". [code=CALIPERS_E_ASSERT_UNIT]',
       );
     });
@@ -618,9 +623,7 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
         'css-calipers.assertCondition: thunk fail [code=CALIPERS_E_ASSERT_CONDITION]',
       );
       expect(() => assertCondition(true, 'ok')).not.toThrow();
-      expect(() =>
-        assertCondition(() => true, 'ok'),
-      ).not.toThrow();
+      expect(() => assertCondition(() => true, 'ok')).not.toThrow();
     });
 
     it('compares equality with strict unit checking', () => {
@@ -658,7 +661,10 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
         'css-calipers.Measurement.assert: too small [code=CALIPERS_E_ASSERT_PREDICATE]',
       );
       expect(() =>
-        measurement.assert((mm) => mm.getValue() > 1, 'should not throw'),
+        measurement.assert(
+          (mm) => mm.getValue() > 1,
+          'should not throw',
+        ),
       ).not.toThrow();
     });
 
@@ -713,7 +719,9 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       ).not.toThrow();
       expect(() =>
         assertCondition(
-          () => paddingBlock.getValue() > 0 && paddingInline.getValue() > 0,
+          () =>
+            paddingBlock.getValue() > 0 &&
+            paddingInline.getValue() > 0,
           'Button padding must be positive',
         ),
       ).not.toThrow();

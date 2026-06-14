@@ -1,20 +1,17 @@
+import type {
+  IMeasurement,
+  InscribedMeasurement,
+  UnitAssertion,
+  UnitGuard,
+  UnitHelper,
+} from '../core';
 import {
   UNIT_DEFINITIONS,
   type UnitDefinitionRecord,
   type UnitHelperName,
 } from '../unitDefinitions';
 import { buildMeasurementCreationError } from './buildMeasurementCreationError';
-import {
-  createErrorHelpers,
-  type ErrorConfigStore,
-} from './errors';
-import type {
-  InscribedMeasurement,
-  IMeasurement,
-  UnitAssertion,
-  UnitGuard,
-  UnitHelper,
-} from '../core';
+import { createErrorHelpers, type ErrorConfigStore } from './errors';
 
 type DeltaInput = number | IMeasurement<string>;
 type MeasurementCreateOptions<Unit extends string> = {
@@ -32,11 +29,17 @@ const toPlainDecimal = (value: number): string => {
   if (!text.includes('e') && !text.includes('E')) {
     return text;
   }
-  const [mantissa, exponentText] = text.toLowerCase().split('e');
+  const [
+    mantissa,
+    exponentText,
+  ] = text.toLowerCase().split('e');
   const exponent = Number(exponentText);
   const negative = mantissa.startsWith('-');
   const unsigned = negative ? mantissa.slice(1) : mantissa;
-  const [intDigits, fracDigits = ''] = unsigned.split('.');
+  const [
+    intDigits,
+    fracDigits = '',
+  ] = unsigned.split('.');
   const digits = intDigits + fracDigits;
   const pointFromLeft = intDigits.length + exponent;
   const sign = negative ? '-' : '';
@@ -64,7 +67,10 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     if (leftUnit !== rightUnit) {
       throwHelperError({
         operation: 'css-calipers.assertMatchingUnits',
-        params: [left, right],
+        params: [
+          left,
+          right,
+        ],
         message: `measurement unit mismatch: ${leftUnit} vs ${rightUnit}`,
         context,
         details: { code: 'CALIPERS_E_UNIT_MISMATCH' },
@@ -81,9 +87,9 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     return delta.getValue();
   };
 
-  class Measurement<Unit extends string>
-    implements IMeasurement<Unit>
-  {
+  class Measurement<
+    Unit extends string,
+  > implements IMeasurement<Unit> {
     #value: number;
     #unit: Unit;
 
@@ -275,7 +281,10 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
         throwMeasurementMethodError({
           operation: 'css-calipers.Measurement.clamp',
           caller: this,
-          params: [min, max],
+          params: [
+            min,
+            max,
+          ],
           message: 'clamp: expected finite bounds',
           details: { code: 'CALIPERS_E_CLAMP_NONFINITE_BOUNDS' },
         });
@@ -284,7 +293,10 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
         throwMeasurementMethodError({
           operation: 'css-calipers.Measurement.clamp',
           caller: this,
-          params: [min, max],
+          params: [
+            min,
+            max,
+          ],
           message: `clamp: min (${min.css()}) must be <= max (${max.css()})`,
           details: { code: 'CALIPERS_E_CLAMP_INVALID_RANGE' },
         });
@@ -308,11 +320,13 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     value: number,
     unit: Unit,
   ): InscribedMeasurement<Unit> =>
-    new Measurement(value, unit) as unknown as InscribedMeasurement<Unit>;
+    new Measurement(
+      value,
+      unit,
+    ) as unknown as InscribedMeasurement<Unit>;
 
-  const isMeasurement = (
-    x: unknown,
-  ): x is IMeasurement<string> => x instanceof Measurement;
+  const isMeasurement = (x: unknown): x is IMeasurement<string> =>
+    x instanceof Measurement;
 
   function m(value: number): InscribedMeasurement<'px'>;
   function m(
@@ -330,7 +344,9 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
   ): InscribedMeasurement<Lowercase<Unit>>;
   function m<Unit extends string>(
     value: number,
-    unitOrOptions: Unit | MeasurementCreateOptions<Unit> = 'px' as Unit,
+    unitOrOptions:
+      | Unit
+      | MeasurementCreateOptions<Unit> = 'px' as Unit,
     context?: string,
   ): InscribedMeasurement<Lowercase<Unit>> {
     const options =
@@ -394,22 +410,19 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     };
     return Object.assign(factory, {
       unit: normalizedUnit,
-    }) as UnitHelperFactory<Unit>;
+    });
   };
 
   const makeUnitHelper = <Unit extends string>(
     unit: Unit,
   ): UnitHelper<Unit> => {
-    return createUnitHelper(unit) as UnitHelper<Unit>;
+    return createUnitHelper(unit);
   };
 
   const makeUnitHelperFromDefinition = <Name extends UnitHelperName>(
     name: Name,
   ): UnitHelper<UnitDefinitionRecord[Name]['unit']> =>
-    createUnitHelper(
-      UNIT_DEFINITIONS[name].unit,
-      name,
-    ) as UnitHelper<UnitDefinitionRecord[Name]['unit']>;
+    createUnitHelper(UNIT_DEFINITIONS[name].unit, name);
 
   const measurementUnitMetadata = UNIT_DEFINITIONS;
   type MeasurementOfHelper<T extends UnitHelper> = ReturnType<T>;
@@ -432,7 +445,11 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
       if (!guard(value)) {
         throwHelperError({
           operation: 'css-calipers.makeUnitAssert',
-          params: isMeasurement(value) ? [value] : [],
+          params: isMeasurement(value)
+            ? [
+                value,
+              ]
+            : [],
           message: `Expected unit "${helper.unit}".`,
           context,
           details: { code: 'CALIPERS_E_ASSERT_UNIT' },
@@ -441,14 +458,12 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     };
   };
 
-  const hasCssMethod = (
-    x: unknown,
-  ): x is { css: () => string } => {
+  const hasCssMethod = (x: unknown): x is { css: () => string } => {
     return (
       typeof x === 'object' &&
       x !== null &&
       'css' in x &&
-      typeof (x as { css: unknown }).css === 'function'
+      typeof x.css === 'function'
     );
   };
 

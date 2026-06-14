@@ -7,8 +7,8 @@
  * deeper discussion of this pattern and its trade-offs.
  */
 
-import type * as csstype from 'csstype';
 import { isMeasurement, m } from '@css-bookends/css-calipers';
+import type * as csstype from 'csstype';
 
 type LineHeightInput = number | string;
 
@@ -25,7 +25,11 @@ const parseNumericWithUnit = (
   const value = raw.trim();
   const match = value.match(/^(-?\d*\.?\d+)\s*(px|rem|em|%)$/i);
   if (!match) return null;
-  const [, numeric, unit] = match;
+  const [
+    ,
+    numeric,
+    unit,
+  ] = match;
   return {
     value: Number(numeric),
     unit: unit.toLowerCase(),
@@ -47,7 +51,10 @@ export const normalizeLineHeight = (
   // Case 2: numeric value + unit string (for example, "1.5rem", "20px")
   const numericWithUnit = parseNumericWithUnit(trimmed);
   if (numericWithUnit) {
-    const measurement = m(numericWithUnit.value, numericWithUnit.unit);
+    const measurement = m(
+      numericWithUnit.value,
+      numericWithUnit.unit,
+    );
     return measurement;
   }
 
@@ -55,7 +62,8 @@ export const normalizeLineHeight = (
   const numericValue = Number(trimmed);
   if (!Number.isNaN(numericValue)) {
     return {
-      css: () => numericValue as unknown as csstype.Property.LineHeight,
+      css: () =>
+        numericValue as unknown as csstype.Property.LineHeight,
     };
   }
 
@@ -71,16 +79,19 @@ const lineHeightFromNumber = normalizeLineHeight(1.5);
 const lineHeightFromUnitString = normalizeLineHeight('1.5rem');
 const lineHeightFromNumericString = normalizeLineHeight('1.5');
 const lineHeightFromKeyword = normalizeLineHeight('normal');
-const lineHeightFromVar = normalizeLineHeight('var(--body-line-height)');
+const lineHeightFromVar = normalizeLineHeight(
+  'var(--body-line-height)',
+);
 
 // All normalized values expose a `.css()` method:
-const lineHeightStyles: Record<string, csstype.Property.LineHeight> = {
-  number: lineHeightFromNumber.css(),
-  unitString: lineHeightFromUnitString.css(),
-  numericString: lineHeightFromNumericString.css(),
-  keyword: lineHeightFromKeyword.css(),
-  cssVariable: lineHeightFromVar.css(),
-};
+const lineHeightStyles: Record<string, csstype.Property.LineHeight> =
+  {
+    number: lineHeightFromNumber.css(),
+    unitString: lineHeightFromUnitString.css(),
+    numericString: lineHeightFromNumericString.css(),
+    keyword: lineHeightFromKeyword.css(),
+    cssVariable: lineHeightFromVar.css(),
+  };
 
 // Advanced example: if the normalized value happens to be a CSS-Calipers
 // measurement, you can safely do math on it before emitting CSS.

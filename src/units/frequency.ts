@@ -8,4 +8,3 @@ export const mKhz = makeUnitHelperFromDefinition('mKhz');
 
 export type HzMeasurement = MeasurementOf<typeof mHz>;
 export type KhzMeasurement = MeasurementOf<typeof mKhz>;
-

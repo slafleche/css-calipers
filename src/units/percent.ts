@@ -11,4 +11,3 @@ export type PercentMeasurement = MeasurementOf<typeof mPercent>;
 
 export const isPercentMeasurement = makeUnitGuard(mPercent);
 export const assertPercentMeasurement = makeUnitAssert(mPercent);
-

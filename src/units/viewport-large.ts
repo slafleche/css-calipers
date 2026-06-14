@@ -16,4 +16,3 @@ export type LviMeasurement = MeasurementOf<typeof mLvi>;
 export type LvbMeasurement = MeasurementOf<typeof mLvb>;
 export type LvminMeasurement = MeasurementOf<typeof mLvmin>;
 export type LvmaxMeasurement = MeasurementOf<typeof mLvmax>;
-

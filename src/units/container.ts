@@ -16,4 +16,3 @@ export type CqiMeasurement = MeasurementOf<typeof mCqi>;
 export type CqbMeasurement = MeasurementOf<typeof mCqb>;
 export type CqminMeasurement = MeasurementOf<typeof mCqmin>;
 export type CqmaxMeasurement = MeasurementOf<typeof mCqmax>;
-

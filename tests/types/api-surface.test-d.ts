@@ -1,68 +1,67 @@
 import { expectAssignable } from 'tsd';
 
 import {
-  m,
-  mPx,
-  mPercent,
-  r,
-  isRatio,
-  normalizeRatio,
-  parseRatio,
-  ratioToFloat,
-  toFloat,
-  reduceRatio,
-  simplifyRatio,
-  isMeasurement,
-  isPercentMeasurement,
-  assertPercentMeasurement,
-  measurementUnitMetadata,
-  measurementMin,
-  measurementMax,
-  makeUnitGuard,
-  makeUnitAssert,
   assertCondition,
-  hasCssMethod,
-  setErrorConfig,
-  getErrorConfig,
-  type MeasurementOf,
-  type UnitGuard,
-  type UnitAssertion,
-  type IMeasurement,
-  type MeasurementString,
-  type MeasurementUnitDefinition,
-  type MeasurementUnitCategory,
-  type ErrorConfig,
-  type ErrorCode,
-  type EmMeasurement,
-  type VwMeasurement,
-  type SvwMeasurement,
-  type LvwMeasurement,
-  type DvwMeasurement,
+  assertPercentMeasurement,
   type CqwMeasurement,
   type DegMeasurement,
-  type SMeasurement,
-  type HzMeasurement,
   type DpiMeasurement,
+  type DvwMeasurement,
+  type EmMeasurement,
+  type ErrorCode,
+  type ErrorConfig,
   type FrMeasurement,
-  type TimeMeasurement,
+  getErrorConfig,
+  hasCssMethod,
+  type HzMeasurement,
+  type IMeasurement,
   type IRatio,
+  isMeasurement,
+  isPercentMeasurement,
+  isRatio,
+  type LvwMeasurement,
+  m,
+  makeUnitAssert,
+  makeUnitGuard,
+  measurementMax,
+  measurementMin,
+  type MeasurementOf,
+  type MeasurementString,
+  type MeasurementUnitCategory,
+  type MeasurementUnitDefinition,
+  measurementUnitMetadata,
+  mPercent,
+  mPx,
+  normalizeRatio,
+  parseRatio,
+  r,
   type RatioParts,
+  ratioToFloat,
+  reduceRatio,
+  setErrorConfig,
+  simplifyRatio,
+  type SMeasurement,
+  type SvwMeasurement,
+  type TimeMeasurement,
+  toFloat,
+  type UnitAssertion,
+  type UnitGuard,
+  type VwMeasurement,
 } from '../../dist/esm';
-
 import * as Units from '../../dist/esm/units';
-import * as PercentUnits from '../../dist/esm/units/percent';
 import * as AbsoluteUnits from '../../dist/esm/units/absolute';
-import * as FontRelativeUnits from '../../dist/esm/units/font-relative';
-import * as ViewportUnits from '../../dist/esm/units/viewport';
-import * as ViewportSmallUnits from '../../dist/esm/units/viewport-small';
-import * as ViewportLargeUnits from '../../dist/esm/units/viewport-large';
-import * as ViewportDynamicUnits from '../../dist/esm/units/viewport-dynamic';
-import * as ContainerUnits from '../../dist/esm/units/container';
 import * as AngleUnits from '../../dist/esm/units/angle';
-import * as TimeUnits from '../../dist/esm/units/time';
+import * as ContainerUnits from '../../dist/esm/units/container';
+import * as FontRelativeUnits from '../../dist/esm/units/font-relative';
 import * as FrequencyUnits from '../../dist/esm/units/frequency';
-import * as ResolutionUnits from '../../dist/esm/units/resolution';
 import * as GridUnits from '../../dist/esm/units/grid';
+import * as PercentUnits from '../../dist/esm/units/percent';
+import * as ResolutionUnits from '../../dist/esm/units/resolution';
+import * as TimeUnits from '../../dist/esm/units/time';
+import * as ViewportUnits from '../../dist/esm/units/viewport';
+import * as ViewportDynamicUnits from '../../dist/esm/units/viewport-dynamic';
+import * as ViewportLargeUnits from '../../dist/esm/units/viewport-large';
+import * as ViewportSmallUnits from '../../dist/esm/units/viewport-small';
 
 // Default unit (no explicit unit argument) is accepted from the public entry
 const apiImplicitMeasurement = m(10);

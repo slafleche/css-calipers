@@ -3,14 +3,24 @@
   "compilerOptions": {
     "noEmit": true,
     "strict": true,
-    "types": ["vitest", "node"],
+    "types": [
+      "vitest",
+      "node"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@css-bookends/css-calipers": ["src/index.ts"],
-      "@css-bookends/css-calipers/*": ["src/*"]
+      "@css-bookends/css-calipers": [
+        "src/index.ts"
+      ],
+      "@css-bookends/css-calipers/*": [
+        "src/*"
+      ]
     }
   },
-  "include": ["tests", "examples"],
+  "include": [
+    "tests",
+    "examples"
+  ],
   "exclude": [
     "tests/types",
     "tests/runtime/**/*.cjs.test.ts",

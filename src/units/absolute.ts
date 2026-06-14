@@ -18,4 +18,3 @@ export type QMeasurement = MeasurementOf<typeof mQ>;
 export type InMeasurement = MeasurementOf<typeof mIn>;
 export type PcMeasurement = MeasurementOf<typeof mPc>;
 export type PtMeasurement = MeasurementOf<typeof mPt>;
-

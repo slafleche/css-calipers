@@ -1,7 +1,7 @@
 # CSS-Calipers
 
-[![npm](https://img.shields.io/npm/v/@css-bookends/css-calipers.svg)](https://www.npmjs.com/package/@css-bookends/css-calipers)
-[![types](https://img.shields.io/npm/types/@css-bookends/css-calipers.svg)](https://www.npmjs.com/package/@css-bookends/css-calipers)
+[![npm](https://img.shields.io/npm/v/css-calipers.svg)](https://www.npmjs.com/package/css-calipers)
+[![types](https://img.shields.io/npm/types/css-calipers.svg)](https://www.npmjs.com/package/css-calipers)
 [![license](https://img.shields.io/npm/l/css-calipers.svg)](./LICENSE.txt)
 
 **CSS is code. Treat it that way.**  
@@ -31,7 +31,7 @@ At a glance:
 ## Install
 
 ```bash
-npm install @css-bookends/css-calipers
+npm install css-calipers
 ```
 
 ---
@@ -39,7 +39,7 @@ npm install @css-bookends/css-calipers
 ## Quick start
 
 ```ts
-import { m } from "@css-bookends/css-calipers";
+import { m } from "css-calipers";
 
 // Declare vars
 const paddingBase = m(4); // defaults to px (and is typed as a px measurement) when no unit is specified
@@ -56,7 +56,7 @@ const style = {
 };
 ```
 
-If you prefer, you can also import unit helpers from dedicated subpaths. For example, `mPercent` is available from the root entrypoint and from `@css-bookends/css-calipers/units/percent`, and all unit helpers are aggregated under `@css-bookends/css-calipers/units`.
+If you prefer, you can also import unit helpers from dedicated subpaths. For example, `mPercent` is available from the root entrypoint and from `css-calipers/units/percent`, and all unit helpers are aggregated under `css-calipers/units`.
 
 ---
 
@@ -71,15 +71,17 @@ If you prefer, you can also import unit helpers from dedicated subpaths. For exa
 
 ## Media queries
 
-Media queries are not part of this package. They live in
+Media queries are not part of CSS-Calipers, which is purely the measurement
+layer. They live in
 [`@css-bookends/media-queries`](https://www.npmjs.com/package/@css-bookends/media-queries),
-a separate book in the [CSS-Bookends](https://github.com/slafleche/css-bookends)
-umbrella that builds on this measurement lexicon. Install it alongside this
-package when you need them.
+a book in the [CSS-Bookends](https://github.com/slafleche/css-bookends) umbrella
+that builds on this lexicon.
 
-(The original unscoped `css-calipers` bundled a media query helper and is now
-deprecated; use `@css-bookends/css-calipers` for measurement and add
-`@css-bookends/media-queries` for media queries.)
+**Upgrading to v1?** The only change is media queries. If you never used the media
+query helper, v1 is a drop-in, nothing to change, no functional difference. If you
+did use it, switch to [CSS-Bookends](https://github.com/slafleche/css-bookends),
+which has the same measurement layer plus the media query helper and the rest of
+the umbrella.
 
 ---
 
@@ -133,7 +135,7 @@ It’s probably overkill if:
 ### Layout tokens example
 
 ```ts
-import { m, mPercent, mVw, mVh, assertCondition } from "@css-bookends/css-calipers";
+import { m, mPercent, mVw, mVh, assertCondition } from "css-calipers";
 
 // Token-style measurements (px by default)
 const spacing = m(8); // Defaults to px and is typed as a PxMeasurement
@@ -205,7 +207,7 @@ a theme override, hardcode a debug routine, or wire a global invariant; the
 structure is up to you:
 
 ```ts
-import { assertMatchingUnits } from "@css-bookends/css-calipers";
+import { assertMatchingUnits } from "css-calipers";
 import { formTokens } from "@/tokens/forms.tokens";
 
 if (process.env.NODE_ENV !== "production") {
@@ -325,7 +327,7 @@ For m and unit helpers, errors include a trimmed stack hint in non-production by
 You can disable or force stack hints globally:
 
 ```
-import { setErrorConfig } from "@css-bookends/css-calipers";
+import { setErrorConfig } from "css-calipers";
 
 // Disable stack hints everywhere (for production).
 setErrorConfig({ stackHints: "off" });
@@ -342,7 +344,7 @@ If you want instance-scoped configuration and a single re-export surface, use
 the factory entrypoint. The instance includes core helpers and unit helpers.
 
 ```
-import { createCalipers } from "@css-bookends/css-calipers/factory";
+import { createCalipers } from "css-calipers/factory";
 
 const calipers = createCalipers({
   errorConfig: { stackHints: "on" },
@@ -377,7 +379,7 @@ property typings (for example, the `Property` types from the `csstype`
 package):
 
 ```ts
-import type { MeasurementString } from "@css-bookends/css-calipers";
+import type { MeasurementString } from "css-calipers";
 import type { Property } from "csstype";
 
 type SpacingKeyword = Exclude<

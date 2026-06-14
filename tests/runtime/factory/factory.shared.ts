@@ -7,7 +7,9 @@ type FactoryApi = {
     m: (value: number, unit?: string) => { css: () => string };
     mPx: (value: number, context?: string) => { css: () => string };
     getErrorConfig: () => { stackHints: 'auto' | 'on' | 'off' };
-    setErrorConfig: (next: { stackHints?: 'auto' | 'on' | 'off' }) => void;
+    setErrorConfig: (next: {
+      stackHints?: 'auto' | 'on' | 'off';
+    }) => void;
     units: {
       mPx: (value: number, context?: string) => { css: () => string };
     };

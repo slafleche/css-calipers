@@ -6,4 +6,3 @@ import {
 export const mFr = makeUnitHelperFromDefinition('mFr');
 
 export type FrMeasurement = MeasurementOf<typeof mFr>;
-

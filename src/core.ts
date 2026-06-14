@@ -1,28 +1,29 @@
+import { createCoreApi } from './internal/createCoreApi';
+import {
+  createErrorConfigStore,
+  type ErrorCode,
+  type ErrorConfig,
+} from './internal/errors';
+import {
+  type IRatio,
+  isRatio,
+  normalizeRatio,
+  parseRatio,
+  r,
+  type RatioParts,
+  ratioToFloat,
+  reduceRatio,
+  simplifyRatio,
+  toFloat,
+} from './ratio';
 import {
   type UnitCategory,
   type UnitDefinition,
   type UnitDefinitionRecord,
 } from './unitDefinitions';
-import { createCoreApi } from './internal/createCoreApi';
-import {
-  createErrorConfigStore,
-  type ErrorConfig,
-  type ErrorCode,
-} from './internal/errors';
-import {
-  r,
-  isRatio,
-  normalizeRatio,
-  parseRatio,
-  ratioToFloat,
-  toFloat,
-  reduceRatio,
-  simplifyRatio,
-  type IRatio,
-  type RatioParts,
-} from './ratio';
 
-type UnitSymbol = UnitDefinitionRecord[keyof UnitDefinitionRecord]['unit'];
+type UnitSymbol =
+  UnitDefinitionRecord[keyof UnitDefinitionRecord]['unit'];
 
 export type MeasurementString<Unit extends string = UnitSymbol> =
   `${number}${Unit}`;
@@ -61,11 +62,14 @@ export interface IMeasurement<Unit extends string = string> {
   round: (precision?: number) => IMeasurement<Unit>;
   floor: () => IMeasurement<Unit>;
   ceil: () => IMeasurement<Unit>;
-  clamp(min: IMeasurement<Unit>, max: IMeasurement<Unit>): IMeasurement<Unit>;
+  clamp(
+    min: IMeasurement<Unit>,
+    max: IMeasurement<Unit>,
+  ): IMeasurement<Unit>;
 }
 
-export type InscribedMeasurement<Unit extends string> = IMeasurement<Unit> &
-  UnitBrand<Unit>;
+export type InscribedMeasurement<Unit extends string> =
+  IMeasurement<Unit> & UnitBrand<Unit>;
 
 /**
  * @deprecated Renamed to `InscribedMeasurement`. This alias is kept for one
@@ -115,15 +119,15 @@ export const {
 
 export type MeasurementUnitDefinition = UnitDefinition;
 export type MeasurementUnitCategory = UnitCategory;
-export { type ErrorConfig, type ErrorCode };
+export { type ErrorCode, type ErrorConfig };
 export {
-  r,
   isRatio,
   normalizeRatio,
   parseRatio,
+  r,
   ratioToFloat,
-  toFloat,
   reduceRatio,
   simplifyRatio,
+  toFloat,
 };
 export type { IRatio, RatioParts };

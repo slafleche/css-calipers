@@ -5,18 +5,29 @@ import { describe, expect, it } from 'vitest';
 const esmRoot = await import('../../../dist/esm/index.js');
 const esmUnits = await import('../../../dist/esm/units/index.js');
 
-const esmUnitsPercent = await import('../../../dist/esm/units/percent.js');
-const esmUnitsAbsolute = await import('../../../dist/esm/units/absolute.js');
-const esmUnitsFontRelative = await import('../../../dist/esm/units/font-relative.js');
-const esmUnitsViewport = await import('../../../dist/esm/units/viewport.js');
-const esmUnitsViewportSmall = await import('../../../dist/esm/units/viewport-small.js');
-const esmUnitsViewportLarge = await import('../../../dist/esm/units/viewport-large.js');
-const esmUnitsViewportDynamic = await import('../../../dist/esm/units/viewport-dynamic.js');
-const esmUnitsContainer = await import('../../../dist/esm/units/container.js');
-const esmUnitsAngle = await import('../../../dist/esm/units/angle.js');
+const esmUnitsPercent =
+  await import('../../../dist/esm/units/percent.js');
+const esmUnitsAbsolute =
+  await import('../../../dist/esm/units/absolute.js');
+const esmUnitsFontRelative =
+  await import('../../../dist/esm/units/font-relative.js');
+const esmUnitsViewport =
+  await import('../../../dist/esm/units/viewport.js');
+const esmUnitsViewportSmall =
+  await import('../../../dist/esm/units/viewport-small.js');
+const esmUnitsViewportLarge =
+  await import('../../../dist/esm/units/viewport-large.js');
+const esmUnitsViewportDynamic =
+  await import('../../../dist/esm/units/viewport-dynamic.js');
+const esmUnitsContainer =
+  await import('../../../dist/esm/units/container.js');
+const esmUnitsAngle =
+  await import('../../../dist/esm/units/angle.js');
 const esmUnitsTime = await import('../../../dist/esm/units/time.js');
-const esmUnitsFrequency = await import('../../../dist/esm/units/frequency.js');
-const esmUnitsResolution = await import('../../../dist/esm/units/resolution.js');
+const esmUnitsFrequency =
+  await import('../../../dist/esm/units/frequency.js');
+const esmUnitsResolution =
+  await import('../../../dist/esm/units/resolution.js');
 const esmUnitsGrid = await import('../../../dist/esm/units/grid.js');
 
 describe('API surface (ESM)', () => {
@@ -150,7 +161,10 @@ describe('API surface (ESM)', () => {
       esmRoot.measurementUnitMetadata,
     );
 
-    const expectedKeys = [...coreRuntimeKeys, ...unitHelperKeys].sort();
+    const expectedKeys = [
+      ...coreRuntimeKeys,
+      ...unitHelperKeys,
+    ].sort();
     const actualKeys = rootKeys.sort();
 
     expect(actualKeys).toEqual(expectedKeys);

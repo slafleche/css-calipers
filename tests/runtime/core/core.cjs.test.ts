@@ -1,5 +1,4 @@
 // Core tests against the built CommonJS artifact in dist/cjs.
-import type { CoreApi } from './core.shared';
 import { runCoreTests } from './core.shared';
 
 // Dynamic import works with CommonJS output and will fail fast if the
@@ -74,6 +73,6 @@ const api = {
   measurementMax,
   setErrorConfig,
   getErrorConfig,
-} as CoreApi;
+};
 
 runCoreTests('cjs', api);

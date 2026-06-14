@@ -7,8 +7,8 @@
  * runner agnostic; you can adapt it to Jest, Mocha, or any other framework.
  */
 
-import { describe, it } from "vitest";
-import { m, assertMatchingUnits } from "@css-bookends/css-calipers";
+import { assertMatchingUnits, m } from '@css-bookends/css-calipers';
+import { describe, it } from 'vitest';
 
 // Pretend these spacing tokens come from a design token file or configuration
 // layer. The intent is a simple invariant: small <= large and both share units.
@@ -17,19 +17,19 @@ const spacingTokens = {
   spaceLg: m(12),
 };
 
-describe("spacing tokens (example unit test)", () => {
-  it("use the same unit for related tokens", () => {
+describe('spacing tokens (example unit test)', () => {
+  it('use the same unit for related tokens', () => {
     const { spaceSm, spaceLg } = spacingTokens;
 
     // Unit consistency between related tokens.
     assertMatchingUnits(
       spaceSm,
       spaceLg,
-      "spacing tokens: spaceSm and spaceLg must share units"
+      'spacing tokens: spaceSm and spaceLg must share units',
     );
   });
 
-  it("keep small <= large", () => {
+  it('keep small <= large', () => {
     const { spaceSm, spaceLg } = spacingTokens;
 
     // Ordering invariant: small should never exceed large.
@@ -39,7 +39,7 @@ describe("spacing tokens (example unit test)", () => {
     if (!(smValue <= lgValue)) {
       throw new Error(
         `spacing tokens out of order: ` +
-          `spaceSm=${spaceSm.css()}, spaceLg=${spaceLg.css()}`
+          `spaceSm=${spaceSm.css()}, spaceLg=${spaceLg.css()}`,
       );
     }
   });

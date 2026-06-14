@@ -1,2 +1,2 @@
-export { buildMeasurementCreationError } from './buildMeasurementCreationError';
 export type { MeasurementCreationErrorPayload } from './buildMeasurementCreationError';
+export { buildMeasurementCreationError } from './buildMeasurementCreationError';

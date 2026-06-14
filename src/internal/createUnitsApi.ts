@@ -1,6 +1,9 @@
+import type { UnitAssertion, UnitGuard, UnitHelper } from '../core';
+import type {
+  UnitDefinitionRecord,
+  UnitHelperName,
+} from '../unitDefinitions';
 import { UNIT_DEFINITIONS } from '../unitDefinitions';
-import type { UnitHelper, UnitGuard, UnitAssertion } from '../core';
-import type { UnitDefinitionRecord, UnitHelperName } from '../unitDefinitions';
 import type { CoreApi } from './createCoreApi';
 
 type UnitHelpersMap = {
@@ -16,9 +19,7 @@ export const createUnitsApi = (core: CoreApi): UnitsApi => {
   const helpers = Object.keys(UNIT_DEFINITIONS).reduce(
     (acc, name) => {
       const helperName = name as UnitHelperName;
-      acc[helperName] = core.makeUnitHelperFromDefinition(
-        helperName,
-      ) as UnitHelper<UnitDefinitionRecord[UnitHelperName]['unit']>;
+      acc[helperName] = core.makeUnitHelperFromDefinition(helperName);
       return acc;
     },
     {} as Record<UnitHelperName, UnitHelper<string>>,

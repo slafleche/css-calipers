@@ -1,20 +1,24 @@
-import { expectAssignable, expectError, expectNotAssignable } from 'tsd';
+import {
+  expectAssignable,
+  expectError,
+  expectNotAssignable,
+} from 'tsd';
 
 import {
-  m,
-  isMeasurement,
-  mPx,
-  mPercent,
-  isPercentMeasurement,
   assertPercentMeasurement,
-  measurementMin,
-  measurementMax,
   type IMeasurement,
+  isMeasurement,
+  isPercentMeasurement,
+  m,
+  measurementMax,
+  measurementMin,
   type MeasurementString,
-  type PxMeasurement,
+  mPercent,
+  mPx,
   type PercentMeasurement,
-  type UnitGuard,
+  type PxMeasurement,
   type UnitAssertion,
+  type UnitGuard,
 } from '../../dist/esm';
 
 const implicit = m(10);
@@ -33,7 +37,10 @@ expectAssignable<PxMeasurement>(implicitWithContext);
 const explicitWithContext = m(10, 'px', 'spacing.token');
 expectAssignable<IMeasurement<'px'>>(explicitWithContext);
 
-const explicitWithOptions = m(10, { unit: 'em', context: 'spacing.token' });
+const explicitWithOptions = m(10, {
+  unit: 'em',
+  context: 'spacing.token',
+});
 expectAssignable<IMeasurement<'em'>>(explicitWithOptions);
 
 const added = explicitPx.add(explicitPx);
@@ -97,7 +104,10 @@ type FakeMarginProperty =
   | MeasurementString<'em'>;
 
 // Exclude measurement-shaped strings to get only keywords
-type FakeSpacingKeyword = Exclude<FakeMarginProperty, MeasurementString>;
+type FakeSpacingKeyword = Exclude<
+  FakeMarginProperty,
+  MeasurementString
+>;
 
 declare const keywordOnlyMargin: FakeSpacingKeyword;
 expectAssignable<'auto' | 'fit-content'>(keywordOnlyMargin);

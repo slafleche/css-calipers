@@ -5,18 +5,29 @@ import { describe, expect, it } from 'vitest';
 const cjsRoot = await import('../../../dist/cjs/index.js');
 const cjsUnits = await import('../../../dist/cjs/units/index.js');
 
-const cjsUnitsPercent = await import('../../../dist/cjs/units/percent.js');
-const cjsUnitsAbsolute = await import('../../../dist/cjs/units/absolute.js');
-const cjsUnitsFontRelative = await import('../../../dist/cjs/units/font-relative.js');
-const cjsUnitsViewport = await import('../../../dist/cjs/units/viewport.js');
-const cjsUnitsViewportSmall = await import('../../../dist/cjs/units/viewport-small.js');
-const cjsUnitsViewportLarge = await import('../../../dist/cjs/units/viewport-large.js');
-const cjsUnitsViewportDynamic = await import('../../../dist/cjs/units/viewport-dynamic.js');
-const cjsUnitsContainer = await import('../../../dist/cjs/units/container.js');
-const cjsUnitsAngle = await import('../../../dist/cjs/units/angle.js');
+const cjsUnitsPercent =
+  await import('../../../dist/cjs/units/percent.js');
+const cjsUnitsAbsolute =
+  await import('../../../dist/cjs/units/absolute.js');
+const cjsUnitsFontRelative =
+  await import('../../../dist/cjs/units/font-relative.js');
+const cjsUnitsViewport =
+  await import('../../../dist/cjs/units/viewport.js');
+const cjsUnitsViewportSmall =
+  await import('../../../dist/cjs/units/viewport-small.js');
+const cjsUnitsViewportLarge =
+  await import('../../../dist/cjs/units/viewport-large.js');
+const cjsUnitsViewportDynamic =
+  await import('../../../dist/cjs/units/viewport-dynamic.js');
+const cjsUnitsContainer =
+  await import('../../../dist/cjs/units/container.js');
+const cjsUnitsAngle =
+  await import('../../../dist/cjs/units/angle.js');
 const cjsUnitsTime = await import('../../../dist/cjs/units/time.js');
-const cjsUnitsFrequency = await import('../../../dist/cjs/units/frequency.js');
-const cjsUnitsResolution = await import('../../../dist/cjs/units/resolution.js');
+const cjsUnitsFrequency =
+  await import('../../../dist/cjs/units/frequency.js');
+const cjsUnitsResolution =
+  await import('../../../dist/cjs/units/resolution.js');
 const cjsUnitsGrid = await import('../../../dist/cjs/units/grid.js');
 
 describe('API surface (CJS)', () => {
@@ -143,9 +154,14 @@ describe('API surface (CJS)', () => {
       'setErrorConfig',
     ];
 
-    const unitHelperKeys = Object.keys(cjsRoot.measurementUnitMetadata);
+    const unitHelperKeys = Object.keys(
+      cjsRoot.measurementUnitMetadata,
+    );
 
-    const expectedKeys = [...coreRuntimeKeys, ...unitHelperKeys].sort();
+    const expectedKeys = [
+      ...coreRuntimeKeys,
+      ...unitHelperKeys,
+    ].sort();
     const actualKeys = rootKeys.sort();
 
     expect(actualKeys).toEqual(expectedKeys);

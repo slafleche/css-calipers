@@ -23,7 +23,10 @@ class RatioImpl implements IRatio {
     denominator: number,
     options: { omitDenominatorWhenOne?: boolean } = {},
   ) {
-    if (!Number.isFinite(numerator) || !Number.isFinite(denominator)) {
+    if (
+      !Number.isFinite(numerator) ||
+      !Number.isFinite(denominator)
+    ) {
       throw new Error('Ratio values must be finite numbers.');
     }
     if (denominator === 0) {
@@ -31,7 +34,8 @@ class RatioImpl implements IRatio {
     }
     this.#numerator = numerator;
     this.#denominator = denominator;
-    this.#omitDenominatorWhenOne = options.omitDenominatorWhenOne ?? false;
+    this.#omitDenominatorWhenOne =
+      options.omitDenominatorWhenOne ?? false;
   }
 
   numerator(): number {
@@ -70,7 +74,10 @@ type RatioCreateOptions = {
   simplify?: boolean;
 };
 
-export function r(denominator: number, options?: RatioCreateOptions): IRatio;
+export function r(
+  denominator: number,
+  options?: RatioCreateOptions,
+): IRatio;
 export function r(
   numerator: number,
   denominator: number,
@@ -90,7 +97,7 @@ export function r(
   const numerator = numeratorOrDenominator;
   const resolvedDenominator = hasOptionsArg
     ? 1
-    : denominatorOrOptions ?? 1;
+    : (denominatorOrOptions ?? 1);
   const ratio = new RatioImpl(numerator, resolvedDenominator);
   return resolvedOptions?.simplify ? simplifyRatio(ratio) : ratio;
 }
@@ -117,17 +124,26 @@ export const parseRatio = (
       : null;
   }
   if (isRatio(value)) {
-    return { numerator: value.numerator(), denominator: value.denominator() };
+    return {
+      numerator: value.numerator(),
+      denominator: value.denominator(),
+    };
   }
   const trimmed = value.trim();
   if (!trimmed) return null;
   if (trimmed.includes('/') || trimmed.includes(':')) {
     const delimiter = trimmed.includes('/') ? '/' : ':';
-    const [left, right] = trimmed.split(delimiter);
+    const [
+      left,
+      right,
+    ] = trimmed.split(delimiter);
     if (left === undefined || right === undefined) return null;
     const numerator = Number(left.trim());
     const denominator = Number(right.trim());
-    if (!Number.isFinite(numerator) || !Number.isFinite(denominator)) {
+    if (
+      !Number.isFinite(numerator) ||
+      !Number.isFinite(denominator)
+    ) {
       return null;
     }
     if (denominator === 0) return null;
@@ -150,7 +166,10 @@ export const normalizeRatio = (ratio: IRatio): IRatio => {
     throw new Error('Ratio denominator cannot be zero.');
   }
 
-  if (!Number.isInteger(numerator) || !Number.isInteger(denominator)) {
+  if (
+    !Number.isInteger(numerator) ||
+    !Number.isInteger(denominator)
+  ) {
     return new RatioImpl(numerator, denominator);
   }
 
@@ -174,7 +193,8 @@ export const normalizeRatio = (ratio: IRatio): IRatio => {
   return new RatioImpl(numerator / divisor, denominator / divisor);
 };
 
-export const reduceRatio = (ratio: IRatio): IRatio => normalizeRatio(ratio);
+export const reduceRatio = (ratio: IRatio): IRatio =>
+  normalizeRatio(ratio);
 export const simplifyRatio = (ratio: IRatio): IRatio => {
   const reduced = normalizeRatio(ratio);
   return new RatioImpl(reduced.numerator(), reduced.denominator(), {

@@ -12,4 +12,3 @@ export type DegMeasurement = MeasurementOf<typeof mDeg>;
 export type RadMeasurement = MeasurementOf<typeof mRad>;
 export type GradMeasurement = MeasurementOf<typeof mGrad>;
 export type TurnMeasurement = MeasurementOf<typeof mTurn>;
-

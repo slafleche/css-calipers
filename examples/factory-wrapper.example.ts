@@ -1,4 +1,4 @@
-import { createCalipers } from "@css-bookends/css-calipers/factory";
+import { createCalipers } from '@css-bookends/css-calipers/factory';
 
 /**
  * Example wrapper module.
@@ -6,7 +6,7 @@ import { createCalipers } from "@css-bookends/css-calipers/factory";
  * This keeps a single import path and makes refactors cheaper.
  */
 const calipers = createCalipers({
-  errorConfig: { stackHints: "on" },
+  errorConfig: { stackHints: 'on' },
 });
 
 export const {
@@ -26,15 +26,15 @@ export const { mEm, mVw } = units;
 export const m = (
   value: number,
   unitOrOptions?: string | { unit?: string; context?: string },
-  context?: string
+  context?: string,
 ) => {
   if (!unitOrOptions) {
-    return calipers.m(value, "%", context);
+    return calipers.m(value, '%', context);
   }
-  if (typeof unitOrOptions === "object") {
+  if (typeof unitOrOptions === 'object') {
     return calipers.m(value, {
       ...unitOrOptions,
-      unit: unitOrOptions.unit ?? "%",
+      unit: unitOrOptions.unit ?? '%',
     });
   }
   return calipers.m(value, unitOrOptions, context);

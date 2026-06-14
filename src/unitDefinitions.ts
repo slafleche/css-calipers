@@ -98,4 +98,3 @@ export const UNIT_DEFINITIONS = {
 
 export type UnitDefinitionRecord = typeof UNIT_DEFINITIONS;
 export type UnitHelperName = keyof UnitDefinitionRecord;
-

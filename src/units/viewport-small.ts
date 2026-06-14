@@ -16,4 +16,3 @@ export type SviMeasurement = MeasurementOf<typeof mSvi>;
 export type SvbMeasurement = MeasurementOf<typeof mSvb>;
 export type SvminMeasurement = MeasurementOf<typeof mSvmin>;
 export type SvmaxMeasurement = MeasurementOf<typeof mSvmax>;
-

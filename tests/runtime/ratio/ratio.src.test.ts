@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   isRatio,
   normalizeRatio,
   parseRatio,
   r,
   ratioToFloat,
-  toFloat,
   reduceRatio,
   simplifyRatio,
+  toFloat,
 } from '../../../src/ratio';
 
 describe('Ratio helper (src)', () => {
@@ -122,7 +123,9 @@ describe('Ratio helper (src)', () => {
     expect(() => r(Number.NaN)).toThrow(
       'Ratio values must be finite numbers.',
     );
-    expect(() => r(2, 0)).toThrow('Ratio denominator cannot be zero.');
+    expect(() => r(2, 0)).toThrow(
+      'Ratio denominator cannot be zero.',
+    );
     expect(() => normalizeRatio(r(Number.NaN))).toThrow(
       'Ratio values must be finite numbers.',
     );

@@ -28,4 +28,3 @@ export type IcMeasurement = MeasurementOf<typeof mIc>;
 export type RicMeasurement = MeasurementOf<typeof mRic>;
 export type LhMeasurement = MeasurementOf<typeof mLh>;
 export type RlhMeasurement = MeasurementOf<typeof mRlh>;
-
