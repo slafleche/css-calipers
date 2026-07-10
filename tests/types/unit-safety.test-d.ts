@@ -12,6 +12,7 @@ import {
   mPercent,
   mPx,
   mVh,
+  type NonNegativeMeasurement,
 } from '../../dist/esm';
 
 // Representative measurements spanning multiple unit categories:
@@ -36,7 +37,8 @@ expectType<IMeasurement<'px'>>(px.divide(2));
 expectType<IMeasurement<'px'>>(px.double());
 expectType<IMeasurement<'px'>>(px.half());
 expectType<IMeasurement<'px'>>(px.negation());
-expectType<IMeasurement<'px'>>(px.absolute());
+// absolute() preserves the unit and is additionally hardened to non-negative.
+expectType<NonNegativeMeasurement<'px'>>(px.absolute());
 expectType<IMeasurement<'px'>>(px.round(2));
 expectType<IMeasurement<'px'>>(px.floor());
 expectType<IMeasurement<'px'>>(px.ceil());

@@ -130,3 +130,5 @@ type PercentAssert = UnitAssertion<typeof mPercent>;
 
 expectAssignable<PercentGuard>(isPercentMeasurement);
 expectAssignable<PercentAssert>(assertPercentMeasurement);
+
+// Value-constraint refinements have their own type suite in refinement.test-d.ts.

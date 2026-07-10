@@ -1,7 +1,5 @@
-import {
-  makeUnitHelperFromDefinition,
-  type MeasurementOf,
-} from '../core';
+import type { MeasurementOf } from '../core';
+import { makeUnitHelperFromDefinition } from '../default';
 
 export const mVw = makeUnitHelperFromDefinition('mVw');
 export const mVh = makeUnitHelperFromDefinition('mVh');

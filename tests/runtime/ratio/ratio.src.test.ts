@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { f, isFloat } from '../../../src/float';
+import { i, isInteger } from '../../../src/integer';
 import {
   isRatio,
   normalizeRatio,
@@ -132,5 +134,74 @@ describe('Ratio helper (src)', () => {
     expect(() => normalizeRatio(r(2, 0))).toThrow(
       'Ratio denominator cannot be zero.',
     );
+  });
+
+  it('normalizeRatio re-validates its own input (not only the r() constructor)', () => {
+    // r() rejects bad inputs at construction, so the earlier cases never reach
+    // normalizeRatio's own guards. A hand-rolled IRatio that bypasses r() proves
+    // normalizeRatio independently rejects non-finite numerators and a zero
+    // denominator (its defensive re-validation, lines 185-190 of ratio.ts).
+    const fakeRatio = (
+      numerator: number,
+      denominator: number,
+    ): Parameters<typeof normalizeRatio>[0] => ({
+      css: () => `${numerator}/${denominator}`,
+      toString: () => `${numerator}/${denominator}`,
+      valueOf: () => numerator / denominator,
+      numerator: () => numerator,
+      denominator: () => denominator,
+      numeratorScalar: () => i(0),
+      denominatorScalar: () => i(0),
+      withNumerator: () => fakeRatio(numerator, denominator),
+      withDenominator: () => fakeRatio(numerator, denominator),
+    });
+
+    expect(() => normalizeRatio(fakeRatio(Number.NaN, 2))).toThrow(
+      'Ratio values must be finite numbers.',
+    );
+    expect(() =>
+      normalizeRatio(fakeRatio(Number.POSITIVE_INFINITY, 2)),
+    ).toThrow('Ratio values must be finite numbers.');
+    expect(() => normalizeRatio(fakeRatio(1, 0))).toThrow(
+      'Ratio denominator cannot be zero.',
+    );
+  });
+
+  it('consumes integer and float primitives', () => {
+    expect(r(i(16), i(9)).css()).toBe('16/9');
+    expect(r(i(16), i(9)).valueOf()).toBeCloseTo(16 / 9);
+    expect(r(f(1.5), f(3)).css()).toBe('1.5/3');
+    expect(r(i(4)).css()).toBe('4/1');
+    expect(r(i(6), i(3), { simplify: true }).css()).toBe('2');
+    expect(r(2, 3).withNumerator(i(4)).css()).toBe('4/3');
+    expect(parseRatio(i(5))).toEqual({
+      numerator: 5,
+      denominator: 1,
+    });
+    expect(parseRatio(f(2.5))).toEqual({
+      numerator: 2.5,
+      denominator: 1,
+    });
+  });
+
+  it('returns numerator and denominator back as typed i()/f() scalars', () => {
+    // typed operands come back INTACT (same kind that went in)
+    const typed = r(i(16), f(9));
+    expect(isInteger(typed.numeratorScalar())).toBe(true);
+    expect(typed.numeratorScalar().valueOf()).toBe(16);
+    expect(isFloat(typed.denominatorScalar())).toBe(true);
+    expect(typed.denominatorScalar().valueOf()).toBe(9);
+
+    // raw numbers reconstruct by value: whole -> i(), fractional -> f()
+    const raw = r(4, 2.5);
+    expect(isInteger(raw.numeratorScalar())).toBe(true);
+    expect(raw.numeratorScalar().valueOf()).toBe(4);
+    expect(isFloat(raw.denominatorScalar())).toBe(true);
+    expect(raw.denominatorScalar().valueOf()).toBe(2.5);
+
+    // a replaced side keeps the new operand's type
+    expect(
+      isInteger(r(2, 3).withNumerator(i(4)).numeratorScalar()),
+    ).toBe(true);
   });
 });

@@ -1,9 +1,9 @@
+import type { MeasurementOf } from '../core';
 import {
   makeUnitAssert,
   makeUnitGuard,
   makeUnitHelperFromDefinition,
-  type MeasurementOf,
-} from '../core';
+} from '../default';
 
 export const mPercent = makeUnitHelperFromDefinition('mPercent');
 

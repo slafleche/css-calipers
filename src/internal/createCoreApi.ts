@@ -1,17 +1,37 @@
 import type {
+  GreaterOrEqualToZeroBrand,
   IMeasurement,
+  InRangeBrand,
   InscribedMeasurement,
+  MeasurementRefinement,
+  MeasurementRefinementResult,
+  NonNegativeMeasurement,
+  SmallerOrEqualToZeroBrand,
   UnitAssertion,
   UnitGuard,
   UnitHelper,
 } from '../core';
+import { f } from '../float';
 import {
+  type Constraints,
+  DEFAULT_HARDENING,
+  describeBound,
+  type Hardening,
+  normalizeConstraints,
+  violatesConstraints,
+} from '../hardening';
+import { i } from '../integer';
+import { type Scalar, toNumber } from '../scalar';
+import {
+  UNIT_CATEGORY_BY_UNIT,
   UNIT_DEFINITIONS,
+  type UnitCategory,
   type UnitDefinitionRecord,
   type UnitHelperName,
 } from '../unitDefinitions';
 import { buildMeasurementCreationError } from './buildMeasurementCreationError';
 import { createErrorHelpers, type ErrorConfigStore } from './errors';
+import { toPlainDecimal } from './toPlainDecimal';
 
 type DeltaInput = number | IMeasurement<string>;
 type MeasurementCreateOptions<Unit extends string> = {
@@ -19,41 +39,10 @@ type MeasurementCreateOptions<Unit extends string> = {
   context?: string;
 };
 
-// JS stringifies numbers in exponential form once the magnitude is >= 1e21 or
-// < 1e-6 (e.g. "1e+21", "1e-7"). CSS output must never contain that, so we
-// expand the exponent into a plain decimal by shifting the decimal point on the
-// digit string. This is string manipulation on the same digits, so it does not
-// re-introduce floating-point error.
-const toPlainDecimal = (value: number): string => {
-  const text = `${value}`;
-  if (!text.includes('e') && !text.includes('E')) {
-    return text;
-  }
-  const [
-    mantissa,
-    exponentText,
-  ] = text.toLowerCase().split('e');
-  const exponent = Number(exponentText);
-  const negative = mantissa.startsWith('-');
-  const unsigned = negative ? mantissa.slice(1) : mantissa;
-  const [
-    intDigits,
-    fracDigits = '',
-  ] = unsigned.split('.');
-  const digits = intDigits + fracDigits;
-  const pointFromLeft = intDigits.length + exponent;
-  const sign = negative ? '-' : '';
-
-  if (pointFromLeft <= 0) {
-    return `${sign}0.${'0'.repeat(-pointFromLeft)}${digits}`;
-  }
-  if (pointFromLeft >= digits.length) {
-    return `${sign}${digits}${'0'.repeat(pointFromLeft - digits.length)}`;
-  }
-  return `${sign}${digits.slice(0, pointFromLeft)}.${digits.slice(pointFromLeft)}`;
-};
-
-export const createCoreApi = (errorStore: ErrorConfigStore) => {
+export const createCoreApi = (
+  errorStore: ErrorConfigStore,
+  hardening: Hardening = DEFAULT_HARDENING,
+) => {
   const { throwHelperError, throwMeasurementMethodError } =
     createErrorHelpers(errorStore);
 
@@ -92,8 +81,13 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
   > implements IMeasurement<Unit> {
     #value: number;
     #unit: Unit;
+    #constraints: Constraints;
 
-    constructor(value: number, unit: Unit) {
+    constructor(
+      value: number,
+      unit: Unit,
+      constraints: Constraints = {},
+    ) {
       if (!Number.isFinite(value)) {
         throwHelperError({
           operation: 'css-calipers.Measurement.constructor',
@@ -104,6 +98,7 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
       }
       this.#value = value;
       this.#unit = unit.toLowerCase() as Unit;
+      this.#constraints = constraints;
     }
 
     css(): string {
@@ -114,12 +109,63 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
       return this.css();
     }
 
+    unit(): Unit {
+      return this.#unit;
+    }
+
+    value(): number {
+      return this.#value;
+    }
+
     getUnit(): Unit {
       return this.#unit;
     }
 
     getValue(): number {
       return this.#value;
+    }
+
+    constraints(): Constraints {
+      return { ...this.#constraints };
+    }
+
+    isInt(): boolean {
+      return Number.isInteger(this.#value);
+    }
+
+    isFloat(): boolean {
+      return !Number.isInteger(this.#value);
+    }
+
+    toTypedValue() {
+      return Number.isInteger(this.#value)
+        ? i(this.#value)
+        : f(this.#value);
+    }
+
+    category(): UnitCategory | undefined {
+      return UNIT_CATEGORY_BY_UNIT[this.#unit];
+    }
+
+    isLength(): boolean {
+      const category = this.category();
+      return category !== undefined && category.startsWith('length-');
+    }
+
+    isAbsolute(): boolean {
+      return this.category() === 'length-absolute';
+    }
+
+    isRelative(): boolean {
+      return this.isLength() && !this.isAbsolute();
+    }
+
+    isPercent(): boolean {
+      return this.category() === 'percent';
+    }
+
+    isAngle(): boolean {
+      return this.category() === 'angle';
     }
 
     valueOf(): number {
@@ -203,17 +249,18 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
       return this.#clone(next);
     }
 
-    multiply(factor: number): Measurement<Unit> {
-      if (factor === 1) return this;
-      if (factor === 0) return new Measurement(0, this.#unit);
-      if (factor === -1)
-        return new Measurement(-this.#value, this.#unit);
-      return this.#clone(this.#value * factor);
+    multiply(factor: Scalar): Measurement<Unit> {
+      const numericFactor = toNumber(factor);
+      if (numericFactor === 1) return this;
+      if (numericFactor === 0) return this.#clone(0);
+      if (numericFactor === -1) return this.#clone(-this.#value);
+      return this.#clone(this.#value * numericFactor);
     }
 
-    divide(divisor: number): Measurement<Unit> {
-      if (divisor === 1) return this;
-      if (divisor === 0) {
+    divide(divisor: Scalar): Measurement<Unit> {
+      const numericDivisor = toNumber(divisor);
+      if (numericDivisor === 1) return this;
+      if (numericDivisor === 0) {
         throwMeasurementMethodError({
           operation: 'css-calipers.Measurement.divide',
           caller: this,
@@ -222,7 +269,7 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
           details: { code: 'CALIPERS_E_DIVIDE_BY_ZERO' },
         });
       }
-      const result = this.#value / divisor;
+      const result = this.#value / numericDivisor;
       if (!Number.isFinite(result)) {
         throwMeasurementMethodError({
           operation: 'css-calipers.Measurement.divide',
@@ -247,8 +294,12 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
       return shouldNegate ? this.#clone(-this.#value) : this;
     }
 
-    absolute(): Measurement<Unit> {
-      return this.#clone(Math.abs(this.#value));
+    absolute(): NonNegativeMeasurement<Unit> {
+      // Math.abs is always >= 0, so the result is hardened to NonNegativeMeasurement
+      // (the governing rule: a runtime restriction must also harden the type).
+      return this.#clone(
+        Math.abs(this.#value),
+      ) as unknown as NonNegativeMeasurement<Unit>;
     }
 
     round(precision = 0): Measurement<Unit> {
@@ -310,7 +361,28 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     }
 
     #clone(value: number): Measurement<Unit> {
-      return new Measurement(value, this.#unit);
+      if (violatesConstraints(value, this.#constraints)) {
+        const result = `${toPlainDecimal(value)}${this.#unit}`;
+        const bound = describeBound(this.#constraints);
+        if (hardening === 'fail') {
+          throwMeasurementMethodError({
+            operation: 'css-calipers.Measurement.hardening',
+            caller: this,
+            params: [],
+            message: `operation result ${result} breaks the hardened bound ${bound}`,
+            details: { code: 'CALIPERS_E_HARDENING_BREACH' },
+          });
+        }
+        if (hardening === 'warn') {
+          console.warn(
+            `css-calipers: operation result ${result} breaks the hardened bound ${bound}; dropping the constraint`,
+          );
+        }
+        // 'ignore' + 'warn': drop the broken bound and proceed.
+        return new Measurement(value, this.#unit);
+      }
+      // In bounds (or unhardened): carry the bound onto the derived value.
+      return new Measurement(value, this.#unit, this.#constraints);
     }
   }
 
@@ -319,36 +391,60 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
   const createMeasurement = <Unit extends string>(
     value: number,
     unit: Unit,
+    constraints: Constraints = {},
   ): InscribedMeasurement<Unit> =>
     new Measurement(
       value,
       unit,
+      constraints,
     ) as unknown as InscribedMeasurement<Unit>;
 
   const isMeasurement = (x: unknown): x is IMeasurement<string> =>
     x instanceof Measurement;
 
-  function m(value: number): InscribedMeasurement<'px'>;
+  function m(value: Scalar): InscribedMeasurement<'px'>;
   function m(
-    value: number,
+    value: Scalar,
     options: { context?: string },
   ): InscribedMeasurement<'px'>;
   function m<Unit extends string>(
-    value: number,
+    value: Scalar,
     unit: Unit,
     context?: string,
   ): InscribedMeasurement<Lowercase<Unit>>;
   function m<Unit extends string>(
-    value: number,
+    value: Scalar,
     options: MeasurementCreateOptions<Unit>,
   ): InscribedMeasurement<Lowercase<Unit>>;
   function m<Unit extends string>(
-    value: number,
+    value: Scalar,
     unitOrOptions:
       | Unit
       | MeasurementCreateOptions<Unit> = 'px' as Unit,
     context?: string,
   ): InscribedMeasurement<Lowercase<Unit>> {
+    // Accept a plain number OR a typed scalar (i / f); coerce to a number here.
+    // Only a typed scalar (object) is unwrapped via valueOf; a plain number, or
+    // anything invalid (e.g. a missing value), passes through so the finite check
+    // below still produces the graceful "non-finite" error rather than crashing.
+    // (A hardened i/f's range bound is ingested below as `ingestedConstraints`.)
+    const numericValue =
+      typeof value === 'object' && value !== null
+        ? value.valueOf()
+        : value;
+    // A hardened i / f carries a range bound; ingest it so m can re-check it
+    // through arithmetic. An unhardened scalar (or plain number) carries none.
+    const ingestedConstraints: Constraints =
+      typeof value === 'object' &&
+      value !== null &&
+      typeof (value as { constraints?: unknown }).constraints ===
+        'function'
+        ? normalizeConstraints(
+            (
+              value as { constraints: () => Constraints }
+            ).constraints(),
+          )
+        : {};
     const options =
       unitOrOptions && typeof unitOrOptions === 'object'
         ? unitOrOptions
@@ -356,9 +452,9 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     const unit = (options.unit ?? 'px') as Unit;
     const contextLabel = options.context;
     const normalizedUnit = unit.toLowerCase() as Lowercase<Unit>;
-    if (!Number.isFinite(value)) {
+    if (!Number.isFinite(numericValue)) {
       const errorPayload = buildMeasurementCreationError(
-        value,
+        numericValue,
         normalizedUnit,
         'm',
         contextLabel,
@@ -372,7 +468,11 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
         includeStackHint: true,
       });
     }
-    return createMeasurement(value, normalizedUnit);
+    return createMeasurement(
+      numericValue,
+      normalizedUnit,
+      ingestedConstraints,
+    );
   }
 
   type UnitHelperFactory<Unit extends string> = ((
@@ -505,6 +605,110 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     }
   };
 
+  // Value-constraint refinements. One factory builds the quartet (is / ensure / check /
+  // hardenWith) from a numeric predicate and narrows to a constraint brand. The brand is
+  // additive over `IMeasurement` and is dropped by arithmetic (which can cross a bound),
+  // so a derived result must be re-checked. `nonNegative` / `nonPositive` / `inRange(...)`
+  // are the built-ins.
+  const makeMeasurementRefinement = <B>(spec: {
+    predicate: (value: number) => boolean;
+    message: (measurement: IMeasurement) => string;
+    defaultFallback?: number;
+  }): MeasurementRefinement<B> => {
+    const is = <M extends IMeasurement>(
+      measurement: M,
+    ): measurement is M & B => spec.predicate(measurement.getValue());
+
+    const ensure = <M extends IMeasurement>(
+      measurement: M,
+      context?: string,
+    ): M & B => {
+      if (!is(measurement)) {
+        throwHelperError({
+          operation: 'css-calipers.refinement.ensure',
+          params: [
+            measurement,
+          ],
+          message: spec.message(measurement),
+          context,
+          details: { code: 'CALIPERS_E_CONSTRAINT' },
+        });
+      }
+      // A negated generic type-guard does not narrow the fall-through to `M & B`, so the
+      // brand cast is necessary here (the runtime check above guarantees it holds).
+      return measurement as M & B;
+    };
+
+    const check = <M extends IMeasurement>(
+      measurement: M,
+    ): MeasurementRefinementResult<M, B> =>
+      is(measurement)
+        ? { ok: true, value: measurement }
+        : {
+            ok: false,
+            value: measurement,
+            error: spec.message(measurement),
+          };
+
+    const hardenWith = <M extends IMeasurement>(
+      measurement: M,
+      fallback?: M & B,
+    ): M & B => {
+      if (is(measurement)) return measurement;
+      if (fallback !== undefined) return fallback;
+      const { defaultFallback } = spec;
+      if (defaultFallback !== undefined) {
+        return createMeasurement(
+          defaultFallback,
+          measurement.getUnit(),
+        ) as unknown as M & B;
+      }
+      return throwHelperError({
+        operation: 'css-calipers.refinement.hardenWith',
+        params: [
+          measurement,
+        ],
+        message:
+          'no fallback provided and this refinement has no default fallback',
+        details: { code: 'CALIPERS_E_CONSTRAINT' },
+      });
+    };
+
+    return { is, ensure, check, hardenWith };
+  };
+
+  const nonNegative =
+    makeMeasurementRefinement<GreaterOrEqualToZeroBrand>({
+      predicate: (value) => value >= 0,
+      message: (measurement) =>
+        `expected a measurement >= 0 (got ${measurement.css()})`,
+      defaultFallback: 0,
+    });
+
+  const nonPositive =
+    makeMeasurementRefinement<SmallerOrEqualToZeroBrand>({
+      predicate: (value) => value <= 0,
+      message: (measurement) =>
+        `expected a measurement <= 0 (got ${measurement.css()})`,
+      defaultFallback: 0,
+    });
+
+  const inRange = <Min extends number, Max extends number>(
+    min: Min,
+    max: Max,
+  ): MeasurementRefinement<InRangeBrand<Min, Max>> => {
+    assertCondition(
+      min <= max,
+      `inRange: min (${min}) must be <= max (${max})`,
+    );
+    return makeMeasurementRefinement<InRangeBrand<Min, Max>>({
+      predicate: (value) => value >= min && value <= max,
+      message: (measurement) =>
+        `expected a measurement in [${min}, ${max}] (got ${measurement.css()})`,
+      defaultFallback: min,
+    });
+  };
+
   return {
     m,
     isMeasurement,
@@ -519,6 +723,10 @@ export const createCoreApi = (errorStore: ErrorConfigStore) => {
     hasCssMethod,
     assertUnit,
     assertCondition,
+    makeMeasurementRefinement,
+    nonNegative,
+    nonPositive,
+    inRange,
     getErrorConfig: errorStore.getErrorConfig,
     setErrorConfig: errorStore.setErrorConfig,
   } as const;

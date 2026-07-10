@@ -98,3 +98,13 @@ export const UNIT_DEFINITIONS = {
 
 export type UnitDefinitionRecord = typeof UNIT_DEFINITIONS;
 export type UnitHelperName = keyof UnitDefinitionRecord;
+
+/** Reverse lookup: a raw unit string -> its CSS category (drives `m` introspection). */
+export const UNIT_CATEGORY_BY_UNIT: Readonly<
+  Record<string, UnitCategory>
+> = Object.fromEntries(
+  Object.values(UNIT_DEFINITIONS).map((d) => [
+    d.unit,
+    d.category,
+  ]),
+);

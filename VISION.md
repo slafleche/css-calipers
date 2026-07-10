@@ -7,7 +7,7 @@ today.
 ## The big picture: CSS-Bookends
 
 The long-term home for this work is **CSS-Bookends**
-(https://github.com/slafleche/css-bookends): an umbrella library where each
+(https://github.com/css-bookends/css-bookends): an umbrella library where each
 "book" is a separate, standalone utility. CSS-Calipers is one book (the
 measurement layer). Other concerns become their own books, grouped where it
 makes sense:

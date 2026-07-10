@@ -312,6 +312,9 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       expect(base.multiply(-1).css()).toBe('-5px');
       expect(base.multiply(3).css()).toBe('15px');
 
+      // divide by 1 short-circuits to the same instance (the identity branch).
+      expect(base.divide(1)).toBe(base);
+
       // double / half
       expect(base.double().css()).toBe('10px');
       expect(base.half().css()).toBe('2.5px');
@@ -356,6 +359,15 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       const big = m(2);
       expect(measurementMin(small, big)).toBe(small);
       expect(measurementMax(small, big)).toBe(big);
+      // the reversed-argument order exercises the OTHER ternary branch:
+      // min returns the second arg, max returns the second arg.
+      expect(measurementMin(big, small)).toBe(small);
+      expect(measurementMax(big, small)).toBe(big);
+      // equal values: min/max both fall to the documented tie side.
+      const tieA = m(3);
+      const tieB = m(3);
+      expect(measurementMin(tieA, tieB)).toBe(tieA);
+      expect(measurementMax(tieA, tieB)).toBe(tieA);
     });
 
     it('rejects min/max when units differ', () => {
@@ -565,6 +577,13 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       );
 
       expect(() => assertPx(m(2))).not.toThrow();
+
+      // a NON-measurement value still fails the assertion; this exercises the
+      // empty-params branch of makeUnitAssert (no measurement to attach).
+      expect(() => assertPx(42)).toThrow(
+        'css-calipers.makeUnitAssert: Expected unit "px". [code=CALIPERS_E_ASSERT_UNIT]',
+      );
+      expect(() => assertPx(null)).toThrow(/Expected unit "px"/);
     });
 
     it('covers guard and util helpers on non-measurement values', () => {
@@ -647,7 +666,17 @@ export const runCoreTests = (label: string, api: CoreApi): void => {
       expect(pxSmaller.compare(px)).toBe(-1);
       expect(px.compare(px, true)).toBe(0);
 
+      // non-strict compare on MATCHING units skips the unit-ordering branch and
+      // compares by value (the false side of the unit-mismatch guard).
+      expect(px.compare(pxSmaller, false)).toBe(1);
+      expect(pxSmaller.compare(px, false)).toBe(-1);
+      expect(px.compare(m(10, 'px'), false)).toBe(0);
+
       expect(px.compare(em, false)).not.toBe(0);
+      // non-strict compare on mismatched units orders by the unit string itself.
+      // 'em' < 'px' -> -1 (the lower-than branch); 'px' > 'em' -> 1 (the other).
+      expect(em.compare(px, false)).toBe(-1);
+      expect(px.compare(em, false)).toBe(1);
       expect(() => px.compare(em, true)).toThrow(
         'compare(strict): css-calipers.assertMatchingUnits: measurement unit mismatch: px vs em [code=CALIPERS_E_UNIT_MISMATCH]',
       );

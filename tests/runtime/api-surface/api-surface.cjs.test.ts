@@ -122,8 +122,11 @@ describe('API surface (CJS)', () => {
   });
 
   it('exposes the full root runtime export map', () => {
+    // `__esModule` and `default` are CJS<->ESM interop artifacts on the namespace
+    // (the dynamic `import()` of a CJS bundle synthesizes a `default`), not part of the
+    // package's real named API surface.
     const rootKeys = Object.keys(cjsRoot).filter(
-      (key) => key !== '__esModule',
+      (key) => key !== '__esModule' && key !== 'default',
     );
 
     const coreRuntimeKeys = [
@@ -142,16 +145,39 @@ describe('API surface (CJS)', () => {
       'hasCssMethod',
       'assertUnit',
       'assertCondition',
+      'makeMeasurementRefinement',
+      'nonNegative',
+      'nonPositive',
+      'inRange',
       'normalizeRatio',
       'parseRatio',
       'ratioToFloat',
       'toFloat',
       'reduceRatio',
       'simplifyRatio',
+      'i',
+      'f',
+      'isInteger',
+      'isFloat',
+      'hardenInteger',
+      'hardenFloat',
+      'createInteger',
+      'createFloat',
+      'createCalipersBundle',
       'isPercentMeasurement',
       'assertPercentMeasurement',
       'getErrorConfig',
       'setErrorConfig',
+      // colour value surface (re-exported from ./color)
+      'color',
+      'colorFormats',
+      'createColor',
+      'defaultColorConfig',
+      'defaultFormatPriority',
+      'defineColorSpace',
+      'parseColor',
+      'resolveColor',
+      'storeColor',
     ];
 
     const unitHelperKeys = Object.keys(

@@ -1,22 +1,26 @@
 {
   "name": "css-calipers",
-  "version": "1.0.0",
-  "description": "Compile-time unit safety for numeric, unit-bearing CSS values via typed measurements.",
+  "version": "1.1.0-beta.1",
+  "description": "The missing typed inputs for CSS: build-time-validated measurements, ratios, integers, floats, and colour.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/slafleche/css-calipers.git"
   },
   "bugs": {
-    "url": "https://github.com/slafleche/css-calipers/issues"
+    "url": "https://github.com/css-bookends/css-calipers/issues"
   },
-  "homepage": "https://github.com/slafleche/css-calipers#readme",
+  "homepage": "https://github.com/css-bookends/css-calipers#readme",
   "author": "slafleche",
   "keywords": [
     "css",
+    "typed-inputs",
     "units",
     "typescript",
     "measurement",
+    "ratio",
+    "integer",
+    "float",
     "safety",
     "calipers",
     "type-safe",
@@ -46,6 +50,36 @@
       "import": "./dist/esm/factory.js",
       "require": "./dist/cjs/factory.js"
     },
+    "./measurements": {
+      "types": "./dist/esm/measurements.d.ts",
+      "import": "./dist/esm/measurements.js",
+      "require": "./dist/cjs/measurements.js"
+    },
+    "./ratio": {
+      "types": "./dist/esm/ratio.d.ts",
+      "import": "./dist/esm/ratio.js",
+      "require": "./dist/cjs/ratio.js"
+    },
+    "./integer": {
+      "types": "./dist/esm/integer.d.ts",
+      "import": "./dist/esm/integer.js",
+      "require": "./dist/cjs/integer.js"
+    },
+    "./float": {
+      "types": "./dist/esm/float.d.ts",
+      "import": "./dist/esm/float.js",
+      "require": "./dist/cjs/float.js"
+    },
+    "./corpus": {
+      "types": "./dist/esm/corpus.d.ts",
+      "import": "./dist/esm/corpus.js",
+      "require": "./dist/cjs/corpus.js"
+    },
+    "./color": {
+      "types": "./dist/esm/color/index.d.ts",
+      "import": "./dist/esm/color/index.js",
+      "require": "./dist/cjs/color/index.js"
+    },
     "./units": {
       "types": "./dist/esm/units/index.d.ts",
       "import": "./dist/esm/units/index.js",
@@ -59,10 +93,12 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "csstype": "^3.1.3"
+    "csstype": "^3.2.3",
+    "culori": "^4.0.2"
   },
   "devDependencies": {
     "@css-bookends/eslint-config": "workspace:*",
+    "@types/culori": "^4.0.1",
     "@types/node": "^24.10.1",
     "@vanilla-extract/css": "^1.20.1",
     "@vitest/coverage-v8": "^4.1.7",
@@ -78,9 +114,19 @@
     "build:examples": "tsc -p tsconfig.examples.json --noEmit",
     "build:test": "npm run build && npm run test",
     "build:delete": "node -e \"const { existsSync, rmSync } = require('fs'); const paths = ['dist/cjs', 'dist/esm']; for (const p of paths) { console.log('Scanning', p + '...'); if (existsSync(p)) { console.log('Found', p + ', deleting...'); rmSync(p, { recursive: true, force: true }); console.log('Deleted', p); } else { console.log(p + ' not found, skipping.'); } }\"",
-    "test": "npm run build && npm run test:core && npm run test:ratio && npm run test:factory && npm run test:dist && npm run test:types && npm run test:tsc && npm run lint && npm run test:internal",
+    "test": "npm run build && npm run test:core && npm run test:units && npm run test:refinement && npm run test:ratio && npm run test:integer && npm run test:float && npm run test:hardening && npm run test:corpus && npm run test:value-surface && npm run test:factory && npm run test:scalar-factories && npm run test:subpaths && npm run test:color && npm run test:audit && npm run test:dist && npm run test:types && npm run test:tsc && npm run lint && npm run test:internal && npm run test:internal:run",
+    "test:subpaths": "vitest run tests/runtime/subpaths/subpaths.src.test.ts",
     "test:core": "vitest run tests/runtime/core/core.src.test.ts",
+    "test:units": "vitest run tests/runtime/core/units.src.test.ts",
+    "test:refinement": "vitest run tests/runtime/core/refinement.src.test.ts",
     "test:ratio": "vitest run tests/runtime/ratio/ratio.src.test.ts",
+    "test:integer": "vitest run tests/runtime/integer/integer.src.test.ts",
+    "test:float": "vitest run tests/runtime/float/float.src.test.ts",
+    "test:hardening": "vitest run tests/runtime/hardening/hardening.src.test.ts",
+    "test:corpus": "vitest run tests/runtime/corpus/corpus.src.test.ts",
+    "test:value-surface": "vitest run tests/runtime/value-surface",
+    "test:color": "vitest run tests/runtime/color",
+    "test:audit": "vitest run tests/runtime/audit",
     "test:core:cjs": "vitest run tests/runtime/core/core.cjs.test.ts tests/runtime/api-surface/api-surface.cjs.test.ts",
     "test:core:esm": "vitest run tests/runtime/core/core.esm.test.ts tests/runtime/api-surface/api-surface.esm.test.ts",
     "test:core:dist": "npm run test:core:cjs && npm run test:core:esm",
@@ -88,11 +134,14 @@
     "test:lint": "npm run lint",
     "test:types": "echo \"\n 🧪 Starting tsd type checks...\n\" && tsd --files tests/types/**/*.test-d.ts && echo \"✅ tsd type checks passed!\n\"",
     "test:tsc": "tsc -p tsconfig.json --noEmit",
-    "test:dist": "npm run test:core:dist && npm run test:factory:dist",
+    "test:dist": "npm run test:core:dist && npm run test:factory:dist && npm run test:subpaths:dist",
+    "test:subpaths:dist": "vitest run tests/runtime/subpaths/subpaths.cjs.test.ts tests/runtime/subpaths/subpaths.esm.test.ts",
     "test:factory": "vitest run tests/runtime/factory/factory.src.test.ts",
+    "test:scalar-factories": "vitest run tests/runtime/factory/scalar-factories.src.test.ts",
     "test:factory:cjs": "vitest run tests/runtime/factory/factory.cjs.test.ts tests/runtime/api-surface/factory.api-surface.cjs.test.ts",
     "test:factory:esm": "vitest run tests/runtime/factory/factory.esm.test.ts tests/runtime/api-surface/factory.api-surface.esm.test.ts",
     "test:factory:dist": "npm run test:factory:cjs && npm run test:factory:esm",
-    "test:internal": "tsc -p tsconfig.internal.json --noEmit"
+    "test:internal": "tsc -p tsconfig.internal.json --noEmit",
+    "test:internal:run": "vitest run tests/runtime/internal"
   }
 }
